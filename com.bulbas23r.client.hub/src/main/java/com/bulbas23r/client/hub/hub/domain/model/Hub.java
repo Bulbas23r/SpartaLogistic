@@ -1,6 +1,7 @@
 package com.bulbas23r.client.hub.hub.domain.model;
 
 import com.bulbas23r.client.hub.hub.presentation.dto.CreateHubRequestDto;
+import com.bulbas23r.client.hub.hub.presentation.dto.UpdateHubRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,19 @@ public class Hub extends BaseEntity {
     private Double longitude;
 
     public Hub(CreateHubRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.managerId = requestDto.getManagerId();
+        this.roadAddress = requestDto.getRoadAddress();
+        this.jibunAddress = requestDto.getJibunAddress();
+        this.city = requestDto.getCity();
+        this.district = requestDto.getDistrict();
+        this.town = requestDto.getTown();
+        this.postalCode = requestDto.getPostalCode();
+        this.latitude = requestDto.getLatitude();
+        this.longitude = requestDto.getLongitude();
+    }
+
+    public void update(UpdateHubRequestDto requestDto) {
         this.name = requestDto.getName();
         this.managerId = requestDto.getManagerId();
         this.roadAddress = requestDto.getRoadAddress();
