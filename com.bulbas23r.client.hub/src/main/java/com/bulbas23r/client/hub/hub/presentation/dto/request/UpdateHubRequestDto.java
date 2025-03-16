@@ -1,11 +1,11 @@
-package com.bulbas23r.client.hub.hub.presentation.dto;
+package com.bulbas23r.client.hub.hub.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateHubRequestDto {
+public class UpdateHubRequestDto {
 
     @NotBlank
     private String name;

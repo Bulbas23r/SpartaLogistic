@@ -1,7 +1,7 @@
 package com.bulbas23r.client.hub.hub.domain.model;
 
-import com.bulbas23r.client.hub.hub.presentation.dto.CreateHubRequestDto;
-import com.bulbas23r.client.hub.hub.presentation.dto.UpdateHubRequestDto;
+import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto;
+import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

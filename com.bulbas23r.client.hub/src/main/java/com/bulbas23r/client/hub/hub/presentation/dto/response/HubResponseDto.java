@@ -1,4 +1,4 @@
-package com.bulbas23r.client.hub.hub.presentation.dto;
+package com.bulbas23r.client.hub.hub.presentation.dto.response;
 
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import java.util.UUID;
