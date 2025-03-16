@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,13 @@ public class HubController {
         return ResponseEntity.ok(new HubResponseDto(hub));
     }
 
+    @GetMapping("/{hubId}")
+    public ResponseEntity<HubResponseDto> getHub(@PathVariable UUID hubId) {
+        Hub hub = hubService.getHubById(hubId);
+
+        return ResponseEntity.ok(new HubResponseDto(hub));
+    }
+
     @PutMapping("/{hubId}")
     public ResponseEntity<HubResponseDto> updateHub(
         @PathVariable UUID hubId,
@@ -40,4 +48,5 @@ public class HubController {
 
         return ResponseEntity.ok(new HubResponseDto(hub));
     }
+
 }
