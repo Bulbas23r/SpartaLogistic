@@ -1,5 +1,6 @@
 package com.bulbas23r.client.hub.route.domain.model;
 
+import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @SQLRestriction("is_deleted is false")
 @Table(name = "p_route")
-public class Route {
+public class Route extends BaseEntity {
 
     @EmbeddedId
     private RouteId id;
