@@ -36,6 +36,9 @@ public class Hub extends BaseEntity {
 
     private Long managerId;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean active;
+
     @Embedded
     private Address address;
     @Embedded
