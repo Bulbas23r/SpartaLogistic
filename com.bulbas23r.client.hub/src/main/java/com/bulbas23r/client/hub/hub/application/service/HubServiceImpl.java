@@ -1,14 +1,17 @@
 package com.bulbas23r.client.hub.hub.application.service;
 
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
+import com.bulbas23r.client.hub.hub.domain.repository.HubQueryRepository;
 import com.bulbas23r.client.hub.hub.domain.repository.HubRepository;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import common.exception.NotFoundException;
+import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HubServiceImpl implements HubService {
 
     private final HubRepository hubRepository;
+    private final HubQueryRepository hubQueryRepository;
 
     @Transactional
     @Override
@@ -57,5 +61,12 @@ public class HubServiceImpl implements HubService {
     public void deleteHub(UUID hubId) {
         Hub hub = getHubById(hubId);
         hub.setDeleted(true);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Hub> searchHub(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
+        String keyword) {
+        return hubQueryRepository.searchHub(pageable, sortDirection, sortBy, keyword);
     }
 }
