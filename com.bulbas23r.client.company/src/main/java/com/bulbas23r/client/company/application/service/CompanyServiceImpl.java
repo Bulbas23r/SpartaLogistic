@@ -1,6 +1,8 @@
 package com.bulbas23r.client.company.application.service;
 
 import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
+import com.bulbas23r.client.company.domain.model.CompanyType;
+import com.bulbas23r.client.company.domain.repository.CompanyQueryRepository;
 import common.annotation.ValidUUID;
 import common.exception.NotFoundException;
 import common.exception.BadRequestException;
@@ -8,10 +10,12 @@ import com.bulbas23r.client.company.application.dto.CompanyCreateRequestDto;
 import com.bulbas23r.client.company.application.dto.CompanyResponseDto;
 import com.bulbas23r.client.company.domain.model.Company;
 import com.bulbas23r.client.company.domain.repository.CompanyRepository;
+import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final CompanyQueryRepository companyQueryRepository;
 
     @Transactional
     public CompanyResponseDto createCompany(CompanyCreateRequestDto companyRequestDto) {
@@ -60,6 +65,11 @@ public class CompanyServiceImpl implements CompanyService {
         company.setDeleted();
 
         return CompanyResponseDto.fromEntity(company);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CompanyResponseDto> searchCompany(String name,UUID hubId, CompanyType type ,Pageable pageable, Direction sortDirection, CommonSortBy sortBy){
+        return companyQueryRepository.searchCompany(name,hubId,type,pageable,sortDirection,sortBy);
     }
 
     public Company getCompany(UUID id) {

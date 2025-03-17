@@ -50,4 +50,7 @@ springdoc:
     urls[1]:
       name: hub-service
       url: /hub-service/v3/api-docs
+    urls[2]:
+      name: company-service
+      url: /company-service/v3/api-docs
     use-root-path: true

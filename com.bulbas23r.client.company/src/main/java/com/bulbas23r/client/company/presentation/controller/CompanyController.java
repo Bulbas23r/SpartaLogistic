@@ -4,8 +4,10 @@ import com.bulbas23r.client.company.application.dto.CompanyCreateRequestDto;
 import com.bulbas23r.client.company.application.dto.CompanyResponseDto;
 import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
 import com.bulbas23r.client.company.application.service.CompanyService;
+import com.bulbas23r.client.company.domain.model.CompanyType;
 import common.annotation.ValidUUID;
 import common.utils.PageUtils;
+import java.lang.reflect.Type;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,8 +46,8 @@ public class CompanyController {
 
     @GetMapping
     public ResponseEntity<?> getCompanyList(
-        @RequestParam(defaultValue = "0", required = false) int page,
-        @RequestParam(defaultValue = "10", required = false) int size
+        @RequestParam(name = "page",defaultValue = "0", required = false) int page,
+        @RequestParam(name = "size", defaultValue = "10", required = false) int size
     ) {
         Pageable pageable = PageUtils.pageable(page, size);
         Page<CompanyResponseDto> result = companyService.getCompanyList(pageable);
@@ -62,6 +64,21 @@ public class CompanyController {
     public ResponseEntity<?> deleteCompany(@PathVariable("companyId")  UUID companyId) {
         CompanyResponseDto resultDto =  companyService.deleteCompany(companyId);
         return ResponseEntity.ok(resultDto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchCompany(
+        @RequestParam(name = "name", required = false) String name,
+        @RequestParam(name = "hubId",required = false) UUID hubId,
+        @RequestParam(name = "type",required = false) CompanyType type,
+        @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+        @RequestParam(name = "size",defaultValue = "10", required = false) int size,
+        @RequestParam(name = "sortDirection",defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(name = "sortBy", defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<CompanyResponseDto> result = companyService.searchCompany(name,hubId,type,pageable,sortDirection,sortBy);
+        return ResponseEntity.ok(result);
     }
 
 }

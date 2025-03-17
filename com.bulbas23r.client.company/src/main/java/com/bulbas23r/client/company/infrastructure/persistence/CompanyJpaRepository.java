@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JpaCompanyRepository extends JpaRepository<Company, UUID> , CompanyRepository {
+public interface CompanyJpaRepository extends JpaRepository<Company, UUID> , CompanyRepository {
     boolean existsByHubIdAndName(UUID hubId, String name);
     Page<Company> findAllByIsDeletedIsFalse(Pageable pageable);
 }
