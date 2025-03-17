@@ -28,4 +28,9 @@ public class Route extends BaseEntity {
 
     @Column(nullable = false)
     private Integer transitDistance;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean active;
+
+//    public Route(Hub departureHub, Hub arrivalHub) { }
 }
