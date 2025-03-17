@@ -15,7 +15,14 @@ spring:
           uri: lb://hub-service
           predicates:
             - Path=/api/hubs/**, /hub-service/v3/api-docs
-
+        - id: company-service
+          uri: lb://company-service
+          predicates:
+            - Path=/api/companies/**, /company-service/v3/api-docs
+#        - id: auth-service
+#          uri: lb://auth-service
+#          predicates:
+#            - Path=/auth/**
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
