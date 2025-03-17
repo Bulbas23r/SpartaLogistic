@@ -23,13 +23,13 @@ public class HubResponseDto {
         this.id = hub.getId();
         this.name = hub.getName();
         this.managerId = hub.getManagerId();
-        this.roadAddress = hub.getRoadAddress();
-        this.jibunAddress = hub.getJibunAddress();
-        this.city = hub.getCity();
-        this.district = hub.getDistrict();
-        this.town = hub.getTown();
-        this.postalCode = hub.getPostalCode();
-        this.latitude = hub.getLatitude();
-        this.longitude = hub.getLongitude();
+        this.roadAddress = hub.getAddress().getRoadAddress();
+        this.jibunAddress = hub.getAddress().getJibunAddress();
+        this.city = hub.getAddress().getCity();
+        this.district = hub.getAddress().getDistrict();
+        this.town = hub.getAddress().getTown();
+        this.postalCode = hub.getAddress().getPostalCode();
+        this.latitude = hub.getLocation().getLatitude();
+        this.longitude = hub.getLocation().getLongitude();
     }
 }

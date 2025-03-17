@@ -17,7 +17,7 @@ public class HubListResponseDto {
         this.id = hub.getId();
         this.name = hub.getName();
         this.managerId = hub.getManagerId();
-        this.roadAddress = hub.getRoadAddress();
-        this.jibunAddress = hub.getJibunAddress();
+        this.roadAddress = hub.getAddress().getRoadAddress();
+        this.jibunAddress = hub.getAddress().getJibunAddress();
     }
 }
