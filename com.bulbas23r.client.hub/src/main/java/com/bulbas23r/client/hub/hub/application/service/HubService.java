@@ -16,4 +16,6 @@ public interface HubService {
     Hub getHubById(UUID hubId);
 
     Page<Hub> getHubList(Pageable pageable);
+
+    void deleteHub(UUID hubId);
 }

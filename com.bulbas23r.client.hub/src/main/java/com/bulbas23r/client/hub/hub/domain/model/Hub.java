@@ -14,13 +14,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "p_hub")
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("is_deleted is false")
+@Table(name = "p_hub")
 public class Hub extends BaseEntity {
 
     @Id

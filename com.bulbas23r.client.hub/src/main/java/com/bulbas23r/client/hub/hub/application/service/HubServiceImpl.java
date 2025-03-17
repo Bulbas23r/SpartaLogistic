@@ -51,4 +51,11 @@ public class HubServiceImpl implements HubService {
 
         return hub;
     }
+
+    @Transactional
+    @Override
+    public void deleteHub(UUID hubId) {
+        Hub hub = getHubById(hubId);
+        hub.setDeleted(true);
+    }
 }
