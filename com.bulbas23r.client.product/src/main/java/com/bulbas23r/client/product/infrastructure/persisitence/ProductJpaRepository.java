@@ -7,7 +7,7 @@ import com.bulbas23r.client.product.domain.model.Product;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JpaProductRepository extends ProductRepository, JpaRepository<Product, UUID> {
+public interface ProductJpaRepository extends ProductRepository, JpaRepository<Product, UUID> {
     @Override
     default void update(Product product) {
         save(product);
@@ -16,5 +16,4 @@ public interface JpaProductRepository extends ProductRepository, JpaRepository<P
     @Override
     Product save(Product product);
 
-    // TODO: make custom methods
 }

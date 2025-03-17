@@ -1,13 +1,17 @@
 package com.bulbas23r.client.product.presentation.controller;
 
-import com.bulbas23r.client.product.application.service.ProductService;
+import com.bulbas23r.client.product.application.service.ProductServiceImpl;
 import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
 import com.bulbas23r.client.product.presentation.dto.ProductResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
+import common.utils.PageUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,14 +21,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
-    private final ProductService productService;
+    private final ProductServiceImpl productService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductServiceImpl productService) {
         this.productService = productService;
     }
 
@@ -64,13 +69,28 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
-        for (Product product : products) {
-            ProductResponseDto productResponseDto = new ProductResponseDto(product);
-            productResponseDtos.add(productResponseDto);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
+    public ResponseEntity<Page<ProductResponseDto>> getProductList(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<Product> products = productService.getAllProducts(pageable);
+
+        return ResponseEntity.ok(products.map(ProductResponseDto::new));
+    }
+
+    @GetMapping("/products/search")
+    public ResponseEntity<Page<ProductResponseDto>> searchProducts(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size,
+        @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<Product> products = productService.searchProducts(keyword, pageable, sortDirection,
+            sortBy);
+
+        return ResponseEntity.ok(products.map(ProductResponseDto::new));
     }
 }
