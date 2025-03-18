@@ -15,6 +15,14 @@ spring:
           uri: lb://hub-service
           predicates:
             - Path=/api/hubs/**, /hub-service/v3/api-docs
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
 
       discovery:
         locator:
@@ -44,3 +52,10 @@ springdoc:
       name: hub-service
       url: /hub-service/v3/api-docs
     use-root-path: true
+
+jwt:
+  key: "asdkfjaldjfkadlkfdkfalkdfaldkfalsdkfakdfklsajdfk"
+
+logging:
+  level:
+    web: debug
