@@ -23,6 +23,10 @@ spring:
           uri: lb://company-service
           predicates:
             - Path=/api/companies/**, /company-service/v3/api-docs
+        - id: delivery-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/deliveries/**, /delivery-service/v3/api-docs
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
@@ -56,4 +60,7 @@ springdoc:
     urls[3]:
       name: company-service
       url: /company-service/v3/api-docs
+    urls[4]:
+        name: delivery-service
+        url: /delivery-service/v3/api-docs
     use-root-path: true
