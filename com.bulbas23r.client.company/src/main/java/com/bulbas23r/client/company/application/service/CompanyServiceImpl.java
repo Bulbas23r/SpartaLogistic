@@ -31,7 +31,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponseDto createCompany(CompanyCreateRequestDto companyRequestDto) {
         //todo: 허브id, 매니저 id 유효한지 check
 
-        if(isCompanyNameExistInHub(companyRequestDto.getHub_id(), companyRequestDto.getName())) {
+        if(isCompanyNameExistInHub(companyRequestDto.getHubId(), companyRequestDto.getName())) {
           throw new BadRequestException("하나의 허브에 업체는 중복 될 수 없습니다.");
         }
 

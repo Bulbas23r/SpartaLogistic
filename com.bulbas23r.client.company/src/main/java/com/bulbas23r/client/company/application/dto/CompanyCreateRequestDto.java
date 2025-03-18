@@ -17,10 +17,10 @@ public class CompanyCreateRequestDto {
     private String name;
 
     @ValidUUID
-    private UUID hub_id;
+    private UUID hubId;
 
     @ValidUUID
-    private UUID manager_id;
+    private UUID managerId;
 
     @ValidEnum(enumClass = CompanyType.class)
     private CompanyType type;
@@ -56,8 +56,8 @@ public class CompanyCreateRequestDto {
             .build();
 
         return Company.builder()
-            .hubId(hub_id)
-            .managerId(manager_id)
+            .hubId(hubId)
+            .managerId(managerId)
             .name(name)
             .type(type)
             .phone(phone)
