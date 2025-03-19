@@ -3,6 +3,7 @@ package com.bulbas23r.client.deliverymanager.domain.repository;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManagerType;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DeliveryManagerRepository {
@@ -13,4 +14,6 @@ public interface DeliveryManagerRepository {
 
     List<DeliveryManager> findAllByTypeAndHubIdOrderBySequenceAsc(DeliveryManagerType type,
         UUID hubId);
+
+    Optional<DeliveryManager> findById(Long id);
 }

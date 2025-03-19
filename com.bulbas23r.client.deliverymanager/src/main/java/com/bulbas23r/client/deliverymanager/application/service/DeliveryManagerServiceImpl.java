@@ -5,10 +5,12 @@ import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManagerType;
 import com.bulbas23r.client.deliverymanager.domain.repository.DeliveryManagerRepository;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import common.exception.BadRequestException;
+import common.exception.NotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final DeliveryManagerRepository deliveryManagerRepository;
 
+    @Transactional
     @Override
     public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
         // TODO userID, hubID 검증 로직 추가하기
@@ -34,6 +37,15 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
         return deliveryManagerRepository.save(deliveryManager);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public DeliveryManager getDeliveryManager(Long userId) {
+        return deliveryManagerRepository.findById(userId).orElseThrow(
+            () -> new NotFoundException("존재하지 않는 담당자입니다!")
+        );
+    }
+
 
     private Integer getHubDeliveryManagerSequence() {
         List<DeliveryManager> deliveryManagers = deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(

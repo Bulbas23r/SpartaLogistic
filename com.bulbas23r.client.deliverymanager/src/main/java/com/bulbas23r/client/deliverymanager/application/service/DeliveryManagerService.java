@@ -6,4 +6,6 @@ import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManag
 public interface DeliveryManagerService {
 
     DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto);
+
+    DeliveryManager getDeliveryManager(Long userId);
 }
