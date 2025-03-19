@@ -2,22 +2,19 @@ package com.bulbas23r.client.delivery.application.dto;
 
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
-import common.annotation.ValidUUID;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryRequestDto {
+public class DeliveryCreateRequestDto {
 
     @NotNull( message = "주문 Id는 필수 값 입니다.")
     private UUID orderId;
@@ -32,7 +29,7 @@ public class DeliveryRequestDto {
     private UUID deliveryManagerId;
 
     @Builder.Default
-    private DeliveryStatus status = DeliveryStatus.HUB_PENDING;
+    private DeliveryStatus status = DeliveryStatus.READY;
 
     @NotNull( message = "수령 업체 Id는 필수 값 입니다.")
     private UUID receiverCompanyId;
