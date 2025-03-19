@@ -40,7 +40,7 @@ public class DeliveryResponseDto {
 
     private String receiverName;
 
-    private UUID receiverCompanySlackId;
+    private String receiverCompanySlackId;
 
     public static DeliveryResponseDto fromEntity(Delivery delivery) {
         return DeliveryResponseDto.builder()
@@ -57,7 +57,7 @@ public class DeliveryResponseDto {
     }
 
     public DeliveryResponseDto(UUID id,UUID orderId,UUID startHubId, UUID endHubId, String status,
-        UUID deliveryManagerId, UUID receiverCompanyId, UUID receiverCompanySlackId) {
+        UUID deliveryManagerId, UUID receiverCompanyId, String receiverCompanySlackId) {
         this.id = id;
         this.orderId = orderId;
         this.startHubId = startHubId;

@@ -1,5 +1,6 @@
 package com.bulbas23r.client.delivery.domain.model;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
@@ -51,14 +52,14 @@ public class Delivery extends BaseEntity {
     private UUID receiverCompanyId;
 
     @Column(name = "receiver_company_slack_id",nullable = false)
-    private UUID receiverCompanySlackId;
+    private String receiverCompanySlackId;
 
     public void update(DeliveryUpdateRequestDto requestDto) {
         if(requestDto.getStartHubId() != null) this.startHubId = requestDto.getStartHubId();
         if(requestDto.getEndHubId() != null) this.endHubId = requestDto.getEndHubId();
         if(requestDto.getDeliveryManagerId() != null) this.deliveryManagerId = requestDto.getDeliveryManagerId();
         if(requestDto.getReceiverCompanyId() != null) this.receiverCompanyId = requestDto.getReceiverCompanyId();
-        if(requestDto.getReceiverCompanySlackId() != null) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
+        if(StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
     }
 
 }

@@ -35,7 +35,7 @@ public class DeliveryCreateRequestDto {
     private UUID receiverCompanyId;
 
     @NotNull( message = "수령 업체 slack Id는 필수 값 입니다.")
-    private UUID receiverCompanySlackId;
+    private String receiverCompanySlackId;
 
     public Delivery toDelivery() {
         return Delivery.builder()

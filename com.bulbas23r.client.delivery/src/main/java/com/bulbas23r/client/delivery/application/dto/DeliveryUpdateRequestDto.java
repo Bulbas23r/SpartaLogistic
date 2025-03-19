@@ -14,6 +14,6 @@ public class DeliveryUpdateRequestDto {
 
     private UUID receiverCompanyId;
 
-    private UUID receiverCompanySlackId;
+    private String receiverCompanySlackId;
 
 }
