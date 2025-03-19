@@ -3,8 +3,10 @@ package com.bulbas23r.client.deliverymanager.application.service;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
+import common.utils.PageUtils.CommonSortBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 
 public interface DeliveryManagerService {
 
@@ -17,4 +19,8 @@ public interface DeliveryManagerService {
     void deleteDeliveryManager(Long userId);
 
     DeliveryManager updateDeliveryManager(Long userId, UpdateDeliveryManagerRequestDto requestDto);
+
+    Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable, Direction sortDirection,
+        CommonSortBy sortBy,
+        String keyword);
 }

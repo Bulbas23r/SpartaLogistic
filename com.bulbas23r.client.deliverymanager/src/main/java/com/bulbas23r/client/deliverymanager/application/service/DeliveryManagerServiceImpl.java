@@ -2,14 +2,17 @@ package com.bulbas23r.client.deliverymanager.application.service;
 
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManagerType;
+import com.bulbas23r.client.deliverymanager.domain.repository.DeliveryManagerQueryRepository;
 import com.bulbas23r.client.deliverymanager.domain.repository.DeliveryManagerRepository;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
+import common.utils.PageUtils.CommonSortBy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final DeliveryManagerRepository deliveryManagerRepository;
+    private final DeliveryManagerQueryRepository deliveryManagerQueryRepository;
 
     @Transactional
     @Override
@@ -90,7 +94,14 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         return deliveryManagerRepository.findAll(pageable);
     }
 
-//    @Transactional
+    @Override
+    public Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable,
+        Direction sortDirection, CommonSortBy sortBy, String keyword) {
+        return deliveryManagerQueryRepository.searchDeliveryManager(
+            pageable, sortDirection, sortBy, keyword);
+    }
+
+    //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
 //        // TODO userID, hubID 검증 로직 추가하기

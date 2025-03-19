@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,5 +71,21 @@ public class DeliveryManagerController {
             requestDto);
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<DeliveryManagerResponse>> searchDeliveryManager(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size,
+        @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
+        @RequestParam(required = false) String keyword
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<DeliveryManager> deliveryManagers =
+            deliveryManagerService.searchDeliveryManagerList(pageable, sortDirection,
+                sortBy, keyword);
+
+        return ResponseEntity.ok(deliveryManagers.map(DeliveryManagerResponse::new));
     }
 }
