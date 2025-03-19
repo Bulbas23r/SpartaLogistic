@@ -47,4 +47,14 @@ public class RouteController {
 
         return ResponseEntity.ok(new RouteResponse(route));
     }
+
+    @GetMapping
+    public ResponseEntity<RouteResponse> getRoute(
+        @RequestParam UUID departureHubId,
+        @RequestParam UUID arrivalHubId
+    ) {
+        Route route = routeService.getRoute(departureHubId, arrivalHubId);
+
+        return ResponseEntity.ok(new RouteResponse(route));
+    }
 }

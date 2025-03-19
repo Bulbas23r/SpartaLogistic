@@ -4,11 +4,13 @@ import com.bulbas23r.client.hub.hub.application.service.HubService;
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
 import com.bulbas23r.client.hub.route.domain.model.Route;
+import com.bulbas23r.client.hub.route.domain.model.RouteId;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
 import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
+import common.exception.NotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -79,5 +81,14 @@ public class RouteServiceImpl implements RouteService {
     public Route createRoute(CreateRouteRequestDto requestDto) {
         Route route = new Route(requestDto);
         return routeRepository.save(route);
+    }
+
+    @Override
+    public Route getRoute(UUID departureHubId, UUID arrivalHubId) {
+        RouteId routeId = new RouteId(departureHubId, arrivalHubId);
+
+        return routeRepository.findById(routeId).orElseThrow(
+            () -> new NotFoundException("존재하지 않는 경로입니다!")
+        );
     }
 }

@@ -12,4 +12,6 @@ public interface RouteService {
     List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId);
 
     Route createRoute(CreateRouteRequestDto requestDto);
+
+    Route getRoute(UUID departureHubId, UUID arrivalHubId);
 }
