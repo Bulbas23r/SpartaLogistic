@@ -64,7 +64,7 @@ public class RouteController {
         return ResponseEntity.ok(new RouteResponse(route));
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<Page<RouteResponse>> getRouteList(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
