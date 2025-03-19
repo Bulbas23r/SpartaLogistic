@@ -1,6 +1,5 @@
 package com.bulbas23r.client.auth.infrastructure.config;
 
-import com.bulbas23r.client.auth.application.dto.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,14 +14,11 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
 public class JwtTokenProvider {
-  // 하단의 방법 : 직접 Cookie 만들고 Cookie에 JWT 담아서 보냄. -> 장점 : Custom 용이, header에 Set-Cookie로 자동으로 넘어감 // 이 방법 외에는 헤더에 넣어서 보내는 방법이 있음 -> 장점 : 코드 수 감소 // 더 좋고 나쁘고는 없으니, 상황에 맞게 구현하면 됨.
   // Header KEY 값
   public static final String AUTHORIZATION_HEADER = "Authorization";
   // 사용자 권한 값의 KEY
@@ -50,21 +46,14 @@ public class JwtTokenProvider {
   }
 
   // JWT accessToken 생성
-  public String generateAccessToken(Authentication authentication) {
+  public String generateAccessToken(String username, String role) {
     Date date = new Date();
     Date expireDate = new Date(date.getTime() + ACCESS_TOKEN_TIME);
-
-    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    String role = userDetails.getAuthorities().stream()
-        .findFirst()  // 단일 권한만 가져옴
-        .map(GrantedAuthority::getAuthority)  // 권한 이름 추출
-        .orElseThrow(() -> new IllegalArgumentException("사용자에게 권한이 없습니다."));
 
     //암호화
     return BEARER_PREFIX +
         Jwts.builder()
-            .setSubject(authentication.getName()) // 사용자 식별자값 username
-            .claim("id", userDetails.getId())
+            .claim("username", username)
             .claim("role", role)
             .setIssuedAt(date) //발급일
             .setExpiration(expireDate) // 만료 시간
@@ -73,21 +62,13 @@ public class JwtTokenProvider {
   }
 
   // JWT refreshToken 생성
-  public String generateRefreshToken(Authentication authentication) {
+  public String generateRefreshToken(String username, String role) {
     Date date = new Date();
     Date expireDate = new Date(date.getTime() + REFRESH_TOKEN_TIME);
 
-    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    String role = userDetails.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("권한이 존재하지 않습니다."));
-
-    //암호화
     return BEARER_PREFIX +
         Jwts.builder()
-            .setSubject(authentication.getName()) // 사용자 식별자값
-            .claim("id", userDetails.getId())
+            .claim("username", username)
             .claim("role", role)
             .setIssuedAt(date) //발급일
             .setExpiration(expireDate) // 만료 시간
@@ -144,18 +125,18 @@ public class JwtTokenProvider {
   }
 
   //
-  public Claims getAllClaimsFromToken(String token) {
+  public Claims getAllClaimsFromToken(String tokenValue) {
     return Jwts.parserBuilder()
         .setSigningKey(key)
         .build()
-        .parseClaimsJws(token)
+        .parseClaimsJws(tokenValue)
         .getBody();
   }
 
   //JWT에서 username 추출
   public String getUsernameFromToken(String token) {
     Claims claims = getAllClaimsFromToken(token);
-    return claims.getSubject();
+    return (String) claims.get("username");
   }
 
   //id 추출
@@ -168,6 +149,5 @@ public class JwtTokenProvider {
   public String getRolesFromToken(String token) {
     Claims claims = getAllClaimsFromToken(token);
     return claims.get("role", String.class);
-
   }
 }

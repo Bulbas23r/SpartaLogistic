@@ -15,19 +15,10 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     @NonNull
     @Override
     public Optional<String> getCurrentAuditor() {
-        // TODO SecurityContextHolder 해결하기
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            return Optional.empty();
-//        }
-//
-//        Object principal = authentication.getPrincipal();
-//
-//        if (principal instanceof UserDetails) {
-//            return Optional.of(((UserDetails) principal).getUsername());
-//        }
 
-        return Optional.empty();
+        String currentUser = UserContextHolder.getCurrentUser();
+        return (currentUser != null && !currentUser.isEmpty())
+            ? Optional.of(currentUser)
+            : Optional.empty();
     }
 }

@@ -13,16 +13,14 @@ public class UserDataForRegisterDto {
   private Long userId;
   private String username;
   private String name;
-  private String slackEmail;
+  private String slackId;
   private UserRoleEnum role;
-  private boolean isConfirmed;
 
   public UserDataForRegisterDto(User user) {
     this.userId = user.getUserId();
     this.username = user.getUsername();
     this.name = user.getName();
-    this.slackEmail = user.getSlackId();
+    this.slackId = user.getSlackId();
     this.role = user.getUserRoleEnum();
-    this.isConfirmed = user.isConfirmed();
   }
 }

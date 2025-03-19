@@ -16,7 +16,7 @@ public class ClientServiceImpl implements ClientService {
   public UserDetailsDto getUserDetails(String username) {
     //repository 조회
     try {
-      User user = userRepository.findByUsernameForAuth(username);
+      User user = userRepository.findByUsername(username).orElseThrow();
 
       //to dto
       UserDetailsDto detailsDto = new UserDetailsDto();
@@ -30,5 +30,4 @@ public class ClientServiceImpl implements ClientService {
       return null;
     }
   }
-
 }

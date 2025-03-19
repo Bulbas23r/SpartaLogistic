@@ -13,5 +13,5 @@ public class UserPatchRequestForRegisterDto {
   private String name;
   private String slackId;
   private UserRoleEnum userRoleEnum;
-  private boolean isConfirmed;
+  private boolean isDeleted;
 }

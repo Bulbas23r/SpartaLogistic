@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 public class UserDataDto {
   private String username;
   private String name;
-  private String slackEmail;
+  private String slackId;
   private UserRoleEnum role;
 
   public UserDataDto(User user) {
     this.username = user.getUsername();
     this.name = user.getName();
-    this.slackEmail = user.getSlackId();
+    this.slackId = user.getSlackId();
     this.role = user.getUserRoleEnum();
   }
 }

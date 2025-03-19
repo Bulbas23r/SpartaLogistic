@@ -7,9 +7,19 @@ import com.bulbas23r.client.user.application.dto.UserResponseForRegisterDto;
 import com.bulbas23r.client.user.application.dto.UserSignUpRequestDto;
 import com.bulbas23r.client.user.application.service.ClientService;
 import com.bulbas23r.client.user.application.service.UserService;
+import com.bulbas23r.client.user.domain.model.User;
+import common.annotation.RoleCheck;
+import common.utils.PageUtils;
+import jakarta.validation.Valid;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,70 +36,91 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
-  private final ClientService clientService;
 
   //회원가입
   @PostMapping("/sign-up")
-  public ResponseEntity signUp(@RequestBody UserSignUpRequestDto userRequestDto) throws Exception {
+  public ResponseEntity<?> signUp(
+      @Valid @RequestBody UserSignUpRequestDto userRequestDto,
+      BindingResult bindingResult
+  ) throws Exception {
+    if(bindingResult.hasErrors()) {
+      String message = bindingResult.getAllErrors().stream()
+          .map(DefaultMessageSourceResolvable::getDefaultMessage)
+          .collect(Collectors.joining(", "));
+
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
     UserResponseDto userResponseDto = userService.signUp(userRequestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
   }
 
-  //관리자 : 유저 가입 승인
-  @PatchMapping("/reg/{userId}/approve")
-  public ResponseEntity approve(
-      @PathVariable(name = "userId") Long userId,
-      @RequestParam(name = "isConfirmed") boolean isConfirmed) {
-    UserResponseForRegisterDto userResponseForRegisterDto = userService.approve(userId, isConfirmed);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(userResponseForRegisterDto);
+  @PatchMapping
+  public ResponseEntity<?> updateUser(
+      @RequestHeader("X-User-Name") String username,
+      @RequestBody UserPatchRequestForRegisterDto userRequestDto
+  ) throws Exception {
+    userService.updateUser(username,userRequestDto);
+    return ResponseEntity.ok().build();
   }
+
   //유저 : 개인 상세 정보 조회
-  @GetMapping("/usr")
-  public ResponseEntity getUserDetail(@RequestHeader("X-User-Id") Long tokenUserId) {
-    //Todo : header 토큰 받아서 처리하기
-    Long userId = tokenUserId;
-    UserResponseDto userResponseDto = userService.getUserDetail(userId);
+  @GetMapping()
+  public ResponseEntity getUserDetail(@RequestHeader("X-User-Name") String username) {
+    UserResponseDto userResponseDto = userService.getUserDetail(username);
     return ResponseEntity.ok(userResponseDto);
   }
 
   //관리자 : 유저 상세 정보 조회
-  @GetMapping("/reg/{userId}")
+  @RoleCheck("MASTER")
+  @GetMapping("/{userId}")
   public ResponseEntity getUserDetailForRegister(@PathVariable("userId") Long userId) {
     UserResponseForRegisterDto userResponseForRegisterDto = userService.getUserDetailForRegister(userId);
     return ResponseEntity.ok(userResponseForRegisterDto);
   }
 
-//  //관리자 : 유저 리스트 조회
-//  @GetMapping("/reg/list")
-//  public ResponseEntity getUsers(@RequestParam("page") int page,
-//      @RequestParam("size") int size,
-//      @RequestParam("sort") String sort) {
-//    CustomPageResponse<UserDataForRegisterDto> userList = userService.getUsers(page-1, size, sort);
-//    return ResponseEntity.ok(userList);
-//  }
+  //관리자 : 유저 리스트 조회
+  @RoleCheck("MASTER")
+  @GetMapping("/list")
+  public ResponseEntity<Page<UserDataForRegisterDto>> getUsers(
+      @RequestParam(defaultValue = "0", required = false) int page,
+      @RequestParam(defaultValue = "10", required = false) int size
+  ) {
+    Pageable pageable = PageUtils.pageable(page, size);
+    Page<User> userList = userService.getUsers(pageable);
+    return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
+  }
 
-//  //관리자 : 유저 검색
-//  @GetMapping("/reg/search")
-//  public ResponseEntity searchUser(@RequestParam(name="text") String searchText,
-//      @RequestParam(name = "page", defaultValue = "1") int page,
-//      @RequestParam(name = "size", defaultValue = "10") int size,
-//      @RequestParam(value = "sort", defaultValue = "createdAt") String sort) {
-//    CustomPageResponse<UserDataForRegisterDto> userList = userService.searchUsers(searchText, page-1, size, sort);
-//    return ResponseEntity.ok(userList);
-//  }
+  //관리자 : 유저 검색
+  @RoleCheck("MASTER")
+  @GetMapping("/search")
+  public ResponseEntity<?> searchUser(
+      @RequestParam(defaultValue = "0", required = false) int page,
+      @RequestParam(defaultValue = "10", required = false) int size,
+      @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+      @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
+      @RequestParam(required = false) String keyword) {
+    Pageable pageable = PageUtils.pageable(page, size);
+    Page<User> userList = userService.searchUser(pageable,sortDirection,sortBy,keyword);
+
+    return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
+  }
 
   //관리자 : 유저 정보 수정
-  @PatchMapping("/reg/{userId}")
-  public ResponseEntity patchUser(@PathVariable("userId") Long userId,
+  @RoleCheck("MASTER")
+  @PatchMapping("/{userId}")
+  public ResponseEntity<?> patchUser(@PathVariable("userId") Long userId,
       @RequestBody UserPatchRequestForRegisterDto patchDto) {
     UserResponseForRegisterDto<UserDataForRegisterDto> patchUser =
         userService.patchUser(userId, patchDto);
     return ResponseEntity.ok(patchUser);
   }
+
   //관리자 : 유저 삭제
-  @DeleteMapping("/reg/{userId}")
-  public ResponseEntity deleteUser(@PathVariable("userId") Long userId) {
+  @RoleCheck("MASTER")
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
     userService.deleteUser(userId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok().build();
   }
 }
