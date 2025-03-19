@@ -8,6 +8,7 @@ import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
 import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
+import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -72,5 +73,11 @@ public class RouteServiceImpl implements RouteService {
         List<Route> routes = routeRepository.findByActiveTrue();
 
         return pathFinderService.findShortestPath(hubs, routes, departureHubId, arrivalHubId);
+    }
+
+    @Override
+    public Route createRoute(CreateRouteRequestDto requestDto) {
+        Route route = new Route(requestDto);
+        return routeRepository.save(route);
     }
 }

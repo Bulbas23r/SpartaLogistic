@@ -1,6 +1,7 @@
 package com.bulbas23r.client.hub.route.domain.model;
 
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
+import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -38,5 +39,11 @@ public class Route extends BaseEntity {
         this.transitTime = transitTime;
         this.transitDistance = transitDistance;
         active = true;
+    }
+
+    public Route(CreateRouteRequestDto requestDto) {
+        this.id = new RouteId(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
+        this.transitTime = requestDto.getTransitTime();
+        this.transitDistance = requestDto.getTransitDistance();
     }
 }
