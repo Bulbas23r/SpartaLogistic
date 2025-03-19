@@ -1,7 +1,6 @@
 package com.bulbas23r.client.delivery.infrastructure.persistence;
 
 import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
-import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.domain.model.QDelivery;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.querydsl.core.types.OrderSpecifier;
@@ -72,7 +71,6 @@ public class DeliveryQueryRepositoryImpl implements DeliveryQueryRepository {
 
         BooleanExpression whereClause = delivery.isDeleted.eq(false);
 
-        System.out.println("!!!!!!!!!!"+startHubId);
         if (orderId != null) { whereClause = whereClause.and(delivery.orderId.eq(orderId)); }
         if (startHubId != null) whereClause = whereClause.and(delivery.startHubId.eq(startHubId));
         if (endHubId != null) whereClause = whereClause.and(delivery.endHubId.eq(endHubId));

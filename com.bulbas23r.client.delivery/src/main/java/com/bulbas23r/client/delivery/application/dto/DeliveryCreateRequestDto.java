@@ -38,7 +38,6 @@ public class DeliveryCreateRequestDto {
     private UUID receiverCompanySlackId;
 
     public Delivery toDelivery() {
-        System.out.println("Converting deliveryManagerId: " + deliveryManagerId);
         return Delivery.builder()
             .orderId(this.orderId)
             .startHubId(this.startHubId)

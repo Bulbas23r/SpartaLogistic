@@ -11,7 +11,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +69,6 @@ public class DeliveryController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchDelivery(@ModelAttribute DeliverySearchRequestDto requestDto) {
-        System.out.println("controller" + requestDto.getStartHubId());
         Page<DeliveryResponseDto> result = deliveryService.searchDelivery(requestDto);
         return ResponseEntity.ok(result);
     }
