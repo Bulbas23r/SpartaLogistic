@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -40,16 +41,21 @@ public class RouteServiceImpl implements RouteService {
                 Hub hubY = hubMap.get(hubName);
                 if (hubY != null) {
                     // TODO 경로 API로 소요시간, 거리 따서 양방향 경로 넣기
-                    DrivingResponse xToY = naverApiService.drivingApi(
+                    Mono<DrivingResponse> xToYMono = naverApiService.drivingApi(
                         hubX.getLatitude(), hubX.getLongitude(),
                         hubY.getLatitude(), hubY.getLongitude());
-                    DrivingResponse yToX = naverApiService.drivingApi(
+                    Mono<DrivingResponse> yToXMono = naverApiService.drivingApi(
                         hubY.getLatitude(), hubY.getLongitude(),
                         hubX.getLatitude(), hubX.getLongitude());
-                    routeRepository.save(
-                        new Route(hubX, hubY, xToY.getDuration(), xToY.getDistance()));
-                    routeRepository.save(
-                        new Route(hubY, hubX, yToX.getDuration(), yToX.getDistance()));
+                    xToYMono.zipWith(yToXMono).doOnSuccess(results -> {
+                        DrivingResponse xToY = results.getT1();
+                        DrivingResponse yToX = results.getT2();
+
+                        routeRepository.save(
+                            new Route(hubX, hubY, xToY.getDuration(), xToY.getDistance()));
+                        routeRepository.save(
+                            new Route(hubY, hubX, yToX.getDuration(), yToX.getDistance()));
+                    }).subscribe();
 //                    saveRouteList.add(new Route(hubX, hubY, 0, 0));
 //                    saveRouteList.add(new Route(hubY, hubX, 0, 0));
                 }

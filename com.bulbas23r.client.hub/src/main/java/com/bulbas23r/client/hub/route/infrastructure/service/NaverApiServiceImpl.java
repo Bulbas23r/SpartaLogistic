@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
@@ -26,7 +27,7 @@ public class NaverApiServiceImpl implements NaverApiService {
 
 
     @Override
-    public DrivingResponse drivingApi(Double startLatitude, Double startLongitude,
+    public Mono<DrivingResponse> drivingApi(Double startLatitude, Double startLongitude,
         Double goalLatitude, Double goalLongitude) {
         String start = Double.toString(startLatitude) + ',' + startLongitude;
         String goal = Double.toString(goalLatitude) + ',' + goalLongitude;
@@ -36,7 +37,6 @@ public class NaverApiServiceImpl implements NaverApiService {
             .header(HEADER_KEY_ID, keyId)
             .header(HEADER_KEY, keySecret)
             .retrieve()
-            .bodyToMono(DrivingResponse.class)
-            .block();
+            .bodyToMono(DrivingResponse.class);
     }
 }
