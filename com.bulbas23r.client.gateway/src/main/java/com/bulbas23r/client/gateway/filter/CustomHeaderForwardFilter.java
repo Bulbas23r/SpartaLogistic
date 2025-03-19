@@ -1,5 +1,7 @@
 package com.bulbas23r.client.gateway.filter;
 
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -15,7 +17,9 @@ import reactor.core.publisher.Mono;
 public class CustomHeaderForwardFilter implements GlobalFilter, Ordered {
 
   private final WebClient webClient;
-  private final String AUTH_URL = "http://localhost:8080/api/auth"; // Auth service base URL
+
+  @Value("${auth.url}")
+  private String AUTH_URL;
 
   public CustomHeaderForwardFilter(WebClient.Builder webClientBuilder) {
     this.webClient = webClientBuilder.build();

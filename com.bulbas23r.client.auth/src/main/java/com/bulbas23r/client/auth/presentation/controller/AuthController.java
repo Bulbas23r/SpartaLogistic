@@ -29,7 +29,6 @@ public class AuthController {
   private final AuthService authService;
   private final JwtTokenProvider jwtTokenProvider;
 
-
   //login
   @PostMapping("/login")
   public ResponseEntity login(

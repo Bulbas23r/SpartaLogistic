@@ -13,9 +13,6 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
-jwt:
-  key: ${jwt_key}
-
 springdoc:
   api-docs:
     version: openapi_3_1
