@@ -52,7 +52,7 @@ public class Order extends BaseEntity {
      * 주문 상태
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "status")
+    @Column(name = "status", nullable = false, columnDefinition = "OrderStatus default 'CREATED'")
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private OrderStatus status;
 
@@ -70,7 +70,9 @@ public class Order extends BaseEntity {
         this.orderProducts = new HashSet<>();
         List<OrderProductCreateRequestDto> orderProductList = dto.getOrderProducts();
         for(OrderProductCreateRequestDto orderProductDto : orderProductList) {
-            this.orderProducts.add(new OrderProduct(orderProductDto));
+            OrderProduct orderProduct = new OrderProduct(orderProductDto);
+            orderProduct.setOrder(this);
+            this.orderProducts.add(orderProduct);
         }
     }
 

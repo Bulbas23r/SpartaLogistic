@@ -1,10 +1,15 @@
 package com.bulbas23r.client.order.presentation.dto;
 
 import com.bulbas23r.client.order.domain.model.OrderProduct;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class OrderProductResponseDto {
     private UUID id;
     private UUID hubId;

@@ -12,7 +12,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import common.utils.PageUtils;
 import common.utils.PageUtils.CommonSortBy;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +32,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     QOrderProduct orderProduct = QOrderProduct.orderProduct;
 
     @Override
+    // 주문 ID 또는 주문 제품 이름으로 검색
     public Page<Order> searchOrders(String keyword, Pageable pageable, Direction sortDirection,
         CommonSortBy sortBy) {
 
@@ -70,8 +70,8 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
     @Override
     @Transactional
-    public long updateOrderStatus(UUID orderId, OrderStatus orderStatus) {
-        return queryFactory
+    public void updateOrderStatus(UUID orderId, OrderStatus orderStatus) {
+        queryFactory
             .update(order)
             .set(order.status, orderStatus)
             .where(order.id.eq(orderId))

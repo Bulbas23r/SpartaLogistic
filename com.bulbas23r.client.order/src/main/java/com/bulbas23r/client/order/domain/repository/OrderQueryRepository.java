@@ -10,5 +10,5 @@ import org.springframework.data.domain.Sort.Direction;
 
 public interface OrderQueryRepository {
     Page<Order> searchOrders(String keyword, Pageable pageable, Direction sortDirection, CommonSortBy sortBy);
-    long updateOrderStatus(UUID orderId, OrderStatus orderStatus);
+    void updateOrderStatus(UUID orderId, OrderStatus orderStatus);
 }

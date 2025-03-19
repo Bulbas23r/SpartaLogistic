@@ -37,6 +37,10 @@ public class OrderController {
     public ResponseEntity<OrderResponseDto> createOrder(
         @RequestBody OrderCreateRequestDto orderCreateRequestDto)
     {
+        /**
+         * TODO: 주문 시 주문 제품 중 허브에 물품 재고가 없는 경우 => 주문 실패로 처리됨
+         * TODO: 있는 경우 => 주문 생성 => 주문 제품 수량 허브에서 감소 + 배송 생성
+          */
         Order order = orderService.createOrder(orderCreateRequestDto);
         OrderResponseDto orderResponseDto = new OrderResponseDto(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
@@ -90,5 +94,14 @@ public class OrderController {
         Pageable pageable = PageUtils.pageable(page, size);
         Page<Order> orders = orderService.searchOrders(keyword, pageable, sortDirection, sortBy);
         return ResponseEntity.status(HttpStatus.OK).body(orders.map(OrderResponseDto::new));
+    }
+
+    @PatchMapping("/orders/cancel/{orderId}")
+    public ResponseEntity<OrderResponseDto> cancelOrder(
+        @PathVariable UUID orderId
+    ){
+        // TODO: 주문 취소 경우 => 주문 제품 수량만큼 허브에 복원
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

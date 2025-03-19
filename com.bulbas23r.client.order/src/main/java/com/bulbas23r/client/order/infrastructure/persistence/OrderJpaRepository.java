@@ -9,4 +9,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderJpaRepository extends OrderRepository, JpaRepository<Order, UUID> {
 
+    @Override
+    default void update(Order order){
+        save(order);
+    }
+
+    @Override
+    Order save(Order order);
 }
