@@ -1,6 +1,7 @@
 package com.bulbas23r.client.deliverymanager.domain.model;
 
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
+import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,11 +41,14 @@ public class DeliveryManager extends BaseEntity {
     @Column(nullable = false)
     private Integer sequence;
 
-    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto, Integer sequence) {
+    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
         this.userId = requestDto.getUserId();
         this.hubId = requestDto.getHubId();
         this.slackId = requestDto.getSlackId();
         this.type = requestDto.getDeliveryManagerType();
-        this.sequence = sequence;
+        this.sequence = requestDto.getSequence();
+    }
+
+    public void update(UpdateDeliveryManagerRequestDto requestDto) {
     }
 }

@@ -12,6 +12,14 @@ public interface DeliveryManagerRepository {
 
     DeliveryManager save(DeliveryManager deliveryManager);
 
+    boolean existsByTypeAndSequence(DeliveryManagerType type, Integer sequence);
+
+    boolean existsByTypeAndHubIdAndSequence(DeliveryManagerType type, UUID hubId, Integer sequence);
+
+    Integer findMaxSequenceByType(DeliveryManagerType type);
+
+    Integer findMaxSequenceByTypeAndHubId(DeliveryManagerType type, UUID hubId);
+
     List<DeliveryManager> findAllByTypeOrderBySequenceAsc(DeliveryManagerType type);
 
     List<DeliveryManager> findAllByTypeAndHubIdOrderBySequenceAsc(DeliveryManagerType type,
