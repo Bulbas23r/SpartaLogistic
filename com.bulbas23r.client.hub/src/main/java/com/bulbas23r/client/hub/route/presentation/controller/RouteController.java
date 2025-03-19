@@ -12,6 +12,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,5 +81,19 @@ public class RouteController {
         Route route = routeService.updateRoute(requestDto);
 
         return ResponseEntity.ok(new RouteResponse(route));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<RouteResponse>> searchRoute(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size,
+        @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
+        @RequestParam(required = false) String keyword
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<Route> routeList = routeService.searchRoute(pageable, sortDirection, sortBy, keyword);
+
+        return ResponseEntity.ok(routeList.map(RouteResponse::new));
     }
 }

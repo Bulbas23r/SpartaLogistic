@@ -5,6 +5,7 @@ import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.domain.model.RouteId;
+import com.bulbas23r.client.hub.route.domain.repository.RouteQueryRepository;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
 import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
@@ -12,6 +13,7 @@ import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
 import common.exception.NotFoundException;
+import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -32,6 +35,7 @@ public class RouteServiceImpl implements RouteService {
     private final RouteRepository routeRepository;
     private final NaverApiService naverApiService;
     private final PathFinderService pathFinderService;
+    private final RouteQueryRepository routeQueryRepository;
 
     @Transactional
     @Override
@@ -113,5 +117,11 @@ public class RouteServiceImpl implements RouteService {
         route.update(requestDto);
 
         return route;
+    }
+
+    @Override
+    public Page<Route> searchRoute(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
+        String keyword) {
+        return routeQueryRepository.searchRoute(pageable, sortDirection, sortBy, keyword);
     }
 }
