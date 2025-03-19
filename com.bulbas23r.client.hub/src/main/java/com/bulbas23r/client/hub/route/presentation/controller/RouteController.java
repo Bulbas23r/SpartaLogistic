@@ -4,10 +4,13 @@ import com.bulbas23r.client.hub.route.application.service.RouteService;
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.RouteResponse;
+import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,5 +59,16 @@ public class RouteController {
         Route route = routeService.getRoute(departureHubId, arrivalHubId);
 
         return ResponseEntity.ok(new RouteResponse(route));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<RouteResponse>> getRoutes(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<Route> routeList = routeService.getRouteList(pageable);
+
+        return ResponseEntity.ok(routeList.map(RouteResponse::new));
     }
 }

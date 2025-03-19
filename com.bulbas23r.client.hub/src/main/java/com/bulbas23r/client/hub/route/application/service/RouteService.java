@@ -4,6 +4,8 @@ import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface RouteService {
 
@@ -14,4 +16,6 @@ public interface RouteService {
     Route createRoute(CreateRouteRequestDto requestDto);
 
     Route getRoute(UUID departureHubId, UUID arrivalHubId);
+
+    Page<Route> getRouteList(Pageable pageable);
 }

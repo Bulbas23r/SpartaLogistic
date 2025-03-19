@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -90,5 +92,10 @@ public class RouteServiceImpl implements RouteService {
         return routeRepository.findById(routeId).orElseThrow(
             () -> new NotFoundException("존재하지 않는 경로입니다!")
         );
+    }
+
+    @Override
+    public Page<Route> getRouteList(Pageable pageable) {
+        return routeRepository.findAll(pageable);
     }
 }
