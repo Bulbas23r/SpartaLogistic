@@ -10,6 +10,7 @@ import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
+import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
 import common.exception.NotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -31,6 +33,7 @@ public class RouteServiceImpl implements RouteService {
     private final NaverApiService naverApiService;
     private final PathFinderService pathFinderService;
 
+    @Transactional
     @Override
     public void initializeRoute() {
         routeRepository.deleteAll();
@@ -71,6 +74,7 @@ public class RouteServiceImpl implements RouteService {
 //        routeRepository.saveAll(saveRouteList);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId) {
         List<Hub> hubs = hubService.getActiveHubList();
@@ -79,12 +83,14 @@ public class RouteServiceImpl implements RouteService {
         return pathFinderService.findShortestPath(hubs, routes, departureHubId, arrivalHubId);
     }
 
+    @Transactional
     @Override
     public Route createRoute(CreateRouteRequestDto requestDto) {
         Route route = new Route(requestDto);
         return routeRepository.save(route);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Route getRoute(UUID departureHubId, UUID arrivalHubId) {
         RouteId routeId = new RouteId(departureHubId, arrivalHubId);
@@ -94,8 +100,18 @@ public class RouteServiceImpl implements RouteService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Route> getRouteList(Pageable pageable) {
         return routeRepository.findAll(pageable);
+    }
+
+    @Transactional
+    @Override
+    public Route updateRoute(UpdateRouteRequestDto requestDto) {
+        Route route = getRoute(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
+        route.update(requestDto);
+
+        return route;
     }
 }

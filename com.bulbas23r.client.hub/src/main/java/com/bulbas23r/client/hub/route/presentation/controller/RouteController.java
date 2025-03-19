@@ -4,6 +4,7 @@ import com.bulbas23r.client.hub.route.application.service.RouteService;
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.RouteResponse;
+import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +64,7 @@ public class RouteController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<RouteResponse>> getRoutes(
+    public ResponseEntity<Page<RouteResponse>> getRouteList(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
     ) {
@@ -70,5 +72,13 @@ public class RouteController {
         Page<Route> routeList = routeService.getRouteList(pageable);
 
         return ResponseEntity.ok(routeList.map(RouteResponse::new));
+    }
+
+    @PutMapping
+    public ResponseEntity<RouteResponse> updateRoute(
+        @RequestBody @Valid UpdateRouteRequestDto requestDto) {
+        Route route = routeService.updateRoute(requestDto);
+
+        return ResponseEntity.ok(new RouteResponse(route));
     }
 }

@@ -2,6 +2,7 @@ package com.bulbas23r.client.hub.route.application.service;
 
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
+import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,6 @@ public interface RouteService {
     Route getRoute(UUID departureHubId, UUID arrivalHubId);
 
     Page<Route> getRouteList(Pageable pageable);
+
+    Route updateRoute(UpdateRouteRequestDto requestDto);
 }
