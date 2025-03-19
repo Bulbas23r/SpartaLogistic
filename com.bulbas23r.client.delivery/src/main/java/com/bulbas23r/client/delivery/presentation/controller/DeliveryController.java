@@ -59,5 +59,11 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
+    @DeleteMapping("/{deliveryId}")
+    public ResponseEntity<?> deleteDelivery(@PathVariable("deliveryId") UUID deliveryId) {
+        DeliveryResponseDto result = deliveryService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok(result);
+    }
+
 
 }

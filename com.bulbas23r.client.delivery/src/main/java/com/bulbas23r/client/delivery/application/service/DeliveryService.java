@@ -12,4 +12,5 @@ public interface DeliveryService {
     DeliveryResponseDto getDelivery(UUID deliveryId);
     Page<DeliveryResponseDto> getDeliveryList(Pageable pageable);
     DeliveryResponseDto updateDelivery(UUID id, DeliveryUpdateRequestDto requestDto);
+    DeliveryResponseDto deleteDelivery(UUID deliveryId);
 }

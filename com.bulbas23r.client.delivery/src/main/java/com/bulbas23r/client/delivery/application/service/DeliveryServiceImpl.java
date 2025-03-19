@@ -54,8 +54,22 @@ public class DeliveryServiceImpl implements DeliveryService {
         if(!delivery.getStatus().equals(DeliveryStatus.READY)) {
             throw new BadRequestException("배송 전에만 수정 할 수 있습니다.");
         }
-
+        //todo: 출발지, 도착지 변경 시, 배송 경로 수정 로직 추가
         delivery.update(requestDto);
+
+        return DeliveryResponseDto.fromEntity(delivery);
+    }
+
+    @Override
+    @Transactional
+    public DeliveryResponseDto deleteDelivery(UUID deliveryId) {
+        Delivery delivery = findById(deliveryId);
+
+        if(!delivery.getStatus().equals(DeliveryStatus.READY)) {
+            throw new BadRequestException("배송 전에만 삭제 할 수 있습니다.");
+        }
+
+        delivery.setDeleted(true);
 
         return DeliveryResponseDto.fromEntity(delivery);
     }
