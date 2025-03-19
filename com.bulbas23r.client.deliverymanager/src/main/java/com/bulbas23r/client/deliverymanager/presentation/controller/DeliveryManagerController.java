@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,5 +50,12 @@ public class DeliveryManagerController {
             .getDeliveryManagerList(pageable);
 
         return ResponseEntity.ok(deliveryManagerList.map(DeliveryManagerResponse::new));
+    }
+
+    @DeleteMapping("/userId")
+    public ResponseEntity<Void> deleteDeliveryManager(@RequestParam Long userId) {
+        deliveryManagerService.deleteDeliveryManager(userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -12,4 +12,6 @@ public interface DeliveryManagerService {
     DeliveryManager getDeliveryManager(Long userId);
 
     Page<DeliveryManager> getDeliveryManagerList(Pageable pageable);
+
+    void deleteDeliveryManager(Long userId);
 }

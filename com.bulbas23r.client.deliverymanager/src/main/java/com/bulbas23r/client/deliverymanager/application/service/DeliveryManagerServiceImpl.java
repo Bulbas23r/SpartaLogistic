@@ -54,6 +54,13 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         return deliveryManagerRepository.findAll(pageable);
     }
 
+    @Transactional
+    @Override
+    public void deleteDeliveryManager(Long userId) {
+        DeliveryManager deliveryManager = getDeliveryManager(userId);
+        deliveryManager.setDeleted();
+    }
+
     private Integer getHubDeliveryManagerSequence() {
         List<DeliveryManager> deliveryManagers = deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(
             DeliveryManagerType.HUB);
