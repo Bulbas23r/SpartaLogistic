@@ -37,5 +37,6 @@ public class Route extends BaseEntity {
         this.id = new RouteId(departureHub.getId(), arrivalHub.getId());
         this.transitTime = transitTime;
         this.transitDistance = transitDistance;
+        active = true;
     }
 }

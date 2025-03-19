@@ -44,6 +44,14 @@ public class Hub extends BaseEntity {
     @Embedded
     private Location location;
 
+    public Double getLatitude() {
+        return this.getLocation().getLatitude();
+    }
+
+    public Double getLongitude() {
+        return this.getLocation().getLongitude();
+    }
+
     public Hub(CreateHubRequestDto requestDto) {
         this.name = requestDto.getName();
         this.managerId = requestDto.getManagerId();
