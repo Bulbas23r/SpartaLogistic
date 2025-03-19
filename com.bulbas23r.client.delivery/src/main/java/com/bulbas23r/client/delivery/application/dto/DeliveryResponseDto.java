@@ -56,4 +56,15 @@ public class DeliveryResponseDto {
             .build();
     }
 
+    public DeliveryResponseDto(UUID id,UUID orderId,UUID startHubId, UUID endHubId, String status,
+        UUID deliveryManagerId, UUID receiverCompanyId, UUID receiverCompanySlackId) {
+        this.id = id;
+        this.orderId = orderId;
+        this.startHubId = startHubId;
+        this.endHubId = endHubId;
+        this.status = status;
+        this.deliveryManagerId = deliveryManagerId;
+        this.receiverCompanyId = receiverCompanyId;
+        this.receiverCompanySlackId = receiverCompanySlackId;
+    }
 }

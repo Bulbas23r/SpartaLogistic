@@ -2,9 +2,11 @@ package com.bulbas23r.client.delivery.application.service;
 
 import com.bulbas23r.client.delivery.application.dto.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
+import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
+import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryQueryRepository deliveryQueryRepository;
 
     @Override
     @Transactional
@@ -72,6 +75,20 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeleted(true);
 
         return DeliveryResponseDto.fromEntity(delivery);
+    }
+
+    @Override
+    public Page<DeliveryResponseDto> searchDelivery(DeliverySearchRequestDto requestDto) {
+        return deliveryQueryRepository.searchDelivery(
+            requestDto.getOrderId(),
+            requestDto.getStartHubId(),
+            requestDto.getEndHubId(),
+            requestDto.getDeliveryManagerId(),
+            requestDto.getReceiverCompanyId(),
+            requestDto.toPageable(),
+            requestDto.getSortDirection(),
+            requestDto.getSortBy()
+        );
     }
 
 
