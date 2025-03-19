@@ -23,6 +23,14 @@ spring:
           uri: lb://company-service
           predicates:
             - Path=/api/companies/**, /company-service/v3/api-docs
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**, /user-service/v3/api-docs
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**, /auth-service/v3/api-docs
         - id: delivery-service
           uri: lb://delivery-service
           predicates:
@@ -61,6 +69,15 @@ springdoc:
       name: company-service
       url: /company-service/v3/api-docs
     urls[4]:
+      name: user-service
+      url: /user-service/v3/api-docs
+    urls[5]:
+      name: auth-service
+      url: /auth-service/v3/api-docs
+    urls[6]:
         name: delivery-service
         url: /delivery-service/v3/api-docs
     use-root-path: true
+
+auth:
+  url: "http://localhost:8080/api/auth"
