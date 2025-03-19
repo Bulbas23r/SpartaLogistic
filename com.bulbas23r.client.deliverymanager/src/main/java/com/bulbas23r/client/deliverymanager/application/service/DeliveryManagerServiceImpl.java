@@ -9,6 +9,8 @@ import common.exception.NotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,11 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         );
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Page<DeliveryManager> getDeliveryManagerList(Pageable pageable) {
+        return deliveryManagerRepository.findAll(pageable);
+    }
 
     private Integer getHubDeliveryManagerSequence() {
         List<DeliveryManager> deliveryManagers = deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(
