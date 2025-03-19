@@ -5,10 +5,12 @@ import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
+import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class RouteServiceImpl implements RouteService {
     private final HubConnection hubConnection;
     private final RouteRepository routeRepository;
     private final NaverApiService naverApiService;
+    private final PathFinderService pathFinderService;
 
     @Override
     public void initializeRoute() {
@@ -31,7 +34,7 @@ public class RouteServiceImpl implements RouteService {
             .collect(Collectors.toMap(Hub::getName, hub -> hub));
 
         Map<String, List<String>> connections = hubConnection.getConnections();
-//        List<Route> saveRouteList = new ArrayList<>();
+//        List<Route> saveRouteList = new ArrayList<>(
         for (Map.Entry<String, List<String>> entry : connections.entrySet()) {
             String key = entry.getKey();
             Hub hubX = hubMap.get(key);
@@ -40,7 +43,6 @@ public class RouteServiceImpl implements RouteService {
             for (String hubName : connectedHubList) {
                 Hub hubY = hubMap.get(hubName);
                 if (hubY != null) {
-                    // TODO 경로 API로 소요시간, 거리 따서 양방향 경로 넣기
                     Mono<DrivingResponse> xToYMono = naverApiService.drivingApi(
                         hubX.getLatitude(), hubX.getLongitude(),
                         hubY.getLatitude(), hubY.getLongitude());
@@ -62,5 +64,13 @@ public class RouteServiceImpl implements RouteService {
             }
         }
 //        routeRepository.saveAll(saveRouteList);
+    }
+
+    @Override
+    public List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId) {
+        List<Hub> hubs = hubService.getActiveHubList();
+        List<Route> routes = routeRepository.findByActiveTrue();
+
+        return pathFinderService.findShortestPath(hubs, routes, departureHubId, arrivalHubId);
     }
 }
