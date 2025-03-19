@@ -32,25 +32,22 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     QOrderProduct orderProduct = QOrderProduct.orderProduct;
 
     @Override
-    // 주문 ID 또는 주문 제품 이름으로 검색
+    // 주문 제품 이름으로 검색
     public Page<Order> searchOrders(String keyword, Pageable pageable, Direction sortDirection,
         CommonSortBy sortBy) {
 
         BooleanBuilder builder = new BooleanBuilder();
         if(keyword != null && !keyword.isEmpty()) {
-            builder.and(
-                Expressions.stringTemplate("{0}::text", order.id)
-                    .containsIgnoreCase(keyword)
-                    .or(orderProduct.productName.containsIgnoreCase(keyword))
-            );
+            builder.and(order.orderProducts.any().productName.containsIgnoreCase(keyword));
         }
 
         OrderSpecifier<?> orderSpecifier = PageUtils.getCommonOrderSpecifier(order, sortDirection, sortBy);
 
         List<Order> orders = queryFactory
             .selectFrom(order)
-            .leftJoin(order.orderProducts, orderProduct).fetchJoin()
+            .leftJoin(order.orderProducts, orderProduct)
             .where(builder)
+            .distinct()
             .offset(pageable.getOffset())
             .orderBy(orderSpecifier)
             .limit(pageable.getPageSize())
@@ -58,7 +55,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
         Long totalCount = Optional.ofNullable(
             queryFactory
-                .select(order.count())
+                .select(order.countDistinct())
                 .from(order)
                 .leftJoin(order.orderProducts, orderProduct)
                 .where(builder)

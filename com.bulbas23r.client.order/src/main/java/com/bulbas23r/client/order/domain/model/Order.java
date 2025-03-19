@@ -1,5 +1,6 @@
 package com.bulbas23r.client.order.domain.model;
 
+import com.bulbas23r.client.order.infrastructure.string.OrderString;
 import com.bulbas23r.client.order.presentation.dto.OrderCreateRequestDto;
 import com.bulbas23r.client.order.presentation.dto.OrderProductCreateRequestDto;
 import com.bulbas23r.client.order.presentation.dto.OrderUpdateRequestDto;
@@ -74,6 +75,10 @@ public class Order extends BaseEntity {
             orderProduct.setOrder(this);
             this.orderProducts.add(orderProduct);
         }
+
+        if(isNotSingleHubId()){
+            throw new IllegalArgumentException(OrderString.NON_SILGLE_HUB_ID);
+        }
     }
 
     public void update(OrderUpdateRequestDto dto) {
@@ -85,5 +90,17 @@ public class Order extends BaseEntity {
         for(OrderProductCreateRequestDto orderProductDto : orderProductList) {
             this.orderProducts.add(new OrderProduct(orderProductDto));
         }
+
+        if(isNotSingleHubId()){
+            throw new IllegalArgumentException(OrderString.NON_SILGLE_HUB_ID);
+        }
+    }
+
+    // 주문의 주문 제품들이 모두 동일 허브 아이디임을 확인
+    public boolean isNotSingleHubId(){
+        return this.orderProducts.stream()
+            .map(OrderProduct::getHubId)
+            .distinct()
+            .count() != 1;
     }
 }

@@ -2,9 +2,11 @@ package com.bulbas23r.client.order.presentation.controller;
 
 import com.bulbas23r.client.order.application.service.OrderService;
 import com.bulbas23r.client.order.domain.model.Order;
+import com.bulbas23r.client.order.infrastructure.string.OrderString;
 import com.bulbas23r.client.order.presentation.dto.OrderCreateRequestDto;
 import com.bulbas23r.client.order.presentation.dto.OrderResponseDto;
 import com.bulbas23r.client.order.presentation.dto.OrderUpdateRequestDto;
+import common.template.ApiResponse;
 import common.utils.PageUtils;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -34,7 +36,7 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<OrderResponseDto> createOrder(
+    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
         @RequestBody OrderCreateRequestDto orderCreateRequestDto)
     {
         /**
@@ -43,21 +45,28 @@ public class OrderController {
           */
         Order order = orderService.createOrder(orderCreateRequestDto);
         OrderResponseDto orderResponseDto = new OrderResponseDto(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
+
+        ApiResponse<OrderResponseDto> response = new ApiResponse<>(HttpStatus.CREATED.value(),
+            OrderString.ORDER_CREATE, orderResponseDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/orders/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateOrder(
+    public ResponseEntity<ApiResponse<OrderResponseDto>> updateOrder(
         @PathVariable UUID orderId,
         @RequestBody OrderUpdateRequestDto orderUpdateRequestDto
     ) {
         Order order = orderService.updateOrder(orderId, orderUpdateRequestDto);
         OrderResponseDto orderResponseDto = new OrderResponseDto(order);
-        return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
+        ApiResponse<OrderResponseDto> response = new ApiResponse<>(HttpStatus.OK.value(),
+            OrderString.ORDER_UPDATE, orderResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<OrderResponseDto> deleteOrder(
+    public ResponseEntity<ApiResponse<OrderResponseDto>> deleteOrder(
         @PathVariable UUID orderId
     ){
         orderService.deleteOrder(orderId);
@@ -65,43 +74,60 @@ public class OrderController {
     }
 
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<OrderResponseDto> getOrder(
+    public ResponseEntity<ApiResponse<OrderResponseDto>> getOrder(
         @PathVariable UUID orderId
     ){
         Order order = orderService.getOrder(orderId);
         OrderResponseDto orderResponseDto = new OrderResponseDto(order);
-        return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
+        ApiResponse<OrderResponseDto> response = new ApiResponse<>(HttpStatus.OK.value(),
+            OrderString.ORDER_GET_BY_ID, orderResponseDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<Page<OrderResponseDto>> getOrderList(
-        @RequestParam(defaultValue = "1", required = false) int page,
+    public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> getOrderList(
+        @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
     ){
         Pageable pageable = PageUtils.pageable(page, size);
-        Page<Order> orders = orderService.getAllOrders(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(orders.map(OrderResponseDto::new));
+        Page<OrderResponseDto> orders = orderService.getAllOrders(pageable).map(OrderResponseDto::new);
+        ApiResponse<Page<OrderResponseDto>> response = new ApiResponse<>(
+            HttpStatus.OK.value(), OrderString.ORDER_GET, orders
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/orders/search")
-    public ResponseEntity<Page<OrderResponseDto>> searchOrders(
+    public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> searchOrders(
         @RequestParam(required = false) String keyword,
-        @RequestParam(defaultValue = "1", required = false) int page,
+        @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size,
         @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
         @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy
     ) {
         Pageable pageable = PageUtils.pageable(page, size);
-        Page<Order> orders = orderService.searchOrders(keyword, pageable, sortDirection, sortBy);
-        return ResponseEntity.status(HttpStatus.OK).body(orders.map(OrderResponseDto::new));
+        Page<OrderResponseDto> orders = orderService.searchOrders(keyword, pageable, sortDirection,
+            sortBy).map(OrderResponseDto::new);
+        ApiResponse<Page<OrderResponseDto>> response = new ApiResponse<>(
+            HttpStatus.OK.value(), OrderString.ORDER_GET, orders
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping("/orders/cancel/{orderId}")
-    public ResponseEntity<OrderResponseDto> cancelOrder(
+    public ResponseEntity<ApiResponse<OrderResponseDto>> cancelOrder(
         @PathVariable UUID orderId
     ){
         // TODO: 주문 취소 경우 => 주문 제품 수량만큼 허브에 복원
         orderService.cancelOrder(orderId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        ApiResponse<OrderResponseDto> response = new ApiResponse<>(
+            HttpStatus.OK.value(), OrderString.ORDER_CANCEL, null
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

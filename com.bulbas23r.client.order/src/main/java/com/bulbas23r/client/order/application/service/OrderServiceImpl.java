@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Page<Order> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable);
+        return orderRepository.findAllByIsDeletedIsFalse(pageable);
     }
 
     @Override

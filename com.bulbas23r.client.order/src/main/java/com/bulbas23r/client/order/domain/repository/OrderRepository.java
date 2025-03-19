@@ -10,5 +10,5 @@ public interface OrderRepository {
     Order save(Order order);
     Optional<Order> findById(UUID orderId);
     void update(Order order);
-    Page<Order> findAll(Pageable pageable);
+    Page<Order> findAllByIsDeletedIsFalse(Pageable pageable);
 }
