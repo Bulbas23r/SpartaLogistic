@@ -5,7 +5,6 @@ import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
 import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class RouteServiceImpl implements RouteService {
             .collect(Collectors.toMap(Hub::getName, hub -> hub));
 
         Map<String, List<String>> connections = hubConnection.getConnections();
-        List<Route> saveRouteList = new ArrayList<>();
+//        List<Route> saveRouteList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : connections.entrySet()) {
             String key = entry.getKey();
             Hub hubX = hubMap.get(key);
@@ -37,9 +36,13 @@ public class RouteServiceImpl implements RouteService {
                 Hub hubY = hubMap.get(hubName);
                 if (hubY != null) {
                     // TODO 경로 API로 소요시간, 거리 따서 양방향 경로 넣기
+                    routeRepository.save(new Route(hubX, hubY, 0, 0));
+                    routeRepository.save(new Route(hubY, hubX, 0, 0));
+//                    saveRouteList.add(new Route(hubX, hubY, 0, 0));
+//                    saveRouteList.add(new Route(hubY, hubX, 0, 0));
                 }
             }
         }
-        routeRepository.saveAll(saveRouteList);
+//        routeRepository.saveAll(saveRouteList);
     }
 }

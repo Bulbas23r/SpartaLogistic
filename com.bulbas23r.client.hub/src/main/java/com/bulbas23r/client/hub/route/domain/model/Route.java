@@ -1,5 +1,6 @@
 package com.bulbas23r.client.hub.route.domain.model;
 
+import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -32,5 +33,9 @@ public class Route extends BaseEntity {
     @Column(columnDefinition = "boolean default false")
     private boolean active;
 
-//    public Route(Hub departureHub, Hub arrivalHub) { }
+    public Route(Hub departureHub, Hub arrivalHub, Integer transitTime, Integer transitDistance) {
+        this.id = new RouteId(departureHub.getId(), arrivalHub.getId());
+        this.transitTime = transitTime;
+        this.transitDistance = transitDistance;
+    }
 }

@@ -5,5 +5,7 @@ import java.util.List;
 
 public interface RouteRepository {
 
-    void saveAll(List<Route> routeList);
+    List<Route> saveAll(List<Route> routeList);
+
+    Route save(Route route);
 }
