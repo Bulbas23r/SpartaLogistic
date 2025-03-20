@@ -7,6 +7,7 @@ import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,11 @@ public class HubServiceImpl implements HubService {
     @Override
     public Page<Hub> getHubList(Pageable pageable) {
         return hubRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Hub> getActiveHubList() {
+        return hubRepository.findByActiveTrue();
     }
 
     @Transactional

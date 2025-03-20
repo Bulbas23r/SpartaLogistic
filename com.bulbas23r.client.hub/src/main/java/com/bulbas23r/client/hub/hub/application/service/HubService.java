@@ -4,6 +4,7 @@ import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import common.utils.PageUtils.CommonSortBy;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ public interface HubService {
     Hub getHubById(UUID hubId);
 
     Page<Hub> getHubList(Pageable pageable);
+
+    List<Hub> getActiveHubList();
 
     void deleteHub(UUID hubId);
 
