@@ -1,5 +1,6 @@
 package common.model;
 
+import common.UserContextHolder;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -42,26 +43,13 @@ public abstract class BaseEntity {
 
     @PreUpdate
     public void setDeleted() {
-        if (isDeleted) {
-            deletedAt = LocalDateTime.now();
-
-            // TODO SecurityContextHolder 해결하기
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//            if (authentication == null || !authentication.isAuthenticated()) {
-//                deletedBy = "SYSTEM";
-//                return;
-//            }
-//
-//            Object principal = authentication.getPrincipal();
-//
-//            if (principal instanceof UserDetails) {
-//                deletedBy = ((UserDetails) principal).getUsername();
-//                return;
-//            }
-//
-//            deletedBy = "UNKNOWN";
+        if (!isDeleted) {
+            this.deletedAt = LocalDateTime.now();
+            this.isDeleted = true;
+            // 이미 deletedBy 값이 없다면, 현재 요청의 사용자 이름을 기록합니다.
+            if (this.deletedBy == null) {
+                this.deletedBy = UserContextHolder.getCurrentUser();
+            }
         }
     }
-
 }
