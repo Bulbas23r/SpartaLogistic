@@ -6,6 +6,8 @@ import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubListResponseDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubResponseDto;
+import common.annotation.RoleCheck;
+import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +37,7 @@ public class HubController {
     private final HubService hubService;
 
     @PostMapping
+    @RoleCheck(Authority.MASTER)
     @Operation(summary = "허브 생성하기")
     public ResponseEntity<HubResponseDto> createHub(
         @RequestBody @Valid CreateHubRequestDto requestDto) {
@@ -64,6 +67,7 @@ public class HubController {
     }
 
     @PutMapping("/{hubId}")
+    @RoleCheck(Authority.MASTER)
     @Operation(summary = "허브 수정하기")
     public ResponseEntity<HubResponseDto> updateHub(
         @PathVariable UUID hubId,
@@ -75,6 +79,7 @@ public class HubController {
     }
 
     @DeleteMapping("/{hubId}")
+    @RoleCheck(Authority.MASTER)
     @Operation(summary = "허브 삭제하기")
     public ResponseEntity<Void> deleteHub(@PathVariable UUID hubId) {
         hubService.deleteHub(hubId);
