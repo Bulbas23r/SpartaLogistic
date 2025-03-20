@@ -6,6 +6,8 @@ import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManag
 import com.bulbas23r.client.deliverymanager.presentation.dto.DeliveryManagerResponse;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
 import common.annotation.RoleCheck;
+import common.exception.BadRequestException;
+import common.header.UserInfoHeader;
 import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,20 +38,34 @@ public class DeliveryManagerController {
     private final DeliveryManagerService deliveryManagerService;
 
     @PostMapping
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "배송 담당자 생성하기")
     public ResponseEntity<DeliveryManagerResponse> crateDeliveryManager(
-        @RequestBody CreateDeliveryManagerRequestDto requestDto) {
+        @RequestBody @Valid CreateDeliveryManagerRequestDto requestDto) {
+        // TODO 허브 담당자 검증
         DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto);
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
     }
 
     @GetMapping("/{userId}")
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER, Authority.HUB_TO_HUB_DELIVERY,
+        Authority.TO_COMPANY_DELIVERY})
     @Operation(summary = "배송 담당자 단건 조회")
     public ResponseEntity<DeliveryManagerResponse> getDeliveryManager(
-        @PathVariable Long userId
+        @PathVariable Long userId,
+        @RequestHeader(UserInfoHeader.USER_ROLE) String requestUserRole,
+        @RequestHeader(UserInfoHeader.USER_ID) Long requestUserId
     ) {
+        // TODO 허브 담당자 검증
         DeliveryManager deliveryManager = deliveryManagerService.getDeliveryManager(userId);
+
+        if (requestUserRole.equals(Authority.HUB_TO_HUB_DELIVERY) ||
+            requestUserRole.equals(Authority.TO_COMPANY_DELIVERY)) {
+            if (!deliveryManagerService.checkDeliveryManager(requestUserId, deliveryManager)) {
+                throw new BadRequestException("본인 정보만 조회할 수 있습니다!");
+            }
+        }
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
     }
@@ -78,9 +95,11 @@ public class DeliveryManagerController {
     }
 
     @GetMapping("/company/{hubId}")
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "업체 배송 담당자 리스트 조회")
     public ResponseEntity<List<DeliveryManagerResponse>> getCompanyDeliveryManagerList(
         @PathVariable UUID hubId) {
+        // TODO 허브 담당자 검증
         List<DeliveryManager> deliveryManagerList =
             deliveryManagerService.getCompanyDeliveryManagerList(hubId);
 
@@ -89,18 +108,22 @@ public class DeliveryManagerController {
     }
 
     @DeleteMapping("/userId")
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "배송 담당자 삭제하기")
     public ResponseEntity<Void> deleteDeliveryManager(@RequestParam Long userId) {
+        // TODO 허브 담당자 검증
         deliveryManagerService.deleteDeliveryManager(userId);
 
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/userId")
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "배송 담당자 수정하기")
     public ResponseEntity<DeliveryManagerResponse> updateDeliveryManager(
         @RequestParam Long userId,
         @RequestBody @Valid UpdateDeliveryManagerRequestDto requestDto) {
+        // TODO 허브 담당자 검증
         DeliveryManager deliveryManager = deliveryManagerService.updateDeliveryManager(userId,
             requestDto);
 
@@ -108,6 +131,7 @@ public class DeliveryManagerController {
     }
 
     @GetMapping("/search")
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "배송 담당자 검색하기")
     public ResponseEntity<Page<DeliveryManagerResponse>> searchDeliveryManager(
         @RequestParam(defaultValue = "0", required = false) int page,
@@ -116,6 +140,7 @@ public class DeliveryManagerController {
         @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
         @RequestParam(required = false) String keyword
     ) {
+        // TODO 허브 담당자 검증
         Pageable pageable = PageUtils.pageable(page, size);
         Page<DeliveryManager> deliveryManagers =
             deliveryManagerService.searchDeliveryManagerList(pageable, sortDirection,

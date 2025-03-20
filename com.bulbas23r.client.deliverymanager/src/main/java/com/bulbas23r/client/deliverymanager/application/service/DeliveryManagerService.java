@@ -27,6 +27,7 @@ public interface DeliveryManagerService {
     DeliveryManager updateDeliveryManager(Long userId, UpdateDeliveryManagerRequestDto requestDto);
 
     Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable, Direction sortDirection,
-        CommonSortBy sortBy,
-        String keyword);
+        CommonSortBy sortBy, String keyword);
+
+    boolean checkDeliveryManager(Long userId, DeliveryManager deliveryManager);
 }

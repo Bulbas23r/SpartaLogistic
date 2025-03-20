@@ -117,6 +117,11 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
             pageable, sortDirection, sortBy, keyword);
     }
 
+    @Override
+    public boolean checkDeliveryManager(Long userId, DeliveryManager deliveryManager) {
+        return userId.equals(deliveryManager.getUserId());
+    }
+
     //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
