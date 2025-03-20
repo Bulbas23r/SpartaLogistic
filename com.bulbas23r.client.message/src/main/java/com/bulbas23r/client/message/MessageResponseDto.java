@@ -1,15 +1,25 @@
 package com.bulbas23r.client.message;
 
-import static org.bouncycastle.asn1.x500.style.BCStyle.T;
-
-import java.time.LocalDateTime;
+import com.bulbas23r.client.message.domain.Message;
+import java.util.Date;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class MessageResponseDto {
-  private String receiverId;
-  private String senderId;
+  private UUID id;
+  private String receiver;
+  private String sender;
   private String message;
-  private LocalDateTime sendTime;
+  private Date sendTime;
 
+  public MessageResponseDto(Message message) {
+    this.id = message.getId();
+    this.receiver = message.getReceiver();
+    this.sender = message.getSender();
+    this.message = message.getMessage();
+    this.sendTime = message.getDate();
+  }
 }

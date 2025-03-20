@@ -22,7 +22,3 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-
-slack:
-  incoming-hook:
-    url: "https://hooks.slack.com/services/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"
