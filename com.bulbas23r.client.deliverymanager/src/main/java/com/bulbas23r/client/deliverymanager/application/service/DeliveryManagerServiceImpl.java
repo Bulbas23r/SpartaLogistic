@@ -50,7 +50,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
                 requestDto.getDeliveryManagerType(), requestDto.getHubId());
         }
 
-        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq);
+        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq + 1);
 
         return deliveryManagerRepository.save(deliveryManager);
     }

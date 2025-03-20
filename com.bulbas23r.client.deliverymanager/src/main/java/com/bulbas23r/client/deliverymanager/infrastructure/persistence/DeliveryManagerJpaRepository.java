@@ -17,5 +17,5 @@ public interface DeliveryManagerJpaRepository extends DeliveryManagerRepository,
     Integer findMaxSequenceByTypeAndHubId(DeliveryManagerType type, UUID hubId);
 
     @Query("SELECT COUNT(d) FROM DeliveryManager d WHERE d.type = :type")
-    Long countByType(DeliveryManagerType type);
+    Integer countByType(DeliveryManagerType type);
 }
