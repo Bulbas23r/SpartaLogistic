@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -38,7 +39,6 @@ public class RouteServiceImpl implements RouteService {
     private final RouteQueryRepository routeQueryRepository;
 
     @Transactional
-    @Override
     public void initializeRoute() {
         routeRepository.deleteAll();
         List<Hub> hubList = hubService.getActiveHubList();
