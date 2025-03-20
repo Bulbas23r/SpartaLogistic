@@ -10,6 +10,7 @@ import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -99,6 +100,13 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     @Override
     public List<DeliveryManager> getHubDeliveryManagerList() {
         return deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(DeliveryManagerType.HUB);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<DeliveryManager> getCompanyDeliveryManagerList(UUID hubId) {
+        return deliveryManagerRepository.findAllByTypeAndHubIdOrderBySequenceAsc(
+            DeliveryManagerType.COMPANY, hubId);
     }
 
     @Transactional(readOnly = true)

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +72,17 @@ public class DeliveryManagerController {
     @Operation(summary = "허브 배송 담당자 리스트 조회")
     public ResponseEntity<List<DeliveryManagerResponse>> getHubDeliveryManagerList() {
         List<DeliveryManager> deliveryManagerList = deliveryManagerService.getHubDeliveryManagerList();
+
+        return ResponseEntity.ok(
+            deliveryManagerList.stream().map(DeliveryManagerResponse::new).toList());
+    }
+
+    @GetMapping("/company/{hubId}")
+    @Operation(summary = "업체 배송 담당자 리스트 조회")
+    public ResponseEntity<List<DeliveryManagerResponse>> getCompanyDeliveryManagerList(
+        @PathVariable UUID hubId) {
+        List<DeliveryManager> deliveryManagerList =
+            deliveryManagerService.getCompanyDeliveryManagerList(hubId);
 
         return ResponseEntity.ok(
             deliveryManagerList.stream().map(DeliveryManagerResponse::new).toList());
