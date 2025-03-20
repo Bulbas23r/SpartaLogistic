@@ -12,6 +12,7 @@ import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
+import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
@@ -24,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -119,9 +119,23 @@ public class RouteServiceImpl implements RouteService {
         return route;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Route> searchRoute(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword) {
         return routeQueryRepository.searchRoute(pageable, sortDirection, sortBy, keyword);
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteRoute(UUID departureHubId, UUID arrivalHubId) {
+        Route route = getRoute(departureHubId, arrivalHubId);
+
+        if (route.isActive()) {
+            throw new BadRequestException("활성화된 이동 정보는 삭제할 수 없습니다!");
+        }
+
+        route.setDeleted();
     }
 }
