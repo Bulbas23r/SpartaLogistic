@@ -36,10 +36,21 @@ public class Hub extends BaseEntity {
 
     private Long managerId;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean active;
+
     @Embedded
     private Address address;
     @Embedded
     private Location location;
+
+    public Double getLatitude() {
+        return this.getLocation().getLatitude();
+    }
+
+    public Double getLongitude() {
+        return this.getLocation().getLongitude();
+    }
 
     public Hub(CreateHubRequestDto requestDto) {
         this.name = requestDto.getName();

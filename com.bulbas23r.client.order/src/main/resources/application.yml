@@ -9,9 +9,6 @@ spring:
         enabled: true
         service-id: config-server
 
-server:
-  port: 19092
-
 eureka:
   client:
     service-url:
@@ -25,13 +22,3 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-
-#management:
-#  zipkin:
-#    tracing:
-#      endpoint: "http://localhost:9411/api/v2/spans"
-#  tracing:
-#    sampling:
-#      probability: 1.0
-
-# db info
