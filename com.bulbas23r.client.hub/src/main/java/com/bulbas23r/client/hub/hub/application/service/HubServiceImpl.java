@@ -54,7 +54,7 @@ public class HubServiceImpl implements HubService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(
-        cacheNames = CacheName.HUB_SEARCH,
+        cacheNames = CacheName.HUB_LIST,
         key = "{ #pageable.pageNumber, #pageable.pageSize }"
     )
     public Page<Hub> getHubList(Pageable pageable) {
@@ -71,7 +71,7 @@ public class HubServiceImpl implements HubService {
     @Override
     @Transactional
     @Caching(evict = {
-        @CacheEvict(cacheNames = CacheName.HUB_LIST, allEntries = true)
+        @CacheEvict(cacheNames = CacheName.HUB_LIST, allEntries = true),
         @CacheEvict(cacheNames = CacheName.HUB_SEARCH, allEntries = true)
     }, put = {
         @CachePut(cacheNames = CacheName.HUB, key = "#result.id")
