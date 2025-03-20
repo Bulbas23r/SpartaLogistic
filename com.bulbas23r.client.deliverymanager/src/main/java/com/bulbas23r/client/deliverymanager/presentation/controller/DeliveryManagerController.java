@@ -6,6 +6,8 @@ import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManag
 import com.bulbas23r.client.deliverymanager.presentation.dto.DeliveryManagerResponse;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
 import common.utils.PageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,11 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Delivery Manager", description = "배송 담당자 관련 API")
 public class DeliveryManagerController {
 
     private final DeliveryManagerService deliveryManagerService;
 
     @PostMapping
+    @Operation(summary = "배송 담당자 생성하기")
     public ResponseEntity<DeliveryManagerResponse> crateDeliveryManager(
         @RequestBody CreateDeliveryManagerRequestDto requestDto) {
         DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto);
@@ -36,6 +40,7 @@ public class DeliveryManagerController {
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "배송 담당자 단건 조회")
     public ResponseEntity<DeliveryManagerResponse> getDeliveryManager(
         @PathVariable Long userId
     ) {
@@ -45,6 +50,7 @@ public class DeliveryManagerController {
     }
 
     @GetMapping
+    @Operation(summary = "배송 담당자 리스트 조회")
     public ResponseEntity<Page<DeliveryManagerResponse>> getDeliveryManagerList(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
@@ -57,6 +63,7 @@ public class DeliveryManagerController {
     }
 
     @DeleteMapping("/userId")
+    @Operation(summary = "배송 담당자 삭제하기")
     public ResponseEntity<Void> deleteDeliveryManager(@RequestParam Long userId) {
         deliveryManagerService.deleteDeliveryManager(userId);
 
@@ -64,6 +71,7 @@ public class DeliveryManagerController {
     }
 
     @PutMapping("/userId")
+    @Operation(summary = "배송 담당자 수정하기")
     public ResponseEntity<DeliveryManagerResponse> updateDeliveryManager(
         @RequestParam Long userId,
         @RequestBody @Valid UpdateDeliveryManagerRequestDto requestDto) {
@@ -74,6 +82,7 @@ public class DeliveryManagerController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "배송 담당자 검색하기")
     public ResponseEntity<Page<DeliveryManagerResponse>> searchDeliveryManager(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size,
