@@ -7,6 +7,8 @@ import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubListResponseDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubResponseDto;
 import common.utils.PageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/hubs")
 @RequiredArgsConstructor
+@Tag(name = "Hub", description = "허브 관련 API")
 public class HubController {
 
     private final HubService hubService;
 
     @PostMapping
+    @Operation(summary = "허브 생성하기")
     public ResponseEntity<HubResponseDto> createHub(
         @RequestBody @Valid CreateHubRequestDto requestDto) {
         Hub hub = hubService.createHub(requestDto);
@@ -40,6 +44,7 @@ public class HubController {
     }
 
     @GetMapping("/{hubId}")
+    @Operation(summary = "허브 단건 조회하기")
     public ResponseEntity<HubResponseDto> getHub(@PathVariable UUID hubId) {
         Hub hub = hubService.getHubById(hubId);
 
@@ -47,6 +52,7 @@ public class HubController {
     }
 
     @GetMapping
+    @Operation(summary = "허브 리스트 조회하기")
     public ResponseEntity<Page<HubListResponseDto>> getHubList(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
@@ -58,6 +64,7 @@ public class HubController {
     }
 
     @PutMapping("/{hubId}")
+    @Operation(summary = "허브 수정하기")
     public ResponseEntity<HubResponseDto> updateHub(
         @PathVariable UUID hubId,
         @RequestBody @Valid UpdateHubRequestDto requestDto
@@ -68,6 +75,7 @@ public class HubController {
     }
 
     @DeleteMapping("/{hubId}")
+    @Operation(summary = "허브 삭제하기")
     public ResponseEntity<Void> deleteHub(@PathVariable UUID hubId) {
         hubService.deleteHub(hubId);
 
@@ -75,6 +83,7 @@ public class HubController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "허브 검색하기")
     public ResponseEntity<Page<HubListResponseDto>> searchHub(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size,
