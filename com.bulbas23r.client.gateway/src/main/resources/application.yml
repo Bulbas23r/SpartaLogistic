@@ -31,6 +31,10 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**, /auth-service/v3/api-docs
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/api/messages/**, /message-service/v3/api-docs
 
       discovery:
         locator:
@@ -71,7 +75,10 @@ springdoc:
     urls[5]:
       name: auth-service
       url: /auth-service/v3/api-docs
+    urls[6]:
+      name: message-service
+      url: /message-service/v3/api-docs
     use-root-path: true
 
 auth:
-  url: "http://localhost:8080/api/auth"
+  url: "http://localhost:18081/api/auth"
