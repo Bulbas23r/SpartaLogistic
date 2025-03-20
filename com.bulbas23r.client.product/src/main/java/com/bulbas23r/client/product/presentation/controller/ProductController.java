@@ -5,6 +5,7 @@ import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
 import com.bulbas23r.client.product.presentation.dto.ProductResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
+import common.annotation.RoleCheck;
 import common.utils.PageUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY"})
     @PostMapping(value = "/products")
     public ResponseEntity<ProductResponseDto> createProduct(
         @RequestBody ProductCreateRequestDto productCreateRequestDto) {
@@ -41,6 +43,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY"})
     @PatchMapping("/products/{productId}")
     public ResponseEntity<ProductResponseDto> updateProduct(
         @PathVariable UUID productId,
@@ -51,6 +54,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY"})
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<ProductResponseDto> deleteProduct(
         @PathVariable UUID productId
@@ -59,6 +63,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/products/{productId}")
     public ResponseEntity<ProductResponseDto> getProduct(
         @PathVariable UUID productId
@@ -68,6 +73,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/products")
     public ResponseEntity<Page<ProductResponseDto>> getProductList(
         @RequestParam(defaultValue = "0", required = false) int page,
@@ -79,6 +85,7 @@ public class ProductController {
         return ResponseEntity.ok(products.map(ProductResponseDto::new));
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/products/search")
     public ResponseEntity<Page<ProductResponseDto>> searchProducts(
         @RequestParam(required = false) String keyword,
