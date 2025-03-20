@@ -35,11 +35,11 @@ public class Delivery extends BaseEntity {
     @Column(name = "order_id",nullable = false)
     private UUID orderId;
 
-    @Column(name = "start_hub_id", nullable = false)
-    private UUID startHubId;
+    @Column(name = "departure_hub_id", nullable = false)
+    private UUID departureHubId;
 
-    @Column(name = "end_hub_id", nullable = false)
-    private UUID endHubId;
+    @Column(name = "arrival_hub_id", nullable = false)
+    private UUID arrivalHubId;
 
     @Column(name = "delivery_manager_id", nullable = false)
     private UUID deliveryManagerId;
@@ -55,8 +55,8 @@ public class Delivery extends BaseEntity {
     private String receiverCompanySlackId;
 
     public void update(DeliveryUpdateRequestDto requestDto) {
-        if(requestDto.getStartHubId() != null) this.startHubId = requestDto.getStartHubId();
-        if(requestDto.getEndHubId() != null) this.endHubId = requestDto.getEndHubId();
+        if(requestDto.getDepartureHubId() != null) this.departureHubId = requestDto.getDepartureHubId();
+        if(requestDto.getArrivalHubIdHubId() != null) this.arrivalHubId = requestDto.getArrivalHubIdHubId();
         if(requestDto.getDeliveryManagerId() != null) this.deliveryManagerId = requestDto.getDeliveryManagerId();
         if(requestDto.getReceiverCompanyId() != null) this.receiverCompanyId = requestDto.getReceiverCompanyId();
         if(StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
