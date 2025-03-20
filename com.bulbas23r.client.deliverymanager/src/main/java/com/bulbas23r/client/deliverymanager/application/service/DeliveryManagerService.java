@@ -4,6 +4,7 @@ import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
 import common.utils.PageUtils.CommonSortBy;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -15,6 +16,8 @@ public interface DeliveryManagerService {
     DeliveryManager getDeliveryManager(Long userId);
 
     Page<DeliveryManager> getDeliveryManagerList(Pageable pageable);
+
+    List<DeliveryManager> getHubDeliveryManagerList();
 
     void deleteDeliveryManager(Long userId);
 

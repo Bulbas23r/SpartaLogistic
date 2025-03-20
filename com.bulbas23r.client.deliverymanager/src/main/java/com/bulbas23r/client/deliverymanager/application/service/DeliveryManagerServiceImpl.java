@@ -9,6 +9,7 @@ import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManag
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,6 +95,13 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         return deliveryManagerRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<DeliveryManager> getHubDeliveryManagerList() {
+        return deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(DeliveryManagerType.HUB);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable,
         Direction sortDirection, CommonSortBy sortBy, String keyword) {

@@ -5,10 +5,13 @@ import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.DeliveryManagerResponse;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
+import common.annotation.RoleCheck;
+import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +53,8 @@ public class DeliveryManagerController {
     }
 
     @GetMapping
-    @Operation(summary = "배송 담당자 리스트 조회")
+    @RoleCheck(Authority.MASTER)
+    @Operation(summary = "모든 배송 담당자 리스트 조회")
     public ResponseEntity<Page<DeliveryManagerResponse>> getDeliveryManagerList(
         @RequestParam(defaultValue = "0", required = false) int page,
         @RequestParam(defaultValue = "10", required = false) int size
@@ -60,6 +64,16 @@ public class DeliveryManagerController {
             .getDeliveryManagerList(pageable);
 
         return ResponseEntity.ok(deliveryManagerList.map(DeliveryManagerResponse::new));
+    }
+
+    @GetMapping("/hub")
+    @RoleCheck(Authority.MASTER)
+    @Operation(summary = "허브 배송 담당자 리스트 조회")
+    public ResponseEntity<List<DeliveryManagerResponse>> getHubDeliveryManagerList() {
+        List<DeliveryManager> deliveryManagerList = deliveryManagerService.getHubDeliveryManagerList();
+
+        return ResponseEntity.ok(
+            deliveryManagerList.stream().map(DeliveryManagerResponse::new).toList());
     }
 
     @DeleteMapping("/userId")
