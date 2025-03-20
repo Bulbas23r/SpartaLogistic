@@ -6,6 +6,7 @@ import com.bulbas23r.client.order.infrastructure.string.OrderString;
 import com.bulbas23r.client.order.presentation.dto.OrderCreateRequestDto;
 import com.bulbas23r.client.order.presentation.dto.OrderResponseDto;
 import com.bulbas23r.client.order.presentation.dto.OrderUpdateRequestDto;
+import common.annotation.RoleCheck;
 import common.template.ApiResponse;
 import common.utils.PageUtils;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @PostMapping("/orders")
     public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(
         @RequestBody OrderCreateRequestDto orderCreateRequestDto)
@@ -52,6 +54,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @PatchMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> updateOrder(
         @PathVariable UUID orderId,
@@ -65,6 +68,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @DeleteMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> deleteOrder(
         @PathVariable UUID orderId
@@ -73,6 +77,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/orders/{orderId}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> getOrder(
         @PathVariable UUID orderId
@@ -85,6 +90,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/orders")
     public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> getOrderList(
         @RequestParam(defaultValue = "0", required = false) int page,
@@ -99,6 +105,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY", "HUB_TO_HUB_DELIVERY", "TO_COMPANY_DELIVERY"})
     @GetMapping("/orders/search")
     public ResponseEntity<ApiResponse<Page<OrderResponseDto>>> searchOrders(
         @RequestParam(required = false) String keyword,
@@ -117,6 +124,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY"})
     @PatchMapping("/orders/cancel/{orderId}")
     public ResponseEntity<ApiResponse<OrderResponseDto>> cancelOrder(
         @PathVariable UUID orderId
