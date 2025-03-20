@@ -28,22 +28,29 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     @Transactional
     @Override
     public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+        Integer seq;
         if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
-            if (deliveryManagerRepository.existsByTypeAndSequence(DeliveryManagerType.HUB,
-                requestDto.getSequence())) {
-                throw new BadRequestException("이미 존재하는 순서입니다!");
+            Integer count = deliveryManagerRepository.countByType(
+                requestDto.getDeliveryManagerType());
+            if (count >= 10) {
+                throw new BadRequestException("허브 배송 담당자의 정원이 모두 찼습니다!");
             }
+            seq = deliveryManagerRepository.findMaxSequenceByType(
+                requestDto.getDeliveryManagerType());
         } else {
             if (requestDto.getHubId() == null) {
                 throw new BadRequestException("허브 아이디가 필요합니다!");
             }
-            if (deliveryManagerRepository.existsByTypeAndHubIdAndSequence(
-                DeliveryManagerType.COMPANY, requestDto.getHubId(), requestDto.getSequence())) {
-                throw new BadRequestException("이미 존재하는 순서입니다!");
+            Integer count = deliveryManagerRepository.countByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
+            if (count >= 10) {
+                throw new BadRequestException("업체 배송 담당자의 정원이 모두 찼습니다!");
             }
+            seq = deliveryManagerRepository.findMaxSequenceByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
         }
 
-        DeliveryManager deliveryManager = new DeliveryManager(requestDto);
+        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq);
 
         return deliveryManagerRepository.save(deliveryManager);
     }

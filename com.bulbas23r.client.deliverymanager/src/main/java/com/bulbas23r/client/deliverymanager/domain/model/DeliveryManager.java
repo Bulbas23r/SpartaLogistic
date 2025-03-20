@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,15 +39,16 @@ public class DeliveryManager extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeliveryManagerType type;
 
+    @Version
     @Column(nullable = false)
     private Integer sequence;
 
-    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto, Integer sequence) {
         this.userId = requestDto.getUserId();
         this.hubId = requestDto.getHubId();
         this.slackId = requestDto.getSlackId();
         this.type = requestDto.getDeliveryManagerType();
-        this.sequence = requestDto.getSequence();
+        this.sequence = sequence;
     }
 
     public void update(UpdateDeliveryManagerRequestDto requestDto) {

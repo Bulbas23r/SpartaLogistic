@@ -20,6 +20,10 @@ public interface DeliveryManagerRepository {
 
     Integer findMaxSequenceByTypeAndHubId(DeliveryManagerType type, UUID hubId);
 
+    Integer countByType(DeliveryManagerType type);
+
+    Integer countByTypeAndHubId(DeliveryManagerType type, UUID hubId);
+
     List<DeliveryManager> findAllByTypeOrderBySequenceAsc(DeliveryManagerType type);
 
     List<DeliveryManager> findAllByTypeAndHubIdOrderBySequenceAsc(DeliveryManagerType type,
