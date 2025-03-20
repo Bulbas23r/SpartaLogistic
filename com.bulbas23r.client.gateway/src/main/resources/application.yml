@@ -39,6 +39,11 @@ spring:
           uri: lb://delivery-service
           predicates:
             - Path=/api/deliveries/**, /delivery-service/v3/api-docs
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/api/messages/**, /message-service/v3/api-docs
+
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
@@ -84,7 +89,9 @@ springdoc:
     urls[7]:
         name: delivery-service
         url: /delivery-service/v3/api-docs
+    urls[6]:
+      name: message-service
+      url: /message-service/v3/api-docs
     use-root-path: true
 
-auth:
-  url: "http://localhost:8080/api/auth"
+  url: "http://localhost:18081/api/auth"
