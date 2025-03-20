@@ -4,15 +4,26 @@ import com.bulbas23r.client.hub.hub.application.service.HubService;
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
 import com.bulbas23r.client.hub.route.domain.model.Route;
+import com.bulbas23r.client.hub.route.domain.model.RouteId;
+import com.bulbas23r.client.hub.route.domain.repository.RouteQueryRepository;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
 import com.bulbas23r.client.hub.route.domain.service.PathFinderService;
 import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
+import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
+import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
+import common.exception.NotFoundException;
+import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -25,8 +36,9 @@ public class RouteServiceImpl implements RouteService {
     private final RouteRepository routeRepository;
     private final NaverApiService naverApiService;
     private final PathFinderService pathFinderService;
+    private final RouteQueryRepository routeQueryRepository;
 
-    @Override
+    @Transactional
     public void initializeRoute() {
         routeRepository.deleteAll();
         List<Hub> hubList = hubService.getActiveHubList();
@@ -66,11 +78,50 @@ public class RouteServiceImpl implements RouteService {
 //        routeRepository.saveAll(saveRouteList);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId) {
         List<Hub> hubs = hubService.getActiveHubList();
         List<Route> routes = routeRepository.findByActiveTrue();
 
         return pathFinderService.findShortestPath(hubs, routes, departureHubId, arrivalHubId);
+    }
+
+    @Transactional
+    @Override
+    public Route createRoute(CreateRouteRequestDto requestDto) {
+        Route route = new Route(requestDto);
+        return routeRepository.save(route);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Route getRoute(UUID departureHubId, UUID arrivalHubId) {
+        RouteId routeId = new RouteId(departureHubId, arrivalHubId);
+
+        return routeRepository.findById(routeId).orElseThrow(
+            () -> new NotFoundException("존재하지 않는 경로입니다!")
+        );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Route> getRouteList(Pageable pageable) {
+        return routeRepository.findAll(pageable);
+    }
+
+    @Transactional
+    @Override
+    public Route updateRoute(UpdateRouteRequestDto requestDto) {
+        Route route = getRoute(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
+        route.update(requestDto);
+
+        return route;
+    }
+
+    @Override
+    public Page<Route> searchRoute(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
+        String keyword) {
+        return routeQueryRepository.searchRoute(pageable, sortDirection, sortBy, keyword);
     }
 }
