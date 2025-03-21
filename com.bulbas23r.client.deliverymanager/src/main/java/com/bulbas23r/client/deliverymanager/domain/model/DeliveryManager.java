@@ -28,7 +28,7 @@ public class DeliveryManager extends BaseEntity {
     @Id
     private Long userId;
 
-    @Column(nullable = false)
+    //    @Column(nullable = false)
     private UUID hubId;
 
     @Column(nullable = false)
@@ -38,15 +38,17 @@ public class DeliveryManager extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeliveryManagerType type;
 
+    //    @Version
     @Column(nullable = false)
     private Integer sequence;
 
-    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto, Integer sequence,
+        String slackId) {
         this.userId = requestDto.getUserId();
         this.hubId = requestDto.getHubId();
-        this.slackId = requestDto.getSlackId();
+        this.slackId = slackId;
         this.type = requestDto.getDeliveryManagerType();
-        this.sequence = requestDto.getSequence();
+        this.sequence = sequence;
     }
 
     public void update(UpdateDeliveryManagerRequestDto requestDto) {

@@ -6,6 +6,7 @@ import com.bulbas23r.client.auth.application.dto.LoginRequestDto;
 import com.bulbas23r.client.auth.application.dto.LoginResponseDto;
 import com.bulbas23r.client.auth.application.dto.RefreshTokenRequest;
 import com.bulbas23r.client.auth.application.service.AuthService;
+import com.bulbas23r.client.auth.client.UserClient;
 import com.bulbas23r.client.auth.infrastructure.config.JwtTokenProvider;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;

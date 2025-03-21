@@ -14,4 +14,6 @@ public interface UserRepository{
   Optional<User> findById(Long userId);
 
   Page<User> findAll(Pageable pageable);
+
+  Optional<User> findBySlackId(String slackId);
 }

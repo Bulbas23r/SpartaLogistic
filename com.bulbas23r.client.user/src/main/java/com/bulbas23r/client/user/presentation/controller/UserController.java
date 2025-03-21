@@ -9,6 +9,7 @@ import com.bulbas23r.client.user.application.service.ClientService;
 import com.bulbas23r.client.user.application.service.UserService;
 import com.bulbas23r.client.user.domain.model.User;
 import common.annotation.RoleCheck;
+import common.dto.UserDetailsDto;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
@@ -36,6 +37,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
+  private final ClientService clientService;
+
+  @GetMapping("/client/{username}")
+  public UserDetailsDto getUserDetails(@PathVariable("username") String username) {
+    return clientService.getUserDetails(username);
+  }
+
+  @GetMapping("/client/slackId/{slackId}")
+  public String getUsername(@PathVariable("slackId") String slackId) {
+    return clientService.getUserName(slackId);
+  }
 
   //회원가입
   @PostMapping("/sign-up")
@@ -43,7 +55,7 @@ public class UserController {
       @Valid @RequestBody UserSignUpRequestDto userRequestDto,
       BindingResult bindingResult
   ) throws Exception {
-    if(bindingResult.hasErrors()) {
+    if (bindingResult.hasErrors()) {
       String message = bindingResult.getAllErrors().stream()
           .map(DefaultMessageSourceResolvable::getDefaultMessage)
           .collect(Collectors.joining(", "));
@@ -60,7 +72,7 @@ public class UserController {
       @RequestHeader("X-User-Name") String username,
       @RequestBody UserPatchRequestForRegisterDto userRequestDto
   ) throws Exception {
-    userService.updateUser(username,userRequestDto);
+    userService.updateUser(username, userRequestDto);
     return ResponseEntity.ok().build();
   }
 
@@ -75,7 +87,8 @@ public class UserController {
   @RoleCheck("MASTER")
   @GetMapping("/{userId}")
   public ResponseEntity getUserDetailForRegister(@PathVariable("userId") Long userId) {
-    UserResponseForRegisterDto userResponseForRegisterDto = userService.getUserDetailForRegister(userId);
+    UserResponseForRegisterDto userResponseForRegisterDto = userService.getUserDetailForRegister(
+        userId);
     return ResponseEntity.ok(userResponseForRegisterDto);
   }
 
@@ -101,7 +114,7 @@ public class UserController {
       @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
       @RequestParam(required = false) String keyword) {
     Pageable pageable = PageUtils.pageable(page, size);
-    Page<User> userList = userService.searchUser(pageable,sortDirection,sortBy,keyword);
+    Page<User> userList = userService.searchUser(pageable, sortDirection, sortBy, keyword);
 
     return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
   }

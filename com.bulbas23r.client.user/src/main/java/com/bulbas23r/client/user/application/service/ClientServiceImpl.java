@@ -3,6 +3,7 @@ package com.bulbas23r.client.user.application.service;
 import com.bulbas23r.client.user.domain.model.User;
 import com.bulbas23r.client.user.domain.repository.UserRepository;
 import common.dto.UserDetailsDto;
+import common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,11 @@ public class ClientServiceImpl implements ClientService {
       log.error(e.getMessage());
       return null;
     }
+  }
+
+  @Override
+  public String getUserName(String slackId) {
+//    User user = userRepository.findBySlackId(slackId).orElseThrow(() -> new NotFoundException("해당 슬랙 아이디를 가진 유저가 존재하지 않습니다."));
+    return userRepository.findBySlackId(slackId).map(User::getUsername).orElse("anonymous");
   }
 }
