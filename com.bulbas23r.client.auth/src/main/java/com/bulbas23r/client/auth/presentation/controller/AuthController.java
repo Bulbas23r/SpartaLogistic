@@ -5,7 +5,6 @@ import com.bulbas23r.client.auth.application.dto.JwtAuthenticationResponse;
 import com.bulbas23r.client.auth.application.dto.LoginRequestDto;
 import com.bulbas23r.client.auth.application.dto.LoginResponseDto;
 import com.bulbas23r.client.auth.application.dto.RefreshTokenRequest;
-import com.bulbas23r.client.auth.application.dto.UserDetailsDto;
 import com.bulbas23r.client.auth.application.service.AuthService;
 import com.bulbas23r.client.auth.client.UserClient;
 import com.bulbas23r.client.auth.infrastructure.config.JwtTokenProvider;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -31,7 +29,6 @@ public class AuthController {
 
   private final AuthService authService;
   private final JwtTokenProvider jwtTokenProvider;
-  private final UserClient userClient;
 
   //login
   @PostMapping("/login")
