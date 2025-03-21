@@ -4,13 +4,18 @@ import com.bulbas23r.client.delivery.application.dto.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
+import com.bulbas23r.client.delivery.application.dto.HubRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
+import com.bulbas23r.client.delivery.domain.repository.DeliveryRouteRepository;
+import com.bulbas23r.client.delivery.infrastructure.client.HubClient;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +29,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryQueryRepository deliveryQueryRepository;
+    private final DeliveryRouteRepository deliveryRouteRepository;
+    private final HubClient hubClient;
 
     @Override
     @Transactional
@@ -31,10 +38,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         //todo: _id 값 유효성 check
 
         Delivery delivery = requestDto.toDelivery();
-        deliveryRepository.save(delivery);
+
+        System.out.println("delivery = " + delivery);
 
         //todo: 배송 경로 생성
+        List<DeliveryRoute> routeList = createDeliveryRoute(requestDto.getDepartureHubId(),requestDto.getArrivalHubId() ,delivery);
 
+        delivery.setDeliveryRouteList(routeList);
+
+        deliveryRouteRepository.saveAll(routeList);
+        deliveryRepository.save(delivery);
         return DeliveryResponseDto.fromEntity(delivery);
     }
 
@@ -103,5 +116,30 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Delivery findById(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
             .orElseThrow(()-> new NotFoundException("배송 정보를 찾을 수 없습니다."));
+    }
+
+
+    public List<DeliveryRoute> createDeliveryRoute(UUID departureHubId, UUID arrivalHubId , Delivery delivery) {
+        List<DeliveryRoute> deliveryRouteList = new ArrayList<>();
+
+        List<UUID> routeList = hubClient.getHubShortRouteList(departureHubId, arrivalHubId);
+
+        for( int i = 1; i < routeList.size(); i++ ) {
+
+            HubRouteResponseDto hubRoute = hubClient.getHubRoute(routeList.get(i-1), routeList.get(i));
+
+            deliveryRouteList.add(
+                DeliveryRoute.builder()
+                    .delivery(delivery)
+                    .departureHubId(routeList.get(i-1))
+                    .arrivalHubId(routeList.get(i))
+                    .estimatedDistance(hubRoute.getTransitDistance())
+                    .estimatedDuration(hubRoute.getTransitTime())
+                    .sequence(i+1)
+                    .build()
+            );
+        }
+
+        return deliveryRouteList;
     }
 }

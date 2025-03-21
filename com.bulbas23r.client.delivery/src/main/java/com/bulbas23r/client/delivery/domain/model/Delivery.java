@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter
@@ -29,6 +30,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("is_deleted IS FALSE")
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Delivery extends BaseEntity {
 
     @Id
@@ -68,6 +70,9 @@ public class Delivery extends BaseEntity {
         if(StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
     }
 
+    public void setDeliveryRouteList(List<DeliveryRoute> deliveryRouteList) {
+        this.deliveryRouteList = deliveryRouteList;
+    }
 
     public void changeStatus(DeliveryStatus status) {
         this.status = status;
