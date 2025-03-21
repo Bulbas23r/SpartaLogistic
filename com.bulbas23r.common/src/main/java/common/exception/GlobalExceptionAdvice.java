@@ -43,4 +43,11 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(value = InternalServerErrorException.class)
+    public ResponseEntity internalServerErrorException(HttpServletRequest req,
+        BadRequestException e) {
+        ErrorResponse errorResponse = new ErrorResponse(req, HttpStatus.INTERNAL_SERVER_ERROR, e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
 }
