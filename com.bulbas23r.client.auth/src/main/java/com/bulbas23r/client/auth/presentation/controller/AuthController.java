@@ -105,10 +105,4 @@ public class AuthController {
 
     return ResponseEntity.ok(response);
   }
-
-  @GetMapping("/getusers")
-  public String getUsers() {
-    UserDetailsDto userDetails = userClient.getUserDetails("dlehdgk");
-    return String.valueOf(userDetails.getRole());
-  }
 }
