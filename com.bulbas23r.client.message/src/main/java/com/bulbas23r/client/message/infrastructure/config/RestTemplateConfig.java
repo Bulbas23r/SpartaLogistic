@@ -1,4 +1,4 @@
-package com.bulbas23r.client.message;
+package com.bulbas23r.client.message.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

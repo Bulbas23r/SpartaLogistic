@@ -1,4 +1,4 @@
-package com.bulbas23r.client.message.domain;
+package com.bulbas23r.client.message.domain.model;
 
 import common.model.BaseEntity;
 import jakarta.persistence.Entity;
@@ -11,7 +11,6 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "p_slack_message")

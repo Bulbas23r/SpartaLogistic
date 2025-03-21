@@ -1,20 +1,25 @@
-package com.bulbas23r.client.message;
+package com.bulbas23r.client.message.application.service;
 
-import com.bulbas23r.client.message.domain.Message;
+import com.bulbas23r.client.message.domain.repository.MessageQueryRepository;
+import com.bulbas23r.client.message.domain.repository.MessageRepository;
+import com.bulbas23r.client.message.presentation.dto.response.MessageResponseDto;
+import com.bulbas23r.client.message.presentation.dto.request.PostMessageDto;
+import com.bulbas23r.client.message.presentation.dto.SlackIncomingHookDto;
+import com.bulbas23r.client.message.domain.model.Message;
 import common.UserContextHolder;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
-import java.time.LocalDateTime;
+import common.utils.PageUtils.CommonSortBy;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,16 +31,18 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SlackServiceImpl {
+public class MessageServiceImpl implements MessageService{
 
   private final RestTemplate restTemplate;
   private final MessageRepository messageRepository;
+  private final MessageQueryRepository messageQueryRepository;
 
   @Value("${slack.bot.token}")
   // todo config yml에 값 넣어놓기
   private String slackBotToken;
 
   @Transactional
+  @Override
   public void sendDirectMessage(PostMessageDto dto) {
     String openUrl = "https://slack.com/api/conversations.open";
     HttpHeaders headers = new HttpHeaders();
@@ -82,6 +89,7 @@ public class SlackServiceImpl {
   }
 
   @Transactional
+  @Override
   public void updateMessage(UUID messageId, String message) {
     Message findMessage = getFindMessage(messageId);
 
@@ -91,6 +99,7 @@ public class SlackServiceImpl {
   }
 
   @Transactional
+  @Override
   public void deleteMessage(UUID messageId) {
     Message findMessage = getFindMessage(messageId);
 
@@ -99,6 +108,7 @@ public class SlackServiceImpl {
 
 
   @Transactional(readOnly = true)
+  @Override
   public MessageResponseDto getMessage(UUID messageId) {
     Message findMessage = getFindMessage(messageId);
 
@@ -110,9 +120,17 @@ public class SlackServiceImpl {
   }
 
   @Transactional(readOnly = true)
+  @Override
   public Page<MessageResponseDto> getMessageList(Pageable pageable) {
     Page<Message> all = messageRepository.findAll(pageable);
     return all.map(MessageResponseDto::new);
+  }
+
+  @Override
+  public Page<Message> searchMessage(Pageable pageable, Direction sortDirection,
+      CommonSortBy sortBy, String keyword) {
+    return messageQueryRepository.search(pageable, sortDirection,
+        sortBy, keyword);
   }
 
   private Message getFindMessage(UUID messageId) {

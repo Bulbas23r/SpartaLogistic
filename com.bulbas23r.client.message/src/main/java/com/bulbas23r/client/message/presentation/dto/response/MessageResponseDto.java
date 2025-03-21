@@ -1,6 +1,6 @@
-package com.bulbas23r.client.message;
+package com.bulbas23r.client.message.presentation.dto.response;
 
-import com.bulbas23r.client.message.domain.Message;
+import com.bulbas23r.client.message.domain.model.Message;
 import java.util.Date;
 import java.util.UUID;
 import lombok.AllArgsConstructor;

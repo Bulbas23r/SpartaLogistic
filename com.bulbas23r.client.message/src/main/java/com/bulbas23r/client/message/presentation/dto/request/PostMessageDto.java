@@ -1,4 +1,4 @@
-package com.bulbas23r.client.message;
+package com.bulbas23r.client.message.presentation.dto.request;
 
 import lombok.Data;
 
