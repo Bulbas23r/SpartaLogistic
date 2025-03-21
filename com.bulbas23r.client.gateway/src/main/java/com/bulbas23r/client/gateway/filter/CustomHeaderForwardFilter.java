@@ -32,7 +32,8 @@ public class CustomHeaderForwardFilter implements GlobalFilter, Ordered {
     String requestPath = request.getURI().getPath();
     String authHeader = request.getHeaders().getFirst("Authorization");
 
-    if (requestPath.startsWith("/api/auth") || requestPath.startsWith("/api/users/sign-up") || requestPath.startsWith("/api/users/client")) {
+    if (requestPath.startsWith("/api/auth") || requestPath.startsWith("/api/users/sign-up")
+        || requestPath.startsWith("/api/users/client") || requestPath.endsWith("api-docs")) {
       return chain.filter(exchange);
     }
 

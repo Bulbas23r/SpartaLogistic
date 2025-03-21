@@ -9,6 +9,8 @@ import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManag
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,23 +27,31 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     @Transactional
     @Override
-    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto,
+        String slackId) {
+        Integer seq;
         if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
-            if (deliveryManagerRepository.existsByTypeAndSequence(DeliveryManagerType.HUB,
-                requestDto.getSequence())) {
-                throw new BadRequestException("이미 존재하는 순서입니다!");
+            Integer count = deliveryManagerRepository.countByType(
+                requestDto.getDeliveryManagerType());
+            if (count >= 10) {
+                throw new BadRequestException("허브 배송 담당자의 정원이 모두 찼습니다!");
             }
+            seq = deliveryManagerRepository.findMaxSequenceByType(
+                requestDto.getDeliveryManagerType());
         } else {
             if (requestDto.getHubId() == null) {
                 throw new BadRequestException("허브 아이디가 필요합니다!");
             }
-            if (deliveryManagerRepository.existsByTypeAndHubIdAndSequence(
-                DeliveryManagerType.COMPANY, requestDto.getHubId(), requestDto.getSequence())) {
-                throw new BadRequestException("이미 존재하는 순서입니다!");
+            Integer count = deliveryManagerRepository.countByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
+            if (count >= 10) {
+                throw new BadRequestException("업체 배송 담당자의 정원이 모두 찼습니다!");
             }
+            seq = deliveryManagerRepository.findMaxSequenceByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
         }
 
-        DeliveryManager deliveryManager = new DeliveryManager(requestDto);
+        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq + 1, slackId);
 
         return deliveryManagerRepository.save(deliveryManager);
     }
@@ -94,6 +104,20 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         return deliveryManagerRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<DeliveryManager> getHubDeliveryManagerList() {
+        return deliveryManagerRepository.findAllByTypeOrderBySequenceAsc(DeliveryManagerType.HUB);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<DeliveryManager> getCompanyDeliveryManagerList(UUID hubId) {
+        return deliveryManagerRepository.findAllByTypeAndHubIdOrderBySequenceAsc(
+            DeliveryManagerType.COMPANY, hubId);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable,
         Direction sortDirection, CommonSortBy sortBy, String keyword) {
@@ -101,10 +125,14 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
             pageable, sortDirection, sortBy, keyword);
     }
 
+    @Override
+    public boolean checkDeliveryManager(Long userId, DeliveryManager deliveryManager) {
+        return userId.equals(deliveryManager.getUserId());
+    }
+
     //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
-//        // TODO userID, hubID 검증 로직 추가하기
 //        Integer sequence;
 //        if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
 //            sequence = getHubDeliveryManagerSequence();
