@@ -1,5 +1,6 @@
 package com.bulbas23r.client.hub.route.application.service;
 
+import com.bulbas23r.client.hub.global.cache.CacheName;
 import com.bulbas23r.client.hub.hub.application.service.HubService;
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.HubConnection;
@@ -12,19 +13,25 @@ import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
+import common.annotation.RoleCheck;
+import common.exception.BadRequestException;
 import common.exception.NotFoundException;
+import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -39,6 +46,7 @@ public class RouteServiceImpl implements RouteService {
     private final RouteQueryRepository routeQueryRepository;
 
     @Transactional
+    @RoleCheck(Authority.MASTER)
     public void initializeRoute() {
         routeRepository.deleteAll();
         List<Hub> hubList = hubService.getActiveHubList();
@@ -78,8 +86,9 @@ public class RouteServiceImpl implements RouteService {
 //        routeRepository.saveAll(saveRouteList);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheName.ROUTE_SHORTEST_PATH, key = "{ #departureHubId, #arrivalHubId }")
     public List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId) {
         List<Hub> hubs = hubService.getActiveHubList();
         List<Route> routes = routeRepository.findByActiveTrue();
@@ -87,15 +96,17 @@ public class RouteServiceImpl implements RouteService {
         return pathFinderService.findShortestPath(hubs, routes, departureHubId, arrivalHubId);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @CachePut(cacheNames = CacheName.ROUTE, key = "{ #result.id.departureHubId, #result.id.arrivalHubId }")
     public Route createRoute(CreateRouteRequestDto requestDto) {
         Route route = new Route(requestDto);
         return routeRepository.save(route);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheName.ROUTE, key = "{ #departureHubId, #arrivalHubId }")
     public Route getRoute(UUID departureHubId, UUID arrivalHubId) {
         RouteId routeId = new RouteId(departureHubId, arrivalHubId);
 
@@ -104,14 +115,21 @@ public class RouteServiceImpl implements RouteService {
         );
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheName.ROUTE_LIST, key = "{ #pageable.pageNumber, #pageable.pageSize }")
     public Page<Route> getRouteList(Pageable pageable) {
         return routeRepository.findAll(pageable);
     }
 
-    @Transactional
     @Override
+    @Transactional
+    @Caching(evict = {
+        @CacheEvict(cacheNames = CacheName.ROUTE_LIST, allEntries = true),
+        @CacheEvict(cacheNames = CacheName.ROUTE_SEARCH, allEntries = true)
+    }, put = {
+        @CachePut(cacheNames = CacheName.ROUTE, key = "#result.id")
+    })
     public Route updateRoute(UpdateRouteRequestDto requestDto) {
         Route route = getRoute(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
         route.update(requestDto);
@@ -120,8 +138,31 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(
+        cacheNames = CacheName.ROUTE_SEARCH,
+        key = "{ #pageable.pageNumber, #pageable.pageSize, #sortDirection, #sortBy, #keyword }"
+    )
     public Page<Route> searchRoute(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword) {
         return routeQueryRepository.searchRoute(pageable, sortDirection, sortBy, keyword);
+    }
+
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+        @CacheEvict(cacheNames = CacheName.ROUTE, key = "{ #departureHubId, #arrivalHubId }"),
+        @CacheEvict(cacheNames = CacheName.ROUTE_LIST, allEntries = true),
+        @CacheEvict(cacheNames = CacheName.ROUTE_SEARCH, allEntries = true)
+    })
+    public void deleteRoute(UUID departureHubId, UUID arrivalHubId) {
+        Route route = getRoute(departureHubId, arrivalHubId);
+
+        if (route.isActive()) {
+            throw new BadRequestException("활성화된 이동 정보는 삭제할 수 없습니다!");
+        }
+
+        route.setDeleted();
     }
 }

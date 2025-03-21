@@ -26,4 +26,6 @@ public interface RouteService {
 
     Page<Route> searchRoute(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword);
+
+    void deleteRoute(UUID departureHubId, UUID arrivalHubId);
 }
