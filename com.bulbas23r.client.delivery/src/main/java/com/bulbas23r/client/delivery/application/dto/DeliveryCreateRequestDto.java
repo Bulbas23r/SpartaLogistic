@@ -20,12 +20,11 @@ public class DeliveryCreateRequestDto {
     private UUID orderId;
 
     @NotNull( message = "출발 허브 Id는 필수 값 입니다.")
-    private UUID startHubId;
+    private UUID departureHubId;
 
     @NotNull( message = "도착 허브 Id는 필수 값 입니다.")
-    private UUID endHubId;
+    private UUID arrivalHubId;
 
-    @NotNull(message = "배송 매니저 Id는 필수 값 입니다.")
     private UUID deliveryManagerId;
 
     @Builder.Default
@@ -40,8 +39,8 @@ public class DeliveryCreateRequestDto {
     public Delivery toDelivery() {
         return Delivery.builder()
             .orderId(this.orderId)
-            .startHubId(this.startHubId)
-            .endHubId(this.endHubId)
+            .departureHubId(this.departureHubId)
+            .arrivalHubId(this.arrivalHubId)
             .deliveryManagerId(this.deliveryManagerId)
             .status(this.status)
             .receiverCompanyId(this.receiverCompanyId)

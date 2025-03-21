@@ -20,13 +20,13 @@ public class DeliveryResponseDto {
 
     private UUID orderId;
 
-    private UUID startHubId;
+    private UUID departureHubId;
 
-    private String startHubName;
+    private String departureHubName;
 
-    private UUID endHubId;
+    private UUID arrivalHubId;
 
-    private String endHubName;
+    private String arrivalHubName;
 
     private String status;
 
@@ -46,8 +46,8 @@ public class DeliveryResponseDto {
         return DeliveryResponseDto.builder()
             .id(delivery.getId())
             .orderId(delivery.getOrderId())
-            .startHubId(delivery.getStartHubId())
-            .endHubId(delivery.getEndHubId())
+            .departureHubId(delivery.getDepartureHubId())
+            .arrivalHubId(delivery.getArrivalHubId())
             .status(delivery.getStatus().name())
             .statusDescription(delivery.getStatus().getDescription())
             .deliveryManagerId(delivery.getDeliveryManagerId())
@@ -56,12 +56,12 @@ public class DeliveryResponseDto {
             .build();
     }
 
-    public DeliveryResponseDto(UUID id,UUID orderId,UUID startHubId, UUID endHubId, String status,
+    public DeliveryResponseDto(UUID id,UUID orderId,UUID departureHubId, UUID arrivalHubId, String status,
         UUID deliveryManagerId, UUID receiverCompanyId, String receiverCompanySlackId) {
         this.id = id;
         this.orderId = orderId;
-        this.startHubId = startHubId;
-        this.endHubId = endHubId;
+        this.departureHubId = departureHubId;
+        this.arrivalHubId = arrivalHubId;
         this.status = status;
         this.deliveryManagerId = deliveryManagerId;
         this.receiverCompanyId = receiverCompanyId;

@@ -5,6 +5,7 @@ import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
 import com.bulbas23r.client.delivery.application.service.DeliveryService;
+import common.annotation.RoleCheck;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @PostMapping
     public ResponseEntity<?> createDelivery(@Valid @RequestBody DeliveryCreateRequestDto requestDto) {
         DeliveryResponseDto result = deliveryService.createDelivery(requestDto);
@@ -42,6 +44,7 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
+
     @GetMapping
     public ResponseEntity<?> getDeliveryList(
         @RequestParam(name = "page", defaultValue = "0", required = false) int page,
@@ -52,6 +55,7 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @PutMapping("/{deliveryId}")
     public ResponseEntity<?> updateDelivery(
         @PathVariable("deliveryId") UUID deliveryId,
@@ -61,6 +65,7 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @DeleteMapping("/{deliveryId}")
     public ResponseEntity<?> deleteDelivery(@PathVariable("deliveryId") UUID deliveryId) {
         DeliveryResponseDto result = deliveryService.deleteDelivery(deliveryId);

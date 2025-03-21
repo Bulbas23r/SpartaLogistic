@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 public class DeliveryUpdateRequestDto {
 
-    private UUID startHubId;
+    private UUID departureHubId;
 
-    private UUID endHubId;
+    private UUID arrivalHubIdHubId;
 
     private UUID deliveryManagerId;
 
