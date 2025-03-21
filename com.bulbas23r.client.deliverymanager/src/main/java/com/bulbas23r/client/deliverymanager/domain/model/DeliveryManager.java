@@ -9,7 +9,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +28,7 @@ public class DeliveryManager extends BaseEntity {
     @Id
     private Long userId;
 
-    @Column(nullable = false)
+    //    @Column(nullable = false)
     private UUID hubId;
 
     @Column(nullable = false)
@@ -39,7 +38,7 @@ public class DeliveryManager extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DeliveryManagerType type;
 
-    @Version
+    //    @Version
     @Column(nullable = false)
     private Integer sequence;
 

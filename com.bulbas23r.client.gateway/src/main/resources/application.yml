@@ -32,7 +32,7 @@ spring:
           predicates:
             - Path=/api/auth/**, /auth-service/v3/api-docs
         - id: delivery-manager-service
-          uri: lb://delivry-manager-service
+          uri: lb://delivery-manager-service
           predicates:
             - Path=/api/managers/**, /delivery-manager-service/v3/api-docs
         - id: delivery-service
