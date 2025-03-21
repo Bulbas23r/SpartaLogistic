@@ -4,7 +4,6 @@ import common.UserContextHolder;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public abstract class BaseEntity {
 
     private String deletedBy;
 
-    @PreUpdate
+    //    @PreUpdate
     public void setDeleted() {
         if (!isDeleted) {
             this.deletedAt = LocalDateTime.now();

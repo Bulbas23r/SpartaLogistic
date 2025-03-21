@@ -89,9 +89,10 @@ springdoc:
     urls[7]:
         name: delivery-service
         url: /delivery-service/v3/api-docs
-    urls[6]:
+    urls[8]:
       name: message-service
       url: /message-service/v3/api-docs
     use-root-path: true
 
+auth:
   url: "http://localhost:18081/api/auth"

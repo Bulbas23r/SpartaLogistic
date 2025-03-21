@@ -5,4 +5,5 @@ import common.dto.UserDetailsDto;
 public interface ClientService {
 
   UserDetailsDto getUserDetails(String username);
+
 }

@@ -2,6 +2,7 @@ package com.bulbas23r.client.hub.route.domain.service;
 
 import com.bulbas23r.client.hub.hub.domain.model.Hub;
 import com.bulbas23r.client.hub.route.domain.model.Route;
+import common.exception.InternalServerErrorException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +36,10 @@ public class PathFinderServiceImpl implements PathFinderService {
     public List<UUID> findShortestPath(List<Hub> hubs, List<Route> routes, UUID departureHubId,
         UUID arrivalHubId) {
 
+        if (hubs.isEmpty() || routes.isEmpty()) {
+            throw new InternalServerErrorException("허브나 경로 데이터가 존재하지 않습니다!");
+        }
+
         Map<UUID, List<Node>> graph = hubs.stream()
             .collect(Collectors.toMap(Hub::getId, hub -> new ArrayList<>()));
 
@@ -48,6 +53,7 @@ public class PathFinderServiceImpl implements PathFinderService {
 
         Map<UUID, Integer> distance = hubs.stream()
             .collect(Collectors.toMap(Hub::getId, hub -> Integer.MAX_VALUE));
+        distance.put(departureHubId, 0);
         Map<UUID, UUID> previous = new HashMap<>();
 
         while (!pq.isEmpty()) {
@@ -70,7 +76,7 @@ public class PathFinderServiceImpl implements PathFinderService {
         List<UUID> path = new ArrayList<>();
         UUID current = arrivalHubId;
 
-        while (current != departureHubId) {
+        while (current != null && current != departureHubId) {
             path.add(current);
             current = previous.get(current);
         }
