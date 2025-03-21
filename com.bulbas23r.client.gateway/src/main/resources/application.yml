@@ -14,7 +14,7 @@ spring:
         - id: hub-service
           uri: lb://hub-service
           predicates:
-            - Path=/api/hubs/**, /hub-service/v3/api-docs
+            - Path=/api/hubs/**, /api/routes/**, /hub-service/v3/api-docs
         - id: product-service  # 라우트 식별자
           uri: lb://product-service  # ‘product-service’라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
@@ -31,6 +31,14 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**, /auth-service/v3/api-docs
+        - id: delivery-manager-service
+          uri: lb://delivry-manager-service
+          predicates:
+            - Path=/api/managers/**, /delivery-manager-service/v3/api-docs
+        - id: delivery-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/deliveries/**, /delivery-service/v3/api-docs
         - id: message-service
           uri: lb://message-service
           predicates:
@@ -76,6 +84,12 @@ springdoc:
       name: auth-service
       url: /auth-service/v3/api-docs
     urls[6]:
+      name: delivery-manager-service
+      url: /delivery-manager-service/v3/api-docs
+    urls[7]:
+        name: delivery-service
+        url: /delivery-service/v3/api-docs
+    urls[8]:
       name: message-service
       url: /message-service/v3/api-docs
     use-root-path: true
