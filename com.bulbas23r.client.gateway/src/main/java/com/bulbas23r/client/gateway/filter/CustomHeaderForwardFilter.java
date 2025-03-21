@@ -32,7 +32,7 @@ public class CustomHeaderForwardFilter implements GlobalFilter, Ordered {
     String requestPath = request.getURI().getPath();
     String authHeader = request.getHeaders().getFirst("Authorization");
 
-    if (requestPath.startsWith("/api/auth") || requestPath.startsWith("/api/users/sign-up")) {
+    if (requestPath.startsWith("/api/auth") || requestPath.startsWith("/api/users/sign-up") || requestPath.startsWith("/api/users/client")) {
       return chain.filter(exchange);
     }
 
@@ -48,6 +48,7 @@ public class CustomHeaderForwardFilter implements GlobalFilter, Ordered {
             // 다운스트림 요청에 사용자 정보 헤더 추가
             ServerHttpRequest modifiedRequest = request.mutate()
 //                .header("X-User-Id",authResponse.getUserId())
+                .header("Authorization", authHeader)
                 .header("X-User-Name", authResponse.getUsername())
                 .header("X-Role", authResponse.getRole())
                 .build();
