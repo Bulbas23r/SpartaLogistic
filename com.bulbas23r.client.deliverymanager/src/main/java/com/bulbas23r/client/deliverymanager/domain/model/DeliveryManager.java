@@ -43,10 +43,11 @@ public class DeliveryManager extends BaseEntity {
     @Column(nullable = false)
     private Integer sequence;
 
-    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto, Integer sequence) {
+    public DeliveryManager(CreateDeliveryManagerRequestDto requestDto, Integer sequence,
+        String slackId) {
         this.userId = requestDto.getUserId();
         this.hubId = requestDto.getHubId();
-        this.slackId = requestDto.getSlackId();
+        this.slackId = slackId;
         this.type = requestDto.getDeliveryManagerType();
         this.sequence = sequence;
     }

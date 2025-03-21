@@ -12,7 +12,8 @@ import org.springframework.data.domain.Sort.Direction;
 
 public interface DeliveryManagerService {
 
-    DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto);
+    DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto,
+        String slackId);
 
     DeliveryManager getDeliveryManager(Long userId);
 

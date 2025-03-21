@@ -27,11 +27,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/managers")
 @Tag(name = "Delivery Manager", description = "배송 담당자 관련 API")
 public class DeliveryManagerController {
 
@@ -42,8 +44,11 @@ public class DeliveryManagerController {
     @Operation(summary = "배송 담당자 생성하기")
     public ResponseEntity<DeliveryManagerResponse> crateDeliveryManager(
         @RequestBody @Valid CreateDeliveryManagerRequestDto requestDto) {
-        // TODO 허브 담당자 검증
-        DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto);
+        // TODO 유저 아이디 검증
+        // TODO 허브  검증
+        String slackId = "test"; // TODO 유저 검증에서 받아오기
+        DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto,
+            slackId);
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
     }

@@ -27,7 +27,8 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     @Transactional
     @Override
-    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto,
+        String slackId) {
         Integer seq;
         if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
             Integer count = deliveryManagerRepository.countByType(
@@ -50,7 +51,7 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
                 requestDto.getDeliveryManagerType(), requestDto.getHubId());
         }
 
-        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq + 1);
+        DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq + 1, slackId);
 
         return deliveryManagerRepository.save(deliveryManager);
     }
