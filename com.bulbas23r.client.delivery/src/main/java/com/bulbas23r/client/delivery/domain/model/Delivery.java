@@ -62,4 +62,9 @@ public class Delivery extends BaseEntity {
         if(StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
     }
 
+
+    public void changeStatus(DeliveryStatus status) {
+        this.status = status;
+    }
+
 }

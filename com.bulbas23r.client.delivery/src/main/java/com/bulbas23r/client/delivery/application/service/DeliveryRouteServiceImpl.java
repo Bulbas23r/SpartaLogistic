@@ -7,11 +7,14 @@ import com.bulbas23r.client.delivery.application.dto.DeliveryRouteDepartRequestD
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
+import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRouteRepository;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryRouteServiceImpl implements DeliveryRouteService {
 
     private final DeliveryRouteRepository deliveryRouteRepository;
-    private final DeliveryServiceImpl deliveryService;
+    private final DeliveryService deliveryService;
+    private final DeliveryServiceImpl deliveryServiceImpl;
 
     @Override
     @Transactional
     public DeliveryRoute createDeliveryRoute(DeliveryRouteCreateRequestDto requestDto) {
 
-        Delivery delivery = deliveryService.findById(requestDto.getDeliveryId());
+        Delivery delivery = deliveryServiceImpl.findById(requestDto.getDeliveryId());
 
         DeliveryRoute deliveryRoute = requestDto.toDeliveryRoute(delivery);
 
@@ -45,6 +49,8 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
             throw new BadRequestException("이전 배송이 도착하지 않아 배송을 시작할 수 없습니다.");
         }
 
+        deliveryService.changeStatus(requestDto.getDeliveryId(), DeliveryStatus.HUB_TRANSIT);
+
         deliveryRoute.updateDepartDelivery(requestDto.getDeliveryManagerId());
 
         return DeliveryRouteResponseDto.fromEntity(deliveryRoute);
@@ -57,7 +63,15 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
 
         deliveryRoute.updateArrivalDelivery(requestDto.getDistance(),requestDto.getDuration());
 
+        deliveryService.changeStatus(requestDto.getDeliveryId(), DeliveryStatus.HUB_ARRIVED);
+
         return DeliveryRouteResponseDto.fromEntity(deliveryRoute);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId ,Pageable pageable) {
+        return deliveryRouteRepository.findAllByDelivery_Id(deliveryId,pageable).map(DeliveryRouteResponseDto::fromEntity);
     }
 
 

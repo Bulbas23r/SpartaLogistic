@@ -91,6 +91,12 @@ public class DeliveryServiceImpl implements DeliveryService {
         );
     }
 
+    @Transactional
+    public void changeStatus(UUID deliveryId, DeliveryStatus status) {
+        Delivery delivery = findById(deliveryId);
+        delivery.changeStatus(status);
+    }
+
 
     public Delivery findById(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
