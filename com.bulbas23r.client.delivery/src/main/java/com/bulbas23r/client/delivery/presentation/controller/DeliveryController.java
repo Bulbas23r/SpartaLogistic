@@ -31,10 +31,9 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-//    @RoleCheck({"MASTER", "HUB_MANAGER"})
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @PostMapping
     public ResponseEntity<?> createDelivery(@Valid @RequestBody DeliveryCreateRequestDto requestDto) {
-        System.out.println("!!!!!");
         DeliveryResponseDto result = deliveryService.createDelivery(requestDto);
         return ResponseEntity.ok(result);
     }

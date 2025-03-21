@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DeliveryRouteRepository {
-    DeliveryRoute save(DeliveryRoute deliveryRoute);
     Optional<DeliveryRoute> findByDelivery_IdAndDepartureHubIdAndArrivalHubIdAndStatus(
         UUID deliveryId, UUID departureHubId, UUID arrivalHubId, DeliveryRouteStatus status);
     boolean isPreviousSequenceDeparted(UUID deliveryId, Integer sequence);
