@@ -132,7 +132,6 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
-//        // TODO userID, hubID 검증 로직 추가하기
 //        Integer sequence;
 //        if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
 //            sequence = getHubDeliveryManagerSequence();

@@ -8,7 +8,6 @@ import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
 import common.exception.NotFoundException;
 import common.utils.PageUtils.CommonSortBy;
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +27,6 @@ public class HubServiceImpl implements HubService {
 
     private final HubRepository hubRepository;
     private final HubQueryRepository hubQueryRepository;
-
-    @Resource(name = "hubServiceImpl")
-    HubService self;
 
     @Override
     @Transactional
@@ -79,7 +75,7 @@ public class HubServiceImpl implements HubService {
     public Hub updateHub(UUID hubId, UpdateHubRequestDto requestDto) {
         // TODO 허브 당당자 ID 검증 로직 추가하기
 
-        Hub hub = self.getHubById(hubId);
+        Hub hub = getHubById(hubId);
         hub.update(requestDto);
 
         return hub;
@@ -93,7 +89,7 @@ public class HubServiceImpl implements HubService {
         @CacheEvict(cacheNames = CacheName.HUB_SEARCH, allEntries = true)
     })
     public void deleteHub(UUID hubId) {
-        Hub hub = self.getHubById(hubId);
+        Hub hub = getHubById(hubId);
         hub.setDeleted(true);
     }
 

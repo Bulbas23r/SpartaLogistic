@@ -13,10 +13,11 @@ import com.bulbas23r.client.hub.route.infrastructure.dto.DrivingResponse;
 import com.bulbas23r.client.hub.route.infrastructure.service.NaverApiService;
 import com.bulbas23r.client.hub.route.presentation.dto.CreateRouteRequestDto;
 import com.bulbas23r.client.hub.route.presentation.dto.UpdateRouteRequestDto;
+import common.annotation.RoleCheck;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
+import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils.CommonSortBy;
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,10 +45,8 @@ public class RouteServiceImpl implements RouteService {
     private final PathFinderService pathFinderService;
     private final RouteQueryRepository routeQueryRepository;
 
-    @Resource(name = "routeServiceImpl")
-    RouteService self;
-
     @Transactional
+    @RoleCheck(Authority.MASTER)
     public void initializeRoute() {
         routeRepository.deleteAll();
         List<Hub> hubList = hubService.getActiveHubList();
@@ -89,7 +88,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = CacheName.ROUTE, key = "{ #departureHubId, #arrivalHubId }")
+    @Cacheable(cacheNames = CacheName.ROUTE_SHORTEST_PATH, key = "{ #departureHubId, #arrivalHubId }")
     public List<UUID> getShortestPath(UUID departureHubId, UUID arrivalHubId) {
         List<Hub> hubs = hubService.getActiveHubList();
         List<Route> routes = routeRepository.findByActiveTrue();
@@ -132,7 +131,7 @@ public class RouteServiceImpl implements RouteService {
         @CachePut(cacheNames = CacheName.ROUTE, key = "#result.id")
     })
     public Route updateRoute(UpdateRouteRequestDto requestDto) {
-        Route route = self.getRoute(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
+        Route route = getRoute(requestDto.getDepartureHubId(), requestDto.getArrivalHubId());
         route.update(requestDto);
 
         return route;
@@ -158,7 +157,7 @@ public class RouteServiceImpl implements RouteService {
         @CacheEvict(cacheNames = CacheName.ROUTE_SEARCH, allEntries = true)
     })
     public void deleteRoute(UUID departureHubId, UUID arrivalHubId) {
-        Route route = self.getRoute(departureHubId, arrivalHubId);
+        Route route = getRoute(departureHubId, arrivalHubId);
 
         if (route.isActive()) {
             throw new BadRequestException("활성화된 이동 정보는 삭제할 수 없습니다!");

@@ -2,6 +2,7 @@ package com.bulbas23r.client.hub.hub.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Location {
+public class Location implements Serializable {
 
     @Column(nullable = false)
     private Double latitude;
