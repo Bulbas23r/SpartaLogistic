@@ -4,6 +4,7 @@ import com.bulbas23r.client.order.domain.model.Order;
 import com.bulbas23r.client.order.domain.model.OrderStatus;
 import com.bulbas23r.client.order.domain.repository.OrderQueryRepository;
 import com.bulbas23r.client.order.domain.repository.OrderRepository;
+import com.bulbas23r.client.order.infrastructure.messaging.OrderEventProducer;
 import com.bulbas23r.client.order.presentation.dto.OrderCreateRequestDto;
 import com.bulbas23r.client.order.presentation.dto.OrderUpdateRequestDto;
 import common.utils.PageUtils.CommonSortBy;
@@ -21,13 +22,16 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderQueryRepository orderQueryRepository;
+    private final OrderEventProducer orderEventProducer;
 
     @Transactional
     @Override
     public Order createOrder(OrderCreateRequestDto orderCreateRequestDto) {
         // TODO: order의 재고확인 로직 필요, 없으면 주문 생산 취소가 됨
         Order order = new Order(orderCreateRequestDto);
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+        orderEventProducer.sendOrderEvent(order);
+        return order;
     }
 
     @Transactional
