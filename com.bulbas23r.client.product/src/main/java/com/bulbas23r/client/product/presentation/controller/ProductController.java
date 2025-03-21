@@ -37,7 +37,8 @@ public class ProductController {
     @RoleCheck({"MASTER", "HUB_MANAGER", "COMPANY"})
     @PostMapping(value = "/products")
     public ResponseEntity<ProductResponseDto> createProduct(
-        @RequestBody ProductCreateRequestDto productCreateRequestDto) {
+        @RequestBody ProductCreateRequestDto productCreateRequestDto)
+    {
         Product product = productService.createProduct(productCreateRequestDto);
         ProductResponseDto productResponseDto = new ProductResponseDto(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);

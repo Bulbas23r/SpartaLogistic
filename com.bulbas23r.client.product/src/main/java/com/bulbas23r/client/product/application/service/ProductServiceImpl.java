@@ -4,8 +4,13 @@ import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductQueryRepository;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.bulbas23r.client.product.infrastructure.Const.ProductString;
+import com.bulbas23r.client.product.infrastructure.client.CompanyClient;
+import com.bulbas23r.client.product.infrastructure.client.HubClient;
+import com.bulbas23r.client.product.presentation.dto.ProductCompanyResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
+import com.bulbas23r.client.product.presentation.dto.ProductHubResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
+import common.utils.PageUtils;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
 import java.util.UUID;
@@ -22,11 +27,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductQueryRepository productQueryRepository;
-    //private final EventPublisher eventPublisher;// 이벤트 발행
+    private final CompanyClient companyClient;
+    private final HubClient hubClient;
 
     @Transactional
     @Override
     public Product createProduct(ProductCreateRequestDto productCreateRequestDto) {
+        ProductCompanyResponseDto company = companyClient.getCompany(
+            productCreateRequestDto.getCompanyId());
+        ProductHubResponseDto hub = hubClient.getHub(productCreateRequestDto.getHubId());
+
+        if (company == null) {
+            throw new ResourceNotFoundException("Company not found with id: " + productCreateRequestDto.getCompanyId());
+        }
+        if (hub == null) {
+            throw new ResourceNotFoundException("Hub not found with id: " + productCreateRequestDto.getHubId());
+        }
+
         Product product = new Product(productCreateRequestDto);
         return productRepository.save(product);
     }
