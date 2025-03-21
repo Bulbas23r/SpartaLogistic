@@ -6,4 +6,5 @@ public interface ClientService {
 
   UserDetailsDto getUserDetails(String username);
 
+  String getUserName(String slackId);
 }

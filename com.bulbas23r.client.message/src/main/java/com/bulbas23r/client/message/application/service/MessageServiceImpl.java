@@ -1,5 +1,6 @@
 package com.bulbas23r.client.message.application.service;
 
+import com.bulbas23r.client.message.client.UserClient;
 import com.bulbas23r.client.message.domain.repository.MessageQueryRepository;
 import com.bulbas23r.client.message.domain.repository.MessageRepository;
 import com.bulbas23r.client.message.presentation.dto.response.MessageResponseDto;
@@ -36,9 +37,9 @@ public class MessageServiceImpl implements MessageService{
   private final RestTemplate restTemplate;
   private final MessageRepository messageRepository;
   private final MessageQueryRepository messageQueryRepository;
+  private final UserClient userClient;
 
   @Value("${slack.bot.token}")
-  // todo config yml에 값 넣어놓기
   private String slackBotToken;
 
   @Transactional
@@ -82,8 +83,9 @@ public class MessageServiceImpl implements MessageService{
       throw new BadRequestException("메시지 전송 실패: " + messageResponseBody);
     }
 
-    // todo 슬랙 아이디로 수신자 이름 찾아오기
-    Message message = new Message(sender, "수신자테스트", dto.getMessage(),
+    String username = userClient.getUsername(dto.getSlackId());
+
+    Message message = new Message(sender, username, dto.getMessage(),
         new Date(System.currentTimeMillis()));
     messageRepository.save(message);
   }
@@ -137,5 +139,4 @@ public class MessageServiceImpl implements MessageService{
     return messageRepository.findById(messageId)
         .orElseThrow(() -> new NotFoundException("존재하지 않는 메세지"));
   }
-
 }

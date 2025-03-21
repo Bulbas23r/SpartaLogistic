@@ -44,6 +44,11 @@ public class UserController {
     return clientService.getUserDetails(username);
   }
 
+  @GetMapping("/client/slackId/{slackId}")
+  public String getUsername(@PathVariable("slackId") String slackId) {
+    return clientService.getUserName(slackId);
+  }
+
   //회원가입
   @PostMapping("/sign-up")
   public ResponseEntity<?> signUp(

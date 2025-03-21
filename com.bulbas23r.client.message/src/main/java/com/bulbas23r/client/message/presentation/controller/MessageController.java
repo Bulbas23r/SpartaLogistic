@@ -35,6 +35,7 @@ public class MessageController {
     return ResponseEntity.ok("메세지를 전송했습니다.");
   }
 
+  @RoleCheck("MASTER")
   @PatchMapping("/{messageId}")
   public ResponseEntity<?> updateMessage(
       @PathVariable UUID messageId,
@@ -44,12 +45,14 @@ public class MessageController {
     return ResponseEntity.ok("메세지를 수정했습니다.");
   }
 
+  @RoleCheck("MASTER")
   @DeleteMapping("/{messageId}")
   public ResponseEntity<?> deleteMessage(@PathVariable UUID messageId) {
     messageService.deleteMessage(messageId);
     return ResponseEntity.ok("메세지가 삭제되었습니다.");
   }
 
+  @RoleCheck("MASTER")
   @GetMapping("/{messageId}")
   public ResponseEntity<?> getMessage(@PathVariable UUID messageId) {
     MessageResponseDto result  = messageService.getMessage(messageId);

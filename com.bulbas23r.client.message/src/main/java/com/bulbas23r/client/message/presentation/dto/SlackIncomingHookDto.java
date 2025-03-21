@@ -11,6 +11,6 @@ public class SlackIncomingHookDto {
    * => 최종적으로 {"text":"@U1234567 테스트 메시지"} 형태로 전송됨
    */
   public SlackIncomingHookDto(String sender, String message) {
-    this.text = "송신자 : " + sender +  ": " + "\n내용 : " + message;
+    this.text = "송신자 : " + sender  + "\n내용 : " + message;
   }
 }
