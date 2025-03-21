@@ -5,17 +5,18 @@ import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
 import com.bulbas23r.client.delivery.domain.model.Delivery;
+import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +74,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         delivery.setDeleted(true);
+        delivery.getDeliveryRouteList().forEach(DeliveryRoute::setDeleted);
 
         return DeliveryResponseDto.fromEntity(delivery);
     }

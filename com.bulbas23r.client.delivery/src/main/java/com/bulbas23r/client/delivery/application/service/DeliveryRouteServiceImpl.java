@@ -1,10 +1,8 @@
 package com.bulbas23r.client.delivery.application.service;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteCreateRequestDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryRouteArriveRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.application.dto.DeliveryRouteDepartRequestDto;
-import com.bulbas23r.client.delivery.domain.model.Delivery;
+import com.bulbas23r.client.delivery.application.dto.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
@@ -23,21 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryRouteServiceImpl implements DeliveryRouteService {
 
     private final DeliveryRouteRepository deliveryRouteRepository;
+
     private final DeliveryService deliveryService;
-    private final DeliveryServiceImpl deliveryServiceImpl;
-
-    @Override
-    @Transactional
-    public DeliveryRoute createDeliveryRoute(DeliveryRouteCreateRequestDto requestDto) {
-
-        Delivery delivery = deliveryServiceImpl.findById(requestDto.getDeliveryId());
-
-        DeliveryRoute deliveryRoute = requestDto.toDeliveryRoute(delivery);
-
-        deliveryRouteRepository.save(deliveryRoute);
-
-        return deliveryRoute;
-    }
 
     @Override
     @Transactional

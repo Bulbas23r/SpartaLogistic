@@ -33,7 +33,7 @@ public class DeliveryRoute extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "delivery_id", nullable = false)
     private Delivery delivery;
 

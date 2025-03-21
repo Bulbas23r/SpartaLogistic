@@ -25,7 +25,6 @@ public class DeliveryCreateRequestDto {
     @NotNull( message = "도착 허브 Id는 필수 값 입니다.")
     private UUID arrivalHubId;
 
-    @NotNull(message = "배송 매니저 Id는 필수 값 입니다.")
     private UUID deliveryManagerId;
 
     @Builder.Default

@@ -30,14 +30,6 @@ public class DeliveryRouteController {
 
     private final DeliveryRouteService deliveryRouteService;
 
-    // 배송 경로 임시 생성 -> 삭제 예정
-    @PostMapping("/route")
-    public ResponseEntity<?> deliveryPath(@RequestBody DeliveryRouteCreateRequestDto requestDto) {
-
-        DeliveryRoute result = deliveryRouteService.createDeliveryRoute(requestDto);
-
-        return ResponseEntity.ok(result);
-    }
 
     @RoleCheck({"MASTER", "HUB_MANAGER", "HUB_TO_HUB_DELIVERY"})
     @PostMapping("/route/depart")
