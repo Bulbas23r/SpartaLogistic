@@ -10,8 +10,8 @@ import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
-import com.bulbas23r.client.delivery.domain.repository.DeliveryRouteRepository;
 import com.bulbas23r.client.delivery.infrastructure.client.HubClient;
+import com.bulbas23r.client.delivery.infrastructure.persistence.DeliveryRouteJpaRepository;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryQueryRepository deliveryQueryRepository;
-    private final DeliveryRouteRepository deliveryRouteRepository;
+    private final DeliveryRouteJpaRepository deliveryRouteJpaRepository;
     private final HubClient hubClient;
 
     @Override
@@ -38,16 +38,13 @@ public class DeliveryServiceImpl implements DeliveryService {
         //todo: _id 값 유효성 check
 
         Delivery delivery = requestDto.toDelivery();
-
-        System.out.println("delivery = " + delivery);
-
-        //todo: 배송 경로 생성
-        List<DeliveryRoute> routeList = createDeliveryRoute(requestDto.getDepartureHubId(),requestDto.getArrivalHubId() ,delivery);
-
-        delivery.setDeliveryRouteList(routeList);
-
-        deliveryRouteRepository.saveAll(routeList);
         deliveryRepository.save(delivery);
+
+        //배송 경로 생성
+        List<DeliveryRoute> routeList = createDeliveryRoute(requestDto.getDepartureHubId(),requestDto.getArrivalHubId(), delivery);
+        delivery.setDeliveryRouteList(routeList);
+        deliveryRouteJpaRepository.saveAll(routeList);
+
         return DeliveryResponseDto.fromEntity(delivery);
     }
 
