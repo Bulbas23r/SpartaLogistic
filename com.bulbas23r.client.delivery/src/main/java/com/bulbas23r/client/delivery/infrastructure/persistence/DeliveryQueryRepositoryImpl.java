@@ -28,11 +28,11 @@ public class DeliveryQueryRepositoryImpl implements DeliveryQueryRepository {
     QDelivery delivery = QDelivery.delivery;
 
 
-    public Page<DeliveryResponseDto> searchDelivery(UUID orderId ,UUID startHubId, UUID endHubId,
+    public Page<DeliveryResponseDto> searchDelivery(UUID orderId ,UUID departureHubId, UUID arrivalHubId,
         UUID deliveryManagerId, UUID receiverCompanyId, Pageable pageable, Direction sortDirection,
         CommonSortBy sortBy) {
 
-        BooleanExpression whereClause = buildWhereClause(orderId, startHubId,endHubId,deliveryManagerId,receiverCompanyId);
+        BooleanExpression whereClause = buildWhereClause(orderId, departureHubId,arrivalHubId,deliveryManagerId,receiverCompanyId);
 
         OrderSpecifier<?> orderSpecifier = PageUtils.getCommonOrderSpecifier(delivery,sortDirection,sortBy);
 
@@ -40,8 +40,8 @@ public class DeliveryQueryRepositoryImpl implements DeliveryQueryRepository {
             .select(Projections.constructor(DeliveryResponseDto.class,
                 delivery.id,
                 delivery.orderId,
-                delivery.startHubId,
-                delivery.endHubId,
+                delivery.departureHubId,
+                delivery.arrivalHubId,
                 delivery.status.stringValue(),
                 delivery.deliveryManagerId,
                 delivery.receiverCompanyId,
@@ -66,14 +66,14 @@ public class DeliveryQueryRepositoryImpl implements DeliveryQueryRepository {
     }
 
 
-    private BooleanExpression buildWhereClause(UUID orderId, UUID startHubId, UUID endHubId,
+    private BooleanExpression buildWhereClause(UUID orderId, UUID departureHubId, UUID arrivalHubId,
         UUID deliveryManagerId, UUID receiverCompanyId) {
 
         BooleanExpression whereClause = delivery.isDeleted.eq(false);
 
         if (orderId != null) { whereClause = whereClause.and(delivery.orderId.eq(orderId)); }
-        if (startHubId != null) whereClause = whereClause.and(delivery.startHubId.eq(startHubId));
-        if (endHubId != null) whereClause = whereClause.and(delivery.endHubId.eq(endHubId));
+        if (departureHubId != null) whereClause = whereClause.and(delivery.departureHubId.eq(departureHubId));
+        if (arrivalHubId != null) whereClause = whereClause.and(delivery.arrivalHubId.eq(arrivalHubId));
         if (deliveryManagerId != null) whereClause = whereClause.and(delivery.deliveryManagerId.eq(deliveryManagerId));
         if (receiverCompanyId !=null) whereClause = whereClause.and(delivery.receiverCompanyId.eq(receiverCompanyId));
 
