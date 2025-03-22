@@ -8,6 +8,9 @@ spring:
       discovery:
         enabled: true
         service-id: config-server
+  kafka:
+    consumer:
+      group-id: order-group
 
 eureka:
   client:
