@@ -53,8 +53,6 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(UUID productId) {
         Product product = getProduct(productId);
         product.delete();
-        // TODO: soft-delete로 처리해야 하는데...
-        productRepository.update(product);
     }
 
     @Transactional
