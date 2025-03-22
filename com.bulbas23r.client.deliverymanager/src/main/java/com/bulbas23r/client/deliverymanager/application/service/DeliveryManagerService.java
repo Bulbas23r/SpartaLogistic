@@ -12,8 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 public interface DeliveryManagerService {
 
-    DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto,
-        String slackId);
+    DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto);
 
     DeliveryManager getDeliveryManager(Long userId);
 
@@ -31,4 +30,6 @@ public interface DeliveryManagerService {
         CommonSortBy sortBy, String keyword);
 
     boolean checkDeliveryManager(Long userId, DeliveryManager deliveryManager);
+
+    void checkHubManager(Long requestUserId, UUID hubId);
 }

@@ -10,6 +10,8 @@ import com.bulbas23r.client.user.application.service.UserService;
 import com.bulbas23r.client.user.domain.model.User;
 import common.annotation.RoleCheck;
 import common.dto.UserDetailsDto;
+import common.dto.UserInfoResponseDto;
+import common.header.UserInfoHeader;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
@@ -36,104 +38,111 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-  private final UserService userService;
-  private final ClientService clientService;
 
-  @GetMapping("/client/{username}")
-  public UserDetailsDto getUserDetails(@PathVariable("username") String username) {
-    return clientService.getUserDetails(username);
-  }
+    private final UserService userService;
+    private final ClientService clientService;
 
-  @GetMapping("/client/slackId/{slackId}")
-  public String getUsername(@PathVariable("slackId") String slackId) {
-    return clientService.getUserName(slackId);
-  }
-
-  //회원가입
-  @PostMapping("/sign-up")
-  public ResponseEntity<?> signUp(
-      @Valid @RequestBody UserSignUpRequestDto userRequestDto,
-      BindingResult bindingResult
-  ) throws Exception {
-    if (bindingResult.hasErrors()) {
-      String message = bindingResult.getAllErrors().stream()
-          .map(DefaultMessageSourceResolvable::getDefaultMessage)
-          .collect(Collectors.joining(", "));
-
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    @GetMapping("/client/{username}")
+    public UserDetailsDto getUserDetails(@PathVariable("username") String username) {
+        return clientService.getUserDetails(username);
     }
 
-    UserResponseDto userResponseDto = userService.signUp(userRequestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
-  }
+    @GetMapping("/client/slackId/{slackId}")
+    public String getUsername(@PathVariable("slackId") String slackId) {
+        return clientService.getUserName(slackId);
+    }
 
-  @PatchMapping
-  public ResponseEntity<?> updateUser(
-      @RequestHeader("X-User-Name") String username,
-      @RequestBody UserPatchRequestForRegisterDto userRequestDto
-  ) throws Exception {
-    userService.updateUser(username, userRequestDto);
-    return ResponseEntity.ok().build();
-  }
+    //회원가입
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(
+        @Valid @RequestBody UserSignUpRequestDto userRequestDto,
+        BindingResult bindingResult
+    ) throws Exception {
+        if (bindingResult.hasErrors()) {
+            String message = bindingResult.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
 
-  //유저 : 개인 상세 정보 조회
-  @GetMapping()
-  public ResponseEntity getUserDetail(@RequestHeader("X-User-Name") String username) {
-    UserResponseDto userResponseDto = userService.getUserDetail(username);
-    return ResponseEntity.ok(userResponseDto);
-  }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        }
 
-  //관리자 : 유저 상세 정보 조회
-  @RoleCheck("MASTER")
-  @GetMapping("/{userId}")
-  public ResponseEntity getUserDetailForRegister(@PathVariable("userId") Long userId) {
-    UserResponseForRegisterDto userResponseForRegisterDto = userService.getUserDetailForRegister(
-        userId);
-    return ResponseEntity.ok(userResponseForRegisterDto);
-  }
+        UserResponseDto userResponseDto = userService.signUp(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
+    }
 
-  //관리자 : 유저 리스트 조회
-  @RoleCheck("MASTER")
-  @GetMapping("/list")
-  public ResponseEntity<Page<UserDataForRegisterDto>> getUsers(
-      @RequestParam(defaultValue = "0", required = false) int page,
-      @RequestParam(defaultValue = "10", required = false) int size
-  ) {
-    Pageable pageable = PageUtils.pageable(page, size);
-    Page<User> userList = userService.getUsers(pageable);
-    return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
-  }
+    @PatchMapping
+    public ResponseEntity<?> updateUser(
+        @RequestHeader(UserInfoHeader.USER_NAME) String username,
+        @RequestBody UserPatchRequestForRegisterDto userRequestDto
+    ) throws Exception {
+        userService.updateUser(username, userRequestDto);
+        return ResponseEntity.ok().build();
+    }
 
-  //관리자 : 유저 검색
-  @RoleCheck("MASTER")
-  @GetMapping("/search")
-  public ResponseEntity<?> searchUser(
-      @RequestParam(defaultValue = "0", required = false) int page,
-      @RequestParam(defaultValue = "10", required = false) int size,
-      @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
-      @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
-      @RequestParam(required = false) String keyword) {
-    Pageable pageable = PageUtils.pageable(page, size);
-    Page<User> userList = userService.searchUser(pageable, sortDirection, sortBy, keyword);
+    //유저 : 개인 상세 정보 조회
+    @GetMapping()
+    public ResponseEntity getUserDetail(@RequestHeader("X-User-Name") String username) {
+        UserResponseDto userResponseDto = userService.getUserDetail(username);
+        return ResponseEntity.ok(userResponseDto);
+    }
 
-    return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
-  }
+    //관리자 : 유저 상세 정보 조회
+    @RoleCheck("MASTER")
+    @GetMapping("/{userId}")
+    public ResponseEntity getUserDetailForRegister(@PathVariable("userId") Long userId) {
+        UserResponseForRegisterDto userResponseForRegisterDto = userService.getUserDetailForRegister(
+            userId);
+        return ResponseEntity.ok(userResponseForRegisterDto);
+    }
 
-  //관리자 : 유저 정보 수정
-  @RoleCheck("MASTER")
-  @PatchMapping("/{userId}")
-  public ResponseEntity<?> patchUser(@PathVariable("userId") Long userId,
-      @RequestBody UserPatchRequestForRegisterDto patchDto) {
-    UserResponseForRegisterDto<UserDataForRegisterDto> patchUser =
-        userService.patchUser(userId, patchDto);
-    return ResponseEntity.ok(patchUser);
-  }
+    //관리자 : 유저 리스트 조회
+    @RoleCheck("MASTER")
+    @GetMapping("/list")
+    public ResponseEntity<Page<UserDataForRegisterDto>> getUsers(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size
+    ) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<User> userList = userService.getUsers(pageable);
+        return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
+    }
 
-  //관리자 : 유저 삭제
-  @RoleCheck("MASTER")
-  @DeleteMapping("/{userId}")
-  public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
-    userService.deleteUser(userId);
-    return ResponseEntity.ok().build();
-  }
+    //관리자 : 유저 검색
+    @RoleCheck("MASTER")
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUser(
+        @RequestParam(defaultValue = "0", required = false) int page,
+        @RequestParam(defaultValue = "10", required = false) int size,
+        @RequestParam(defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
+        @RequestParam(required = false) String keyword) {
+        Pageable pageable = PageUtils.pageable(page, size);
+        Page<User> userList = userService.searchUser(pageable, sortDirection, sortBy, keyword);
+
+        return ResponseEntity.ok(userList.map(UserDataForRegisterDto::new));
+    }
+
+    //관리자 : 유저 정보 수정
+    @RoleCheck("MASTER")
+    @PatchMapping("/{userId}")
+    public ResponseEntity<?> patchUser(@PathVariable("userId") Long userId,
+        @RequestBody UserPatchRequestForRegisterDto patchDto) {
+        UserResponseForRegisterDto<UserDataForRegisterDto> patchUser =
+            userService.patchUser(userId, patchDto);
+        return ResponseEntity.ok(patchUser);
+    }
+
+    //관리자 : 유저 삭제
+    @RoleCheck("MASTER")
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/info/{userId}")
+    public ResponseEntity<UserInfoResponseDto> getUserInfo(@PathVariable("userId") Long userId) {
+        User user = userService.getUserById(userId);
+        return ResponseEntity.ok(user.toUserInfoResponseDto());
+    }
 }

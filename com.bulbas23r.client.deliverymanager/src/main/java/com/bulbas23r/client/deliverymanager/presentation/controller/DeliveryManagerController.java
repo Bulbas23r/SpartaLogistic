@@ -2,6 +2,7 @@ package com.bulbas23r.client.deliverymanager.presentation.controller;
 
 import com.bulbas23r.client.deliverymanager.application.service.DeliveryManagerService;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
+import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManagerType;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.DeliveryManagerResponse;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
@@ -44,11 +45,7 @@ public class DeliveryManagerController {
     @Operation(summary = "배송 담당자 생성하기")
     public ResponseEntity<DeliveryManagerResponse> crateDeliveryManager(
         @RequestBody @Valid CreateDeliveryManagerRequestDto requestDto) {
-        // TODO 유저 아이디 검증
-        // TODO 허브  검증
-        String slackId = "test"; // TODO 유저 검증에서 받아오기
-        DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto,
-            slackId);
+        DeliveryManager deliveryManager = deliveryManagerService.createDeliveryManager(requestDto);
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
     }
@@ -62,13 +59,17 @@ public class DeliveryManagerController {
         @RequestHeader(UserInfoHeader.USER_ROLE) String requestUserRole,
         @RequestHeader(UserInfoHeader.USER_ID) Long requestUserId
     ) {
-        // TODO 허브 담당자 검증
         DeliveryManager deliveryManager = deliveryManagerService.getDeliveryManager(userId);
 
         if (requestUserRole.equals(Authority.HUB_TO_HUB_DELIVERY) ||
             requestUserRole.equals(Authority.TO_COMPANY_DELIVERY)) {
             if (!deliveryManagerService.checkDeliveryManager(requestUserId, deliveryManager)) {
                 throw new BadRequestException("본인 정보만 조회할 수 있습니다!");
+            }
+        } else {
+            if (deliveryManager.getType().equals(DeliveryManagerType.COMPANY)
+                && requestUserRole.equals(Authority.HUB_MANAGER)) {
+                deliveryManagerService.checkHubManager(requestUserId, deliveryManager.getHubId());
             }
         }
 
@@ -103,8 +104,14 @@ public class DeliveryManagerController {
     @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "업체 배송 담당자 리스트 조회")
     public ResponseEntity<List<DeliveryManagerResponse>> getCompanyDeliveryManagerList(
-        @PathVariable UUID hubId) {
-        // TODO 허브 담당자 검증
+        @PathVariable UUID hubId,
+        @RequestHeader(UserInfoHeader.USER_ROLE) String requestUserRole,
+        @RequestHeader(UserInfoHeader.USER_ID) Long requestUserId
+    ) {
+        if (requestUserRole.equals(Authority.HUB_MANAGER)) {
+            deliveryManagerService.checkHubManager(requestUserId, hubId);
+        }
+
         List<DeliveryManager> deliveryManagerList =
             deliveryManagerService.getCompanyDeliveryManagerList(hubId);
 
@@ -115,8 +122,16 @@ public class DeliveryManagerController {
     @DeleteMapping("/userId")
     @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @Operation(summary = "배송 담당자 삭제하기")
-    public ResponseEntity<Void> deleteDeliveryManager(@RequestParam Long userId) {
-        // TODO 허브 담당자 검증
+    public ResponseEntity<Void> deleteDeliveryManager(
+        @RequestParam Long userId,
+        @RequestHeader(UserInfoHeader.USER_ROLE) String requestUserRole,
+        @RequestHeader(UserInfoHeader.USER_ID) Long requestUserId
+    ) {
+        DeliveryManager deliveryManager = deliveryManagerService.getDeliveryManager(userId);
+        if (requestUserRole.equals(Authority.HUB_MANAGER)) {
+            deliveryManagerService.checkHubManager(requestUserId, deliveryManager.getHubId());
+        }
+
         deliveryManagerService.deleteDeliveryManager(userId);
 
         return ResponseEntity.noContent().build();
@@ -127,9 +142,15 @@ public class DeliveryManagerController {
     @Operation(summary = "배송 담당자 수정하기")
     public ResponseEntity<DeliveryManagerResponse> updateDeliveryManager(
         @RequestParam Long userId,
-        @RequestBody @Valid UpdateDeliveryManagerRequestDto requestDto) {
-        // TODO 허브 담당자 검증
-        DeliveryManager deliveryManager = deliveryManagerService.updateDeliveryManager(userId,
+        @RequestBody @Valid UpdateDeliveryManagerRequestDto requestDto,
+        @RequestHeader(UserInfoHeader.USER_ROLE) String requestUserRole,
+        @RequestHeader(UserInfoHeader.USER_ID) Long requestUserId
+    ) {
+        DeliveryManager deliveryManager = deliveryManagerService.getDeliveryManager(userId);
+        if (requestUserRole.equals(Authority.HUB_MANAGER)) {
+            deliveryManagerService.checkHubManager(requestUserId, deliveryManager.getHubId());
+        }
+        deliveryManager = deliveryManagerService.updateDeliveryManager(userId,
             requestDto);
 
         return ResponseEntity.ok(new DeliveryManagerResponse(deliveryManager));
@@ -145,7 +166,6 @@ public class DeliveryManagerController {
         @RequestParam(defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy,
         @RequestParam(required = false) String keyword
     ) {
-        // TODO 허브 담당자 검증
         Pageable pageable = PageUtils.pageable(page, size);
         Page<DeliveryManager> deliveryManagers =
             deliveryManagerService.searchDeliveryManagerList(pageable, sortDirection,

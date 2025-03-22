@@ -18,6 +18,8 @@ public interface HubService {
 
     Hub getHubById(UUID hubId);
 
+    Hub getHubByManagerId(Long managerId);
+
     Page<Hub> getHubList(Pageable pageable);
 
     List<Hub> getActiveHubList();

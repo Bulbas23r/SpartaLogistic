@@ -2,6 +2,7 @@ package com.bulbas23r.client.hub.hub.domain.model;
 
 import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
+import common.dto.HubInfoResponseDto;
 import common.model.Address;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
@@ -34,6 +35,7 @@ public class Hub extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @Column(unique = true)
     private Long managerId;
 
     @Column(columnDefinition = "boolean default false")
@@ -43,14 +45,6 @@ public class Hub extends BaseEntity {
     private Address address;
     @Embedded
     private Location location;
-
-    public Double getLatitude() {
-        return this.getLocation().getLatitude();
-    }
-
-    public Double getLongitude() {
-        return this.getLocation().getLongitude();
-    }
 
     public Hub(CreateHubRequestDto requestDto) {
         this.name = requestDto.getName();
@@ -78,5 +72,17 @@ public class Hub extends BaseEntity {
             requestDto.getPostalCode()
         );
         this.location = new Location(requestDto.getLatitude(), requestDto.getLongitude());
+    }
+
+    public HubInfoResponseDto toHubInfoResponseDto() {
+        return HubInfoResponseDto.builder()
+            .name(this.name)
+            .managerId(this.managerId)
+            .jibunAddress(this.address.getJibunAddress())
+            .roadAddress(this.address.getRoadAddress())
+            .latitude(this.location.getLatitude())
+            .longitude(this.location.getLongitude())
+            .active(this.active)
+            .build();
     }
 }
