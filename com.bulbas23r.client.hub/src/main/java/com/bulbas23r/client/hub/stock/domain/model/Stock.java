@@ -29,7 +29,7 @@ public class Stock extends BaseEntity {
 
     public static Stock fromEventDto(CreateStockEventDto eventDto) {
         return Stock.builder()
-            .id(new StockId(eventDto.getHubId(), eventDto.getHubId()))
+            .id(new StockId(eventDto.getHubId(), eventDto.getProductId()))
             .quantity(eventDto.getQuantity())
             .build();
     }
