@@ -13,6 +13,7 @@ import common.exception.NotFoundException;
 import common.model.UserRoleEnum;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,11 +42,13 @@ public class HubServiceImpl implements HubService {
             throw new BadRequestException("해당 허브 이름이 이미 존재합니다!");
         }
 
-        UserInfoResponseDto userInfo = userClient.getUserInfo(requestDto.getManagerId())
-            .getBody();
+        if (Objects.nonNull(requestDto.getManagerId())) {
+            UserInfoResponseDto userInfo = userClient.getUserInfo(requestDto.getManagerId())
+                .getBody();
 
-        if (userInfo == null || !userInfo.getRole().equals(UserRoleEnum.HUB_MANAGER)) {
-            throw new BadRequestException("유저가 존재하지 않거나 허브 관리자가 아닙니다!");
+            if (userInfo == null || !userInfo.getRole().equals(UserRoleEnum.HUB_MANAGER)) {
+                throw new BadRequestException("유저가 존재하지 않거나 허브 관리자가 아닙니다!");
+            }
         }
 
         Hub hub = new Hub(requestDto);
@@ -88,11 +91,13 @@ public class HubServiceImpl implements HubService {
         @CachePut(cacheNames = CacheName.HUB, key = "#result.id")
     })
     public Hub updateHub(UUID hubId, UpdateHubRequestDto requestDto) {
-        UserInfoResponseDto userInfo = userClient.getUserInfo(requestDto.getManagerId())
-            .getBody();
+        if (Objects.nonNull(requestDto.getManagerId())) {
+            UserInfoResponseDto userInfo = userClient.getUserInfo(requestDto.getManagerId())
+                .getBody();
 
-        if (userInfo == null || !userInfo.getRole().equals(UserRoleEnum.HUB_MANAGER)) {
-            throw new BadRequestException("유저가 존재하지 않거나 허브 관리자가 아닙니다!");
+            if (userInfo == null || !userInfo.getRole().equals(UserRoleEnum.HUB_MANAGER)) {
+                throw new BadRequestException("유저가 존재하지 않거나 허브 관리자가 아닙니다!");
+            }
         }
 
         Hub hub = getHubById(hubId);
@@ -122,5 +127,14 @@ public class HubServiceImpl implements HubService {
     public Page<Hub> searchHub(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword) {
         return hubQueryRepository.searchHub(pageable, sortDirection, sortBy, keyword);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheName.HUB, key = "#managerId")
+    public Hub getHubByManagerId(Long managerId) {
+        return hubRepository.findByManagerId(managerId).orElseThrow(
+            () -> new BadRequestException("해당 유저가 담당중인 허브가 존재하지 않습니다!")
+        );
     }
 }

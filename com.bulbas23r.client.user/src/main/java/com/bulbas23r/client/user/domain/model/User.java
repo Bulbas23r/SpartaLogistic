@@ -67,6 +67,7 @@ public class User extends BaseEntity {
             .userId(this.userId)
             .username(this.username)
             .role(this.userRoleEnum)
+            .slackId(this.slackId)
             .build();
     }
 }

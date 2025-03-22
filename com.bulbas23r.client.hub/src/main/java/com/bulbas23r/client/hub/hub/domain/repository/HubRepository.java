@@ -15,6 +15,8 @@ public interface HubRepository {
 
     Page<Hub> findAll(Pageable pageable);
 
+    Optional<Hub> findByManagerId(Long managerId);
+
     List<Hub> findByActiveTrue();
 
     boolean existsByName(String name);

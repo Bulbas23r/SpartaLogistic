@@ -11,6 +11,7 @@ import com.bulbas23r.client.user.domain.model.User;
 import common.annotation.RoleCheck;
 import common.dto.UserDetailsDto;
 import common.dto.UserInfoResponseDto;
+import common.header.UserInfoHeader;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class UserController {
 
     @PatchMapping
     public ResponseEntity<?> updateUser(
-        @RequestHeader("X-User-Name") String username,
+        @RequestHeader(UserInfoHeader.USER_NAME) String username,
         @RequestBody UserPatchRequestForRegisterDto userRequestDto
     ) throws Exception {
         userService.updateUser(username, userRequestDto);

@@ -14,5 +14,6 @@ public class UserInfoResponseDto {
 
     private Long userId;
     private String username;
+    private String slackId;
     private UserRoleEnum role;
 }
