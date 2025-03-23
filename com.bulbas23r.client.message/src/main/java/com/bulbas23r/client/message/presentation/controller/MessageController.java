@@ -92,10 +92,10 @@ public class MessageController {
   }
 
   // todo 주문 시 발생
-  @PostMapping("/ai")
-  public ResponseEntity<?> getAi(@RequestBody String question){
-    String aiAnswer = geminiService.getAi(question);
-    messageService.sendDirectMessage(new PostMessageDto("U08JRH0PEMP", aiAnswer));
-    return ResponseEntity.ok("메세지를 전송했습니다.");
-  }
+//  @PostMapping("/ai")
+//  public ResponseEntity<?> getAi(@RequestBody String question){
+//    String aiAnswer = geminiService.getAi(question);
+//    messageService.sendDirectMessage(new PostMessageDto("U08JRH0PEMP", aiAnswer));
+//    return ResponseEntity.ok("메세지를 전송했습니다.");
+//  }
 }

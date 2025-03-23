@@ -1,5 +1,6 @@
 package com.bulbas23r.client.delivery.domain.repository;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
 import java.util.Optional;
@@ -12,4 +13,5 @@ public interface DeliveryRouteRepository {
         UUID deliveryId, UUID departureHubId, UUID arrivalHubId, DeliveryRouteStatus status);
     boolean isPreviousSequenceDeparted(UUID deliveryId, Integer sequence);
     Page<DeliveryRoute> findAllByDelivery_Id(UUID deliveryId, Pageable pageable);
+    Page<DeliveryRoute> findAllByOrder_Id(UUID orderId, Pageable pageable);
 }
