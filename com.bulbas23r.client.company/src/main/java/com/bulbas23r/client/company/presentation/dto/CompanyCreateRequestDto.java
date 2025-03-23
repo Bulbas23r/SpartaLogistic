@@ -1,4 +1,4 @@
-package com.bulbas23r.client.company.application.dto;
+package com.bulbas23r.client.company.presentation.dto;
 
 import com.bulbas23r.client.company.domain.model.Company;
 import com.bulbas23r.client.company.domain.model.CompanyType;
@@ -19,8 +19,8 @@ public class CompanyCreateRequestDto {
     @ValidUUID
     private UUID hubId;
 
-    @ValidUUID
-    private UUID managerId;
+    @NotBlank(message = "업체 담당자를 입력해 주세요.")
+    private Long managerId;
 
     @ValidEnum(enumClass = CompanyType.class)
     private CompanyType type;
