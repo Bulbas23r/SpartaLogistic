@@ -165,4 +165,12 @@ public class RouteServiceImpl implements RouteService {
 
         route.setDeleted();
     }
+
+    @Override
+    @Transactional
+    public void deleteRoutesByHubId(UUID hubId) {
+        List<Route> routeList = routeRepository.findAllByHubId(hubId);
+
+        routeList.forEach(Route::setDeleted);
+    }
 }
