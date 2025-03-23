@@ -7,13 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-// TODO 삭제 예정
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteStockEventDto {
+public class DeleteHubEventDto {
 
     UUID hubId;
 }
