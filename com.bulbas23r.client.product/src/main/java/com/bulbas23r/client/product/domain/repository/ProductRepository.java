@@ -14,4 +14,5 @@ public interface ProductRepository {
     void delete(Product product);
     Page<Product> findAll(Pageable pageable);
     List<Product> findByHubId(UUID hubId);
+    List<Product> findByCompanyId(UUID companyId);
 }

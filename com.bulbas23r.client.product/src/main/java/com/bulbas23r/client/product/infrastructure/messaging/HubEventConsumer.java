@@ -3,6 +3,7 @@ package com.bulbas23r.client.product.infrastructure.messaging;
 import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.event.DeleteCompanyEventDto;
 import common.event.DeleteStockEventDto;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +18,10 @@ import org.springframework.stereotype.Service;
 public class HubEventConsumer {
     private static final Logger logger = LoggerFactory.getLogger(HubEventConsumer.class);
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final ProductRepository productRepository;
 
-    public HubEventConsumer(KafkaTemplate<String, Object> kafkaTemplate,
-        ObjectMapper objectMapper, ProductRepository productRepository) {
-        this.kafkaTemplate = kafkaTemplate;
+    public HubEventConsumer(ObjectMapper objectMapper, ProductRepository productRepository) {
         this.objectMapper = objectMapper;
         this.productRepository = productRepository;
     }

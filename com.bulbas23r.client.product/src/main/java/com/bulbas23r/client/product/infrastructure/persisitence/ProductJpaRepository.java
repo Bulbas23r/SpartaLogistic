@@ -13,6 +13,9 @@ public interface ProductJpaRepository extends ProductRepository, JpaRepository<P
     List<Product> findByHubId(UUID hubId);
 
     @Override
+    List<Product> findByCompanyId(UUID companyId);
+
+    @Override
     default void update(Product product) {
         save(product);
     }
