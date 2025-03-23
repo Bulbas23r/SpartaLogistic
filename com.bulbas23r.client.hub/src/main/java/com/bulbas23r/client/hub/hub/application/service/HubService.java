@@ -28,4 +28,8 @@ public interface HubService {
 
     Page<Hub> searchHub(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword);
+
+    void deleteRoutesByHubId(UUID hubId);
+
+    void deleteStocksByProductId(UUID productId);
 }
