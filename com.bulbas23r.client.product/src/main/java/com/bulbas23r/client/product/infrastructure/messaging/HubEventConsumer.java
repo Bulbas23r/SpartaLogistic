@@ -3,15 +3,13 @@ package com.bulbas23r.client.product.infrastructure.messaging;
 import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import common.event.DeleteCompanyEventDto;
-import common.event.DeleteStockEventDto;
+import common.event.DeleteHubEventDto;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,10 +24,10 @@ public class HubEventConsumer {
         this.productRepository = productRepository;
     }
 
-    @KafkaListener(topics = "delete-stock")
-    public void handleDeleteStockEvent(Map<String, Object> eventMap) {
-        DeleteStockEventDto deleteStockEventDto = objectMapper.convertValue(eventMap,
-            DeleteStockEventDto.class);
+    @KafkaListener(topics = "delete-hub")
+    public void handleDeleteHubEvent(Map<String, Object> eventMap) {
+        DeleteHubEventDto deleteStockEventDto = objectMapper.convertValue(eventMap,
+            DeleteHubEventDto.class);
         UUID hubId = deleteStockEventDto.getHubId();
 
         List<Product> productsToDelete = productRepository.findByHubId(hubId);
