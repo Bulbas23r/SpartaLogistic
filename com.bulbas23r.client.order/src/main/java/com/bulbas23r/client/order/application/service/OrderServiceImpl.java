@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
         // TODO: order의 재고확인 로직 필요, 없으면 주문 생산 취소가 됨
         Order order = new Order(orderCreateRequestDto);
         order = orderRepository.save(order);
-        orderEventProducer.sendOrderEvent(order);
+        orderEventProducer.sendOrderEvent(order, -1);//주문 생성 시 허브 재고 수량 감소
         return order;
     }
 
@@ -38,6 +38,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void cancelOrder(UUID orderId) {
         orderQueryRepository.updateOrderStatus(orderId, OrderStatus.CANCELLED);
+        Order order = getOrder(orderId);
+        orderEventProducer.sendOrderEvent(order, 1);//주문 취소 시 허브 재고 수량 복원
     }
 
     @Transactional

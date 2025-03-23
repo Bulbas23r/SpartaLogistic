@@ -15,5 +15,5 @@ import lombok.ToString;
 @NoArgsConstructor
 public class UpdateStockEventDto {
     UUID hubId;
-    List<OrderProductEventDto> products;
+    List<UpdateOrderProductEventDto> products;
 }
