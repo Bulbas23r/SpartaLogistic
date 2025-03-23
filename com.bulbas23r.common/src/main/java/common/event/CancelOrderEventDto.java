@@ -17,5 +17,5 @@ import lombok.ToString;
 public class CancelOrderEventDto {
     UUID orderId;
     UUID hubId;
-    List<CancelOrderProductEventDto> products;
+    List<OrderProductEventDto> products;
 }

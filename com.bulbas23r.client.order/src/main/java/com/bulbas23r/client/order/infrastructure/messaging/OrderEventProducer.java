@@ -3,13 +3,10 @@ package com.bulbas23r.client.order.infrastructure.messaging;
 import com.bulbas23r.client.order.domain.model.Order;
 import com.bulbas23r.client.order.domain.model.OrderProduct;
 import common.event.CancelOrderEventDto;
-import common.event.CancelOrderProductEventDto;
 import common.event.CreateOrderEventDto;
-import common.event.CreateOrderProductEventDto;
-import common.event.UpdateStockEventDto;
+import common.event.OrderProductEventDto;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -28,9 +25,7 @@ public class OrderEventProducer {
      */
     public void sendOrderCreateEvent(Order order) {
         UUID hubId = getHubId(order);
-        List<CreateOrderProductEventDto> createOrderProductEventDtos = convertOrderProductEventDtos(
-            order, 1,
-            op -> new CreateOrderProductEventDto(op.getProductId(), op.getQuantity()));
+        List<OrderProductEventDto> createOrderProductEventDtos = getOrderProductEventDtos(order);
 
         CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(order.getId(), hubId, createOrderProductEventDtos);
         kafkaTemplate.send("create-order", createOrderEventDto);
@@ -42,29 +37,18 @@ public class OrderEventProducer {
      */
     public void sendOrderCancelEvent(Order order) {
         UUID hubId = getHubId(order);
-        List<CancelOrderProductEventDto> cancelOrderProductEventDtos = convertOrderProductEventDtos(
-            order, 1,
-            op -> new CancelOrderProductEventDto(op.getProductId(), op.getQuantity()));
+        List<OrderProductEventDto> cancelOrderProductEventDtos = getOrderProductEventDtos(order);
 
         CancelOrderEventDto cancelOrderEventDto = new CancelOrderEventDto(order.getId(), hubId, cancelOrderProductEventDtos);
         kafkaTemplate.send("cancel-order", cancelOrderEventDto);
     }
 
-    /**
-     * OrderProduct를 특정 OrderProductEvent로 변환
-     * @param order
-     * @param quantityMultiplier
-     * @param mapper
-     * @return
-     * @param <T>
-     */
-    private <T> List<T> convertOrderProductEventDtos(Order order, int quantityMultiplier ,
-        Function<OrderProduct, T> mapper) {
+
+    private List<OrderProductEventDto> getOrderProductEventDtos(Order order) {
 
         return order.getOrderProducts().stream()
-            .map(mapper)
+            .map(orderProduct -> new OrderProductEventDto(orderProduct.getId(), orderProduct.getQuantity()))
             .collect(Collectors.toList());
-
     }
 
     /**
