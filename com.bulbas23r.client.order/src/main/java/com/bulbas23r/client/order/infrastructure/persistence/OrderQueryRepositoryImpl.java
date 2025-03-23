@@ -74,4 +74,19 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
             .where(order.id.eq(orderId))
             .execute();
     }
+
+    @Override
+    public List<Order> findOrdersByProductId(UUID productId) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(order.orderProducts.any().productId.eq(productId));
+
+        List<Order> orders = queryFactory
+            .selectFrom(order)
+            .leftJoin(order.orderProducts, orderProduct)
+            .where(builder)
+            .distinct() // join으로 인한 중복 제거
+            .fetch();
+
+        return orders;
+    }
 }
