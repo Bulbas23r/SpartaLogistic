@@ -25,7 +25,7 @@ public class OrderEventProducer {
      */
     public void sendOrderCreateEvent(Order order) {
         UUID hubId = getHubId(order);
-        List<OrderProductEventDto> createOrderProductEventDtos = getOrderProductEventDtos(order);
+        List<OrderProductEventDto> createOrderProductEventDtos = getOrderProductEventDtos(order, 1);
 
         CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(order.getId(), hubId, createOrderProductEventDtos);
         kafkaTemplate.send("create-order", createOrderEventDto);
@@ -37,17 +37,18 @@ public class OrderEventProducer {
      */
     public void sendOrderCancelEvent(Order order) {
         UUID hubId = getHubId(order);
-        List<OrderProductEventDto> cancelOrderProductEventDtos = getOrderProductEventDtos(order);
+        List<OrderProductEventDto> cancelOrderProductEventDtos = getOrderProductEventDtos(order, -1);
 
         CancelOrderEventDto cancelOrderEventDto = new CancelOrderEventDto(order.getId(), hubId, cancelOrderProductEventDtos);
         kafkaTemplate.send("cancel-order", cancelOrderEventDto);
     }
 
 
-    private List<OrderProductEventDto> getOrderProductEventDtos(Order order) {
+    private List<OrderProductEventDto> getOrderProductEventDtos(Order order, int quantityOperator) {
 
         return order.getOrderProducts().stream()
-            .map(orderProduct -> new OrderProductEventDto(orderProduct.getId(), orderProduct.getQuantity()))
+            .map(orderProduct -> new OrderProductEventDto(orderProduct.getId(),
+                quantityOperator * orderProduct.getQuantity()))
             .collect(Collectors.toList());
     }
 
