@@ -28,6 +28,4 @@ public interface RouteService {
         String keyword);
 
     void deleteRoute(UUID departureHubId, UUID arrivalHubId);
-
-    void deleteRoutesByHubId(UUID hubId);
 }

@@ -30,10 +30,10 @@ public class StockServiceImpl implements StockService {
     @Override
     @Transactional
     public void updateStock(UpdateStockEventDto eventDto) {
-        List<UUID> itemIds =
+        List<UUID> productIds =
             eventDto.getProducts().stream().map(OrderProductEventDto::getProductId).toList();
         List<Stock> stockList =
-            stockRepository.findById_HubIdAndId_ItemIdIn(eventDto.getHubId(), itemIds);
+            stockRepository.findByHubIdAndProductId(eventDto.getHubId(), productIds);
 
         eventDto.getProducts().forEach(dto ->
             stockList.stream()
@@ -49,20 +49,5 @@ public class StockServiceImpl implements StockService {
                     }
                 })
         );
-    }
-
-    @Override
-    @Transactional
-    public void deleteStocksByHubId(UUID hubId) {
-        List<Stock> stockList = stockRepository.findAllByHubId(hubId);
-
-        stockList.forEach(Stock::setDeleted);
-    }
-
-    @Override
-    public void deleteStocksByProductId(UUID productId) {
-        List<Stock> stockList = stockRepository.findAllByProductId(productId);
-
-        stockList.forEach(Stock::setDeleted);
     }
 }

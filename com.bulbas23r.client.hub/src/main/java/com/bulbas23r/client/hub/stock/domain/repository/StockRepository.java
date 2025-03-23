@@ -9,7 +9,8 @@ public interface StockRepository {
 
     Stock save(Stock stock);
 
-    List<Stock> findById_HubIdAndId_ItemIdIn(UUID hubId, List<UUID> itemIds);
+    @Query("SELECT s FROM Stock s WHERE s.id.hubId = :hubId AND s.id.productId IN :productIds")
+    List<Stock> findByHubIdAndProductId(UUID hubId, List<UUID> productIds);
 
     @Query("SELECT s FROM Stock s WHERE s.id.hubId = :hubId")
     List<Stock> findAllByHubId(UUID hubId);
