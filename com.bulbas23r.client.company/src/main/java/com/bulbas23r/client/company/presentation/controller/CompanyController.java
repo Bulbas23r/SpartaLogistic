@@ -1,19 +1,18 @@
 package com.bulbas23r.client.company.presentation.controller;
 
-import com.bulbas23r.client.company.application.dto.CompanyCreateRequestDto;
-import com.bulbas23r.client.company.application.dto.CompanyResponseDto;
-import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyCreateRequestDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyResponseDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
 import com.bulbas23r.client.company.application.service.CompanyService;
 import com.bulbas23r.client.company.domain.model.CompanyType;
-import common.annotation.ValidUUID;
+import common.annotation.RoleCheck;
 import common.utils.PageUtils;
-import java.lang.reflect.Type;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +31,14 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @PostMapping
     public ResponseEntity<?> createCompany(@RequestBody CompanyCreateRequestDto requestDto) {
         CompanyResponseDto resultDto = companyService.createCompany(requestDto);
         return ResponseEntity.ok(resultDto);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER, COMPANY"})
     @PutMapping("/{companyId}")
     public ResponseEntity<?> updateCompany(@PathVariable("companyId") UUID companyId, @RequestBody CompanyUpdateRequestDto requestDto) {
         CompanyResponseDto resultDto = companyService.updateCompany(companyId, requestDto);
@@ -60,6 +61,7 @@ public class CompanyController {
         return ResponseEntity.ok(resultDto);
     }
 
+    @RoleCheck({"MASTER", "HUB_MANAGER"})
     @DeleteMapping("/{companyId}")
     public ResponseEntity<?> deleteCompany(@PathVariable("companyId")  UUID companyId) {
         CompanyResponseDto resultDto =  companyService.deleteCompany(companyId);
