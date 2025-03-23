@@ -1,6 +1,6 @@
 package com.bulbas23r.client.company.domain.repository;
 
-import com.bulbas23r.client.company.application.dto.CompanyResponseDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyResponseDto;
 import com.bulbas23r.client.company.domain.model.CompanyType;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
