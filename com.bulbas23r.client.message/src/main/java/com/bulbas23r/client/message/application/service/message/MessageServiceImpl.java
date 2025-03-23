@@ -1,4 +1,4 @@
-package com.bulbas23r.client.message.application.service;
+package com.bulbas23r.client.message.application.service.message;
 
 import com.bulbas23r.client.message.client.UserClient;
 import com.bulbas23r.client.message.domain.repository.MessageQueryRepository;
