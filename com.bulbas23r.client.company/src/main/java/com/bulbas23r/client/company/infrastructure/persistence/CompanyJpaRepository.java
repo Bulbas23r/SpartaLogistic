@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompanyJpaRepository extends JpaRepository<Company, UUID> , CompanyRepository {
     boolean existsByHubIdAndName(UUID hubId, String name);
-    Page<Company> findAllByIsDeletedIsFalse(Pageable pageable);
+    Page<Company> findAll(Pageable pageable);
 }
