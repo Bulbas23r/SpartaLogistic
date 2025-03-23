@@ -7,6 +7,7 @@ import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubListResponseDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.response.HubResponseDto;
 import common.annotation.RoleCheck;
+import common.dto.HubInfoResponseDto;
 import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -101,4 +102,22 @@ public class HubController {
 
         return ResponseEntity.ok(hubList.map(HubListResponseDto::new));
     }
+
+    @GetMapping("/info/id/{hubId}")
+    @Operation(summary = "허브 아이디로 정보 가져오기")
+    ResponseEntity<HubInfoResponseDto> getHubInfoById(@PathVariable("hubId") UUID hubId) {
+        Hub hub = hubService.getHubById(hubId);
+
+        return ResponseEntity.ok(hub.toHubInfoResponseDto());
+    }
+
+    @GetMapping("/info/managerId/{managerId}")
+    @Operation(summary = "허브 관리자 아이디로 정보 가져오기")
+    ResponseEntity<HubInfoResponseDto> getHubInfoByManagerId(
+        @PathVariable("managerId") Long managerId) {
+        Hub hub = hubService.getHubByManagerId(managerId);
+
+        return ResponseEntity.ok(hub.toHubInfoResponseDto());
+    }
+
 }

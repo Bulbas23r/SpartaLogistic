@@ -28,6 +28,8 @@ public class ProductCreateRequestDto {
     // 설명은 선택적으로 입력 가능
     private String description;
 
+    // 수량 추가
+
     // 모든 필드를 받는 생성자
     public ProductCreateRequestDto(UUID companyId, UUID hubId, String name,
         BigDecimal price, int quantity, String description) {

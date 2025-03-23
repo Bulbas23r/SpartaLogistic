@@ -1,6 +1,7 @@
 package common.filter;
 
 import common.UserContextHolder;
+import common.header.UserInfoHeader;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,37 +17,37 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserContextFilter implements Filter {
 
-  private static final Logger logger = LoggerFactory.getLogger(UserContextFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserContextFilter.class);
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    try {
-      HttpServletRequest httpRequest = (HttpServletRequest) request;
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        try {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-      // 디버깅을 위한 전체 헤더 로그 출력
-      Enumeration<String> headerNames = httpRequest.getHeaderNames();
-      if (headerNames != null) {
-        while (headerNames.hasMoreElements()) {
-          String headerName = headerNames.nextElement();
-          logger.debug("Header {} : {}", headerName, httpRequest.getHeader(headerName));
+            // 디버깅을 위한 전체 헤더 로그 출력
+            Enumeration<String> headerNames = httpRequest.getHeaderNames();
+            if (headerNames != null) {
+                while (headerNames.hasMoreElements()) {
+                    String headerName = headerNames.nextElement();
+                    logger.debug("Header {} : {}", headerName, httpRequest.getHeader(headerName));
+                }
+            }
+
+            // "X-User-Name" 헤더 값 가져오기
+            String username = httpRequest.getHeader(UserInfoHeader.USER_NAME);
+            logger.info("X-User-Name header: {}", username);
+
+            if (username != null && !username.trim().isEmpty()) {
+                UserContextHolder.setCurrentUser(username);
+            } else {
+                logger.warn("X-User-Name header is missing or empty");
+            }
+
+            chain.doFilter(request, response);
+        } finally {
+            // 요청 처리 후 ThreadLocal 정리
+            UserContextHolder.clear();
         }
-      }
-
-      // "X-User-Name" 헤더 값 가져오기
-      String username = httpRequest.getHeader("X-User-Name");
-      logger.info("X-User-Name header: {}", username);
-
-      if (username != null && !username.trim().isEmpty()) {
-        UserContextHolder.setCurrentUser(username);
-      } else {
-        logger.warn("X-User-Name header is missing or empty");
-      }
-
-      chain.doFilter(request, response);
-    } finally {
-      // 요청 처리 후 ThreadLocal 정리
-      UserContextHolder.clear();
     }
-  }
 }

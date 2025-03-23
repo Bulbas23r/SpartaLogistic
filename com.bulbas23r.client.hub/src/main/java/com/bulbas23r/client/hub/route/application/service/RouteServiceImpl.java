@@ -64,11 +64,11 @@ public class RouteServiceImpl implements RouteService {
                 Hub hubY = hubMap.get(hubName);
                 if (hubY != null) {
                     Mono<DrivingResponse> xToYMono = naverApiService.drivingApi(
-                        hubX.getLatitude(), hubX.getLongitude(),
-                        hubY.getLatitude(), hubY.getLongitude());
+                        hubX.getLocation().getLatitude(), hubX.getLocation().getLongitude(),
+                        hubY.getLocation().getLatitude(), hubY.getLocation().getLongitude());
                     Mono<DrivingResponse> yToXMono = naverApiService.drivingApi(
-                        hubY.getLatitude(), hubY.getLongitude(),
-                        hubX.getLatitude(), hubX.getLongitude());
+                        hubY.getLocation().getLatitude(), hubY.getLocation().getLongitude(),
+                        hubX.getLocation().getLatitude(), hubX.getLocation().getLongitude());
                     xToYMono.zipWith(yToXMono).doOnSuccess(results -> {
                         DrivingResponse xToY = results.getT1();
                         DrivingResponse yToX = results.getT2();

@@ -4,10 +4,15 @@ import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManager;
 import com.bulbas23r.client.deliverymanager.domain.model.DeliveryManagerType;
 import com.bulbas23r.client.deliverymanager.domain.repository.DeliveryManagerQueryRepository;
 import com.bulbas23r.client.deliverymanager.domain.repository.DeliveryManagerRepository;
+import com.bulbas23r.client.deliverymanager.infrastructure.client.HubClient;
+import com.bulbas23r.client.deliverymanager.infrastructure.client.UserClient;
 import com.bulbas23r.client.deliverymanager.presentation.dto.CreateDeliveryManagerRequestDto;
 import com.bulbas23r.client.deliverymanager.presentation.dto.UpdateDeliveryManagerRequestDto;
+import common.dto.HubInfoResponseDto;
+import common.dto.UserInfoResponseDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
+import common.model.UserRoleEnum;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.List;
 import java.util.UUID;
@@ -24,32 +29,31 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
 
     private final DeliveryManagerRepository deliveryManagerRepository;
     private final DeliveryManagerQueryRepository deliveryManagerQueryRepository;
+    private final UserClient userClient;
+    private final HubClient hubClient;
 
     @Transactional
     @Override
-    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto,
-        String slackId) {
-        Integer seq;
-        if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
-            Integer count = deliveryManagerRepository.countByType(
-                requestDto.getDeliveryManagerType());
-            if (count >= 10) {
-                throw new BadRequestException("허브 배송 담당자의 정원이 모두 찼습니다!");
-            }
-            seq = deliveryManagerRepository.findMaxSequenceByType(
-                requestDto.getDeliveryManagerType());
-        } else {
+    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {
+        if (requestDto.getDeliveryManagerType() == DeliveryManagerType.COMPANY) {
             if (requestDto.getHubId() == null) {
-                throw new BadRequestException("허브 아이디가 필요합니다!");
+                throw new BadRequestException("업체 배송 담당자가 속할 허브 id가 필요합니다!");
             }
-            Integer count = deliveryManagerRepository.countByTypeAndHubId(
-                requestDto.getDeliveryManagerType(), requestDto.getHubId());
-            if (count >= 10) {
-                throw new BadRequestException("업체 배송 담당자의 정원이 모두 찼습니다!");
+
+            HubInfoResponseDto hubInfo = hubClient.getHubInfoById(requestDto.getHubId()).getBody();
+            if (hubInfo == null || hubInfo.getActive() == null) {
+                throw new BadRequestException("허브가 존재하지 않거나 유효하지 않습니다!");
             }
-            seq = deliveryManagerRepository.findMaxSequenceByTypeAndHubId(
-                requestDto.getDeliveryManagerType(), requestDto.getHubId());
         }
+
+        UserInfoResponseDto userInfo = userClient.getUserInfo(requestDto.getUserId()).getBody();
+        if (userInfo == null || !(userInfo.getRole().equals(UserRoleEnum.HUB_TO_HUB_DELIVERY)
+            || userInfo.getRole().equals(UserRoleEnum.TO_COMPANY_DELIVERY))) {
+            throw new BadRequestException("유저가 존재하지 않거나 배송담당자가 아닙니다.");
+        }
+
+        String slackId = userInfo.getSlackId();
+        Integer seq = getSequence(requestDto);
 
         DeliveryManager deliveryManager = new DeliveryManager(requestDto, seq + 1, slackId);
 
@@ -69,7 +73,6 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
     public DeliveryManager updateDeliveryManager(Long userId,
         UpdateDeliveryManagerRequestDto requestDto) {
         DeliveryManager deliveryManager = getDeliveryManager(userId);
-        deliveryManager.setSlackId(requestDto.getSlackId());
 
         if (!deliveryManager.getSequence().equals(requestDto.getSequence())) {
             if (deliveryManager.getType().equals(DeliveryManagerType.HUB)) {
@@ -130,6 +133,44 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         return userId.equals(deliveryManager.getUserId());
     }
 
+    private Integer getSequence(CreateDeliveryManagerRequestDto requestDto) {
+        if (requestDto.getDeliveryManagerType().equals(DeliveryManagerType.HUB)) {
+            Integer count = deliveryManagerRepository.countByType(
+                requestDto.getDeliveryManagerType());
+            if (count >= 10) {
+                throw new BadRequestException("허브 배송 담당자의 정원이 모두 찼습니다!");
+            }
+            return deliveryManagerRepository.findMaxSequenceByType(
+                requestDto.getDeliveryManagerType());
+        } else {
+            if (requestDto.getHubId() == null) {
+                throw new BadRequestException("허브 아이디가 필요합니다!");
+            }
+            Integer count = deliveryManagerRepository.countByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
+            if (count >= 10) {
+                throw new BadRequestException("업체 배송 담당자의 정원이 모두 찼습니다!");
+            }
+            return deliveryManagerRepository.findMaxSequenceByTypeAndHubId(
+                requestDto.getDeliveryManagerType(), requestDto.getHubId());
+        }
+    }
+
+    @Override
+    public void checkHubManager(Long requestUserId, UUID hubId) {
+        if (hubId == null) {
+            throw new BadRequestException("허브 관리자를 검증하려면 허브 아이디가 필요합니다!");
+        }
+        HubInfoResponseDto hubInfo = hubClient.getHubInfoById(hubId).getBody();
+        UserInfoResponseDto userInfo = userClient.getUserInfo(requestUserId).getBody();
+
+        if (userInfo == null || !userInfo.getRole().equals(UserRoleEnum.HUB_MANAGER)
+            || hubInfo == null || hubInfo.getManagerId() == null || !hubInfo.getManagerId()
+            .equals(userInfo.getUserId())) {
+            throw new BadRequestException("본인의 관리하는 허브의 배송 담당자만 조회할 수 있습니다!");
+        }
+
+    }
     //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {

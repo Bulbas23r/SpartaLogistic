@@ -18,6 +18,8 @@ public interface HubService {
 
     Hub getHubById(UUID hubId);
 
+    Hub getHubByManagerId(Long managerId);
+
     Page<Hub> getHubList(Pageable pageable);
 
     List<Hub> getActiveHubList();
@@ -26,4 +28,8 @@ public interface HubService {
 
     Page<Hub> searchHub(Pageable pageable, Direction sortDirection, CommonSortBy sortBy,
         String keyword);
+
+    void deleteRoutesByHubId(UUID hubId);
+
+    void deleteStocksByProductId(UUID productId);
 }
