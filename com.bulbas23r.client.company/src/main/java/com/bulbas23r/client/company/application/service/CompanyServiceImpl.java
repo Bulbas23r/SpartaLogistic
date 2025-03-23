@@ -3,7 +3,7 @@ package com.bulbas23r.client.company.application.service;
 import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
 import com.bulbas23r.client.company.domain.model.CompanyType;
 import com.bulbas23r.client.company.domain.repository.CompanyQueryRepository;
-import common.annotation.ValidUUID;
+import com.bulbas23r.client.company.infrastructure.messaging.CompanyEventProducer;
 import common.exception.NotFoundException;
 import common.exception.BadRequestException;
 import com.bulbas23r.client.company.application.dto.CompanyCreateRequestDto;
@@ -26,6 +26,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
     private final CompanyQueryRepository companyQueryRepository;
+    private final CompanyEventProducer companyKafkaProducer;
 
     @Transactional
     public CompanyResponseDto createCompany(CompanyCreateRequestDto companyRequestDto) {
@@ -63,6 +64,9 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponseDto deleteCompany(UUID id) {
         Company company = getCompany(id);
         company.setDeleted();
+
+        //event 발행
+        companyKafkaProducer.sendDeleteCompanyEvent(id);
 
         return CompanyResponseDto.fromEntity(company);
     }
