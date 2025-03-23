@@ -29,15 +29,15 @@ public class HubEventConsumer {
     }
 
     @KafkaListener(topics = "delete-stock")
-    public void handleEvent(Map<String, Object> eventMap) {
+    public void handleDeleteStockEvent(Map<String, Object> eventMap) {
         DeleteStockEventDto deleteStockEventDto = objectMapper.convertValue(eventMap,
             DeleteStockEventDto.class);
         UUID hubId = deleteStockEventDto.getHubId();
 
-        List<Product> productsTodelete = productRepository.findByHubId(hubId);
-        if(productsTodelete != null && !productsTodelete.isEmpty()) {
-            productsTodelete.forEach(productRepository::delete);
-            logger.info("Deleted {} products for hubId {}", productsTodelete.size(), hubId);
+        List<Product> productsToDelete = productRepository.findByHubId(hubId);
+        if(productsToDelete != null && !productsToDelete.isEmpty()) {
+            productsToDelete.forEach(productRepository::delete);
+            logger.info("Deleted {} products for hubId {}", productsToDelete.size(), hubId);
         }
         else{
             logger.info("No products found for hubId {}", hubId);

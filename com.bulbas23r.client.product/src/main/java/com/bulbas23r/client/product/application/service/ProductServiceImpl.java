@@ -4,6 +4,7 @@ import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductQueryRepository;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.bulbas23r.client.product.infrastructure.Const.ProductString;
+import com.bulbas23r.client.product.infrastructure.messaging.ProductEventProducer;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
 import common.utils.PageUtils.CommonSortBy;
@@ -22,13 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductQueryRepository productQueryRepository;
-    //private final EventPublisher eventPublisher;// 이벤트 발행
+    private final ProductEventProducer productEventProducer;
 
     @Transactional
     @Override
     public Product createProduct(ProductCreateRequestDto productCreateRequestDto) {
         Product product = new Product(productCreateRequestDto);
-        return productRepository.save(product);
+        product = productRepository.save(product);
+        productEventProducer.sendProductCreateEvent(product.getId(),
+            productCreateRequestDto.getHubId(), productCreateRequestDto.getQuantity());
+        return product;
     }
 
     @Transactional
