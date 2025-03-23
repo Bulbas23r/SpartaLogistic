@@ -15,4 +15,5 @@ public interface ProductRepository {
     Page<Product> findAll(Pageable pageable);
     List<Product> findByHubId(UUID hubId);
     List<Product> findByCompanyId(UUID companyId);
+    <S extends Product> List<S> saveAll(Iterable<S> entities);
 }
