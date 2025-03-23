@@ -4,9 +4,11 @@ import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.domain.model.RouteId;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RouteRepository {
 
@@ -21,4 +23,7 @@ public interface RouteRepository {
     Optional<Route> findById(RouteId id);
 
     Page<Route> findAll(Pageable pageable);
+
+    @Query("SELECT r FROM Route r WHERE r.id.departureHubId = :hubId OR r.id.arrivalHubId = :hubId")
+    List<Route> findAllByHubId(@Param("hubId") UUID hubId);
 }

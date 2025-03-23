@@ -18,7 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class StockId {
 
-    // TODO 연관관계 매핑
     private UUID hubId;
     private UUID productId;
 }

@@ -16,7 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RouteId implements Serializable {
 
-    // TODO 연관관계 매핑
     private UUID departureHubId;
     private UUID arrivalHubId;
 
