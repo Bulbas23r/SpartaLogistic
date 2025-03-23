@@ -25,7 +25,7 @@ public class ProductEventConsumer {
         this.orderQueryRepository = orderQueryRepository;
     }
 
-    @KafkaListener(topics = "delete-order")
+    @KafkaListener(topics = "delete-product")
     public void handleDeleteOrderEvent(Map<String, Object> event) {
         DeleteProductEventDto deleteProductEventDto = objectMapper.convertValue(event,
             DeleteProductEventDto.class);

@@ -13,5 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeleteProductEventDto {
+    UUID hubId;
     UUID productId;
 }

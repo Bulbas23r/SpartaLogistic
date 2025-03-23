@@ -1,6 +1,6 @@
 package com.bulbas23r.client.product.infrastructure.messaging;
 
-import common.event.CreateStockEventDto;
+import common.event.CreateProductEventDto;
 import common.event.DeleteProductEventDto;
 import java.util.UUID;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,15 +14,16 @@ public class ProductEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendProductDeleteEvent(UUID productId){
-        DeleteProductEventDto deleteProductEventDto = new DeleteProductEventDto(productId);
-        kafkaTemplate.send("delete-order", deleteProductEventDto);
+    public void sendProductDeleteEvent(UUID productId, UUID hubId){
+        DeleteProductEventDto deleteProductEventDto = new DeleteProductEventDto(
+            hubId, productId);
+        kafkaTemplate.send("delete-product", deleteProductEventDto);
     }
 
     public void sendProductCreateEvent(UUID productId, UUID hubId, int quantity){
-        CreateStockEventDto createStockEventDto = new CreateStockEventDto(
+        CreateProductEventDto createProductEventDto = new CreateProductEventDto(
             hubId, productId, quantity
         );
-        kafkaTemplate.send("create-stock", createStockEventDto);
+        kafkaTemplate.send("create-product", createProductEventDto);
     }
 }
