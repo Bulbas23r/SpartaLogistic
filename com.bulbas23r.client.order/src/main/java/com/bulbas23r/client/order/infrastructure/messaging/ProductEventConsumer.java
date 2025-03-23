@@ -33,7 +33,9 @@ public class ProductEventConsumer {
 
         List<Order> ordersByProductId = orderQueryRepository.findOrdersByProductId(productId);
         if(ordersByProductId != null && !ordersByProductId.isEmpty()) {
-            ordersByProductId.forEach(order -> {order.setDeleted(true);});
+            ordersByProductId.forEach(order -> {
+                order.setDeleted(true);
+            });
             logger.info("Deleted {} Orders for productId {}", ordersByProductId, productId);
         }
         else{

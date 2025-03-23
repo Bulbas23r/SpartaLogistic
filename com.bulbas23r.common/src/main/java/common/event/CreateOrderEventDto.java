@@ -18,5 +18,5 @@ public class CreateOrderEventDto {
 
     UUID orderId;
     UUID hubId;
-    List<OrderProductEventDto> products;
+    List<CreateOrderProductEventDto> products;
 }

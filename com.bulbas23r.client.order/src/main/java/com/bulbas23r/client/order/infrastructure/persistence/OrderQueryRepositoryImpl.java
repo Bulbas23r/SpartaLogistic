@@ -79,6 +79,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     public List<Order> findOrdersByProductId(UUID productId) {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(order.orderProducts.any().productId.eq(productId));
+        builder.and(order.status.eq(OrderStatus.CANCELLED));
 
         List<Order> orders = queryFactory
             .selectFrom(order)

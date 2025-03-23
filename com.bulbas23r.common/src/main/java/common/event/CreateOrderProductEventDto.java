@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateOrderProductEventDto {
+public class CreateOrderProductEventDto {
     UUID productId;
     int quantity;
 }
