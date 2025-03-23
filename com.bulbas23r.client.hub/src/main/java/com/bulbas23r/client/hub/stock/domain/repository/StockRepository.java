@@ -13,4 +13,7 @@ public interface StockRepository {
 
     @Query("SELECT s FROM Stock s WHERE s.id.hubId = :hubId")
     List<Stock> findAllByHubId(UUID hubId);
+
+    @Query("SELECT s FROM Stock s WHERE s.id.productId = :productId")
+    List<Stock> findAllByProductId(UUID productId);
 }

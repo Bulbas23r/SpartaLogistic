@@ -52,8 +52,16 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void deleteStockByHubId(UUID hubId) {
+    @Transactional
+    public void deleteStocksByHubId(UUID hubId) {
         List<Stock> stockList = stockRepository.findAllByHubId(hubId);
+
+        stockList.forEach(Stock::setDeleted);
+    }
+
+    @Override
+    public void deleteStocksByProductId(UUID productId) {
+        List<Stock> stockList = stockRepository.findAllByProductId(productId);
 
         stockList.forEach(Stock::setDeleted);
     }

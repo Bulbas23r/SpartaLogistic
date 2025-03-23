@@ -11,5 +11,7 @@ public interface StockService {
 
     void updateStock(UpdateStockEventDto eventDto);
 
-    void deleteStockByHubId(UUID hubId);
+    void deleteStocksByHubId(UUID hubId);
+
+    void deleteStocksByProductId(UUID productId);
 }
