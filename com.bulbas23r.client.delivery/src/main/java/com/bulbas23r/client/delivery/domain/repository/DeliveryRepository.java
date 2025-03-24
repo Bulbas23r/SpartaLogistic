@@ -7,7 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DeliveryRepository {
+
     Delivery save(Delivery delivery);
+
     Optional<Delivery> findById(UUID id);
+
     Page<Delivery> findAll(Pageable pageable);
+
+    Optional<Delivery> findByOrderId(UUID orderId);
 }

@@ -8,4 +8,5 @@ public class Topic {
     public static final String DELETE_PRODUCT = "delete-product";
     public static final String DELETE_HUB = "delete-hub";
     public static final String DELETE_USER = "delete-user";
+    public static final String ORDER_FAILED = "order-failed";
 }
