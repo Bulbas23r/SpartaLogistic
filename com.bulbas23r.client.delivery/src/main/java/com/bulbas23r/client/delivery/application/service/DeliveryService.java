@@ -12,14 +12,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DeliveryService {
+
     DeliveryResponseDto createDelivery(DeliveryCreateRequestDto requestDto);
+
     DeliveryResponseDto getDelivery(UUID deliveryId);
+
     Page<DeliveryResponseDto> getDeliveryList(Pageable pageable);
+
     DeliveryResponseDto updateDelivery(UUID id, DeliveryUpdateRequestDto requestDto);
+
     DeliveryResponseDto deleteDelivery(UUID deliveryId);
+
     Page<DeliveryResponseDto> searchDelivery(DeliverySearchRequestDto requestDto);
+
     void changeStatus(UUID deliveryId, DeliveryStatus status);
+
     void createDeliveryByOrder(CreateOrderEventDto eventDto);
+
+    void cancelDelivery(UUID orderId);
 
     Delivery getDeliveryByOrderId(UUID orderId);
 }

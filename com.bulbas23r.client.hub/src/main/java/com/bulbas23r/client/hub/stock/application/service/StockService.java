@@ -1,12 +1,12 @@
 package com.bulbas23r.client.hub.stock.application.service;
 
 import com.bulbas23r.client.hub.stock.domain.model.Stock;
-import common.event.CreateStockEventDto;
-import common.event.UpdateStockEventDto;
+import common.event.CreateOrderEventDto;
+import common.event.CreateProductEventDto;
 
 public interface StockService {
 
-    Stock createStock(CreateStockEventDto eventDto);
+    Stock createStock(CreateProductEventDto eventDto);
 
-    void updateStock(UpdateStockEventDto eventDto);
+    void updateStock(CreateOrderEventDto eventDto);
 }

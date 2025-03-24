@@ -1,12 +1,12 @@
 package com.bulbas23r.client.delivery.application.service;
 
-import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteArriveRequestDto;
-import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepartRequestDto;
-import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRouteRepository;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteArriveRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepartRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import java.util.UUID;
@@ -27,10 +27,13 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
     @Override
     @Transactional
     public DeliveryRouteResponseDto departDeliveryRoute(DeliveryRouteDepartRequestDto requestDto) {
-        DeliveryRoute deliveryRoute = findDeliveryRoute(requestDto.getDeliveryId(),requestDto.getDepartureHubId(),requestDto.getArrivalHubId(), DeliveryRouteStatus.HUB_PENDING);
+        DeliveryRoute deliveryRoute = findDeliveryRoute(requestDto.getDeliveryId(),
+            requestDto.getDepartureHubId(), requestDto.getArrivalHubId(),
+            DeliveryRouteStatus.HUB_PENDING);
 
         //todo: 배송 매니저 유효성 check
-        if(deliveryRoute.getSequence() > 1 && !deliveryRouteRepository.isPreviousSequenceDeparted(requestDto.getDeliveryId(),deliveryRoute.getSequence())){
+        if (deliveryRoute.getSequence() > 1 && !deliveryRouteRepository.isPreviousSequenceDeparted(
+            requestDto.getDeliveryId(), deliveryRoute.getSequence())) {
             throw new BadRequestException("이전 배송이 도착하지 않아 배송을 시작할 수 없습니다.");
         }
 
@@ -44,9 +47,11 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
     @Override
     @Transactional
     public DeliveryRouteResponseDto arriveDeliveryRoute(DeliveryRouteArriveRequestDto requestDto) {
-        DeliveryRoute deliveryRoute = findDeliveryRoute(requestDto.getDeliveryId(),requestDto.getDepartureHubId(),requestDto.getArrivalHubId(), DeliveryRouteStatus.HUB_TRANSIT);
+        DeliveryRoute deliveryRoute = findDeliveryRoute(requestDto.getDeliveryId(),
+            requestDto.getDepartureHubId(), requestDto.getArrivalHubId(),
+            DeliveryRouteStatus.HUB_TRANSIT);
 
-        deliveryRoute.updateArrivalDelivery(requestDto.getDistance(),requestDto.getDuration());
+        deliveryRoute.updateArrivalDelivery(requestDto.getDistance(), requestDto.getDuration());
 
         deliveryService.changeStatus(requestDto.getDeliveryId(), DeliveryStatus.HUB_ARRIVED);
 
@@ -55,19 +60,22 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId ,Pageable pageable) {
-        return deliveryRouteRepository.findAllByDelivery_Id(deliveryId,pageable).map(DeliveryRouteResponseDto::fromEntity);
+    public Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId, Pageable pageable) {
+        return deliveryRouteRepository.findAllByDelivery_Id(deliveryId, pageable)
+            .map(DeliveryRouteResponseDto::fromEntity);
     }
 
     @Override
     public Page<DeliveryRouteResponseDto> getDeliveryByOrderIdRouteList(UUID orderId,
         Pageable pageable) {
-        return deliveryRouteRepository.findAllByOrder_Id(orderId,pageable).map(DeliveryRouteResponseDto::fromEntity);
+        return deliveryRouteRepository.findAllByDelivery_OrderId(orderId, pageable)
+            .map(DeliveryRouteResponseDto::fromEntity);
     }
 
-    public DeliveryRoute findDeliveryRoute(UUID deliveryId, UUID departureHubId, UUID arrivalHubId, DeliveryRouteStatus status) {
+    public DeliveryRoute findDeliveryRoute(UUID deliveryId, UUID departureHubId, UUID arrivalHubId,
+        DeliveryRouteStatus status) {
         return deliveryRouteRepository.findByDelivery_IdAndDepartureHubIdAndArrivalHubIdAndStatus(
-            deliveryId, departureHubId, arrivalHubId, status)
-            .orElseThrow(()-> new NotFoundException("배송 경로를 찾을 수 없습니다."));
+                deliveryId, departureHubId, arrivalHubId, status)
+            .orElseThrow(() -> new NotFoundException("배송 경로를 찾을 수 없습니다."));
     }
 }

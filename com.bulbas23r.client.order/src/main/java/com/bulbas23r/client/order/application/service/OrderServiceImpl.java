@@ -10,12 +10,14 @@ import com.bulbas23r.client.order.presentation.dto.OrderUpdateRequestDto;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -46,7 +48,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order getOrder(UUID orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
     @Transactional
@@ -75,5 +78,13 @@ public class OrderServiceImpl implements OrderService {
     public Page<Order> searchOrders(String keywords, Pageable pageable, Direction direction,
         CommonSortBy sortBy) {
         return orderQueryRepository.searchOrders(keywords, pageable, direction, sortBy);
+    }
+
+    @Override
+    @Transactional
+    public void failOrder(UUID orderId) {
+        log.info("Order failed for orderId: {}", orderId);
+        Order order = getOrder(orderId);
+        order.fail();
     }
 }

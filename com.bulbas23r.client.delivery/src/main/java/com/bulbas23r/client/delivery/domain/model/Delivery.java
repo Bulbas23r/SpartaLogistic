@@ -37,7 +37,7 @@ public class Delivery extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "order_id",nullable = false)
+    @Column(name = "order_id", nullable = false, unique = true)
     private UUID orderId;
 
     @Column(name = "departure_hub_id", nullable = false)
@@ -53,21 +53,31 @@ public class Delivery extends BaseEntity {
     @Column(nullable = false)
     private DeliveryStatus status;
 
-    @Column(name = "receiver_company_id",nullable = false)
+    @Column(name = "receiver_company_id", nullable = false)
     private UUID receiverCompanyId;
 
-    @Column(name = "receiver_company_slack_id",nullable = false)
+    @Column(name = "receiver_company_slack_id", nullable = false)
     private String receiverCompanySlackId;
 
     @OneToMany(mappedBy = "delivery", fetch = FetchType.LAZY)
     private List<DeliveryRoute> deliveryRouteList;
 
     public void update(DeliveryUpdateRequestDto requestDto) {
-        if(requestDto.getDepartureHubId() != null) this.departureHubId = requestDto.getDepartureHubId();
-        if(requestDto.getArrivalHubIdHubId() != null) this.arrivalHubId = requestDto.getArrivalHubIdHubId();
-        if(requestDto.getDeliveryManagerId() != null) this.deliveryManagerId = requestDto.getDeliveryManagerId();
-        if(requestDto.getReceiverCompanyId() != null) this.receiverCompanyId = requestDto.getReceiverCompanyId();
-        if(StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
+        if (requestDto.getDepartureHubId() != null) {
+            this.departureHubId = requestDto.getDepartureHubId();
+        }
+        if (requestDto.getArrivalHubIdHubId() != null) {
+            this.arrivalHubId = requestDto.getArrivalHubIdHubId();
+        }
+        if (requestDto.getDeliveryManagerId() != null) {
+            this.deliveryManagerId = requestDto.getDeliveryManagerId();
+        }
+        if (requestDto.getReceiverCompanyId() != null) {
+            this.receiverCompanyId = requestDto.getReceiverCompanyId();
+        }
+        if (StringUtil.isNullOrEmpty(requestDto.getReceiverCompanySlackId())) {
+            this.receiverCompanySlackId = requestDto.getReceiverCompanySlackId();
+        }
     }
 
     public void setDeliveryRouteList(List<DeliveryRoute> deliveryRouteList) {
@@ -77,5 +87,4 @@ public class Delivery extends BaseEntity {
     public void changeStatus(DeliveryStatus status) {
         this.status = status;
     }
-
 }

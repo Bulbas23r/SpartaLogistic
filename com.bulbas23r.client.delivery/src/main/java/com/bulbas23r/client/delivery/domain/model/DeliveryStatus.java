@@ -9,7 +9,8 @@ public enum DeliveryStatus {
     HUB_TRANSIT("허브 간 이동"),
     HUB_ARRIVED("허브 도착"),
     COMPANY_TRANSIT("업체 배송 중"),
-    DELIVERED("배송 완료");
+    DELIVERED("배송 완료"),
+    CANCELED("배송 취소");
 
     private final String description;
 

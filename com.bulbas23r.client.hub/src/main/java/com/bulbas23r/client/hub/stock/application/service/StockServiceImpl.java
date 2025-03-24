@@ -2,9 +2,11 @@ package com.bulbas23r.client.hub.stock.application.service;
 
 import com.bulbas23r.client.hub.stock.domain.model.Stock;
 import com.bulbas23r.client.hub.stock.domain.repository.StockRepository;
-import common.event.CreateStockEventDto;
+import com.bulbas23r.client.hub.stock.infrastructure.messaging.TransactionEventProducer;
+import common.event.CreateOrderEventDto;
+import common.event.CreateProductEventDto;
 import common.event.OrderProductEventDto;
-import common.event.UpdateStockEventDto;
+import common.exception.BadRequestException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class StockServiceImpl implements StockService {
 
     private final StockRepository stockRepository;
+    private final TransactionEventProducer transactionEventProducer;
 
     @Override
     @Transactional
-    public Stock createStock(CreateStockEventDto eventDto) {
+    public Stock createStock(CreateProductEventDto eventDto) {
         Stock stock = Stock.fromEventDto(eventDto);
 
         return stockRepository.save(stock);
@@ -29,7 +32,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    public void updateStock(UpdateStockEventDto eventDto) {
+    public void updateStock(CreateOrderEventDto eventDto) {
         List<UUID> productIds =
             eventDto.getProducts().stream().map(OrderProductEventDto::getProductId).toList();
         List<Stock> stockList =
@@ -43,7 +46,8 @@ public class StockServiceImpl implements StockService {
                     int reducedQuantity = stock.getQuantity() - dto.getQuantity();
                     if (reducedQuantity < 0) {
                         log.error("허브의 재고를 초과한 주문");
-                        // TODO 주문 실패 처리 핸들링
+                        transactionEventProducer.sendOrderFailedEvent(eventDto.getOrderId());
+                        throw new BadRequestException("허브의 재고를 초과한 주문입니다!");
                     } else {
                         stock.setQuantity(reducedQuantity);
                     }

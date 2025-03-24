@@ -1,5 +1,6 @@
 package common.event;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteUserEventDto extends EventBaseDto {
-  
-    private Long userId;
+public class OrderFailedEventDto {
+
+    private UUID orderId;
 }
