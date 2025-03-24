@@ -3,7 +3,7 @@ package com.bulbas23r.client.order.infrastructure.messaging;
 import com.bulbas23r.client.order.domain.model.Order;
 import com.bulbas23r.client.order.domain.model.OrderProduct;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import common.event.CreateStockEventDto;
+import common.event.CreateOrderEventDto;
 import common.event.OrderProductEventDto;
 import common.event.UpdateStockEventDto;
 import java.util.ArrayList;
@@ -35,5 +35,11 @@ public class OrderEventProducer {
         UpdateStockEventDto updateStockEventDto = new UpdateStockEventDto(hubId,
             orderProductEventDtos);
         kafkaTemplate.send("order-test-update-events", updateStockEventDto);
+    }
+
+
+    public void sendCreateOrderEventToDelivery(Order order) {
+        CreateOrderEventDto orderEventDto = new CreateOrderEventDto(order.getId(),order.getProvideCompanyId(),order.getReceiveCompanyId());
+        kafkaTemplate.send("create-order-delivery", orderEventDto);
     }
 }

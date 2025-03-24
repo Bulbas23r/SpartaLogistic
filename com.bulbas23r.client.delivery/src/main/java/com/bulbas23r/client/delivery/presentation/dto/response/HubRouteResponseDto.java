@@ -1,8 +1,7 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.response;
 
 import java.util.UUID;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

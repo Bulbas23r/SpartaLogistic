@@ -1,4 +1,4 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.request;
 
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;

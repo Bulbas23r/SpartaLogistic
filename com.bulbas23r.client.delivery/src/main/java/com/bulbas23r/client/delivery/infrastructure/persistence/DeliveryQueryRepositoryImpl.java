@@ -1,6 +1,6 @@
 package com.bulbas23r.client.delivery.infrastructure.persistence;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.domain.model.QDelivery;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.querydsl.core.types.OrderSpecifier;

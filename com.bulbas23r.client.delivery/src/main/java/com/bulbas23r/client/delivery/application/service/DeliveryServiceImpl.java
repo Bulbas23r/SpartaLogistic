@@ -1,10 +1,12 @@
 package com.bulbas23r.client.delivery.application.service;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryCreateRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
-import com.bulbas23r.client.delivery.application.dto.DeliverySearchRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
-import com.bulbas23r.client.delivery.application.dto.HubRouteResponseDto;
+import com.bulbas23r.client.delivery.infrastructure.client.CompanyClient;
+import com.bulbas23r.client.delivery.infrastructure.client.UserClient;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryUpdateRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.HubRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
@@ -12,6 +14,9 @@ import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
 import com.bulbas23r.client.delivery.infrastructure.client.HubClient;
 import com.bulbas23r.client.delivery.infrastructure.persistence.DeliveryRouteJpaRepository;
+import common.dto.CompanyInfoResponseDto;
+import common.dto.UserInfoResponseDto;
+import common.event.CreateOrderEventDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
 import java.util.ArrayList;
@@ -31,6 +36,27 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryQueryRepository deliveryQueryRepository;
     private final DeliveryRouteJpaRepository deliveryRouteJpaRepository;
     private final HubClient hubClient;
+    private final CompanyClient companyClient;
+    private final UserClient userClient;
+
+    @Transactional
+    public void createDeliveryByOrder(CreateOrderEventDto eventDto){
+        CompanyInfoResponseDto providerCompanyInfoDto = companyClient.getCompanyInfoById(eventDto.getProvideCompanyId()).getBody();
+        CompanyInfoResponseDto receiverCompanyInfoDto = companyClient.getCompanyInfoById(eventDto.getReceiverCompanyId()).getBody();
+
+        UserInfoResponseDto userInfoResponseDto = userClient.getUserInfo(receiverCompanyInfoDto.getManagerId())
+            .getBody();
+
+        DeliveryCreateRequestDto requestDto = DeliveryCreateRequestDto.builder()
+            .orderId(eventDto.getOrderId())
+            .departureHubId(providerCompanyInfoDto.getHubId())
+            .arrivalHubId(receiverCompanyInfoDto.getHubId())
+            .receiverCompanyId(eventDto.getReceiverCompanyId())
+            .receiverCompanySlackId(userInfoResponseDto.getSlackId())
+            .build();
+
+        createDelivery(requestDto);
+    }
 
     @Override
     @Transactional

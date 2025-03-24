@@ -94,6 +94,7 @@ public class CompanyServiceImpl implements CompanyService {
         return companyQueryRepository.searchCompany(name,hubId,type,pageable,sortDirection,sortBy);
     }
 
+    @Transactional
     public Company getCompany(UUID id) {
         return companyRepository.findById(id).orElseThrow(()-> new NotFoundException("업체를 찾을 수 없습니다."));
     }
