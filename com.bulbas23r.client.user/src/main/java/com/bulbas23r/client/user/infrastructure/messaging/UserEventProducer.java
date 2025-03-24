@@ -1,6 +1,5 @@
 package com.bulbas23r.client.user.infrastructure.messaging;
 
-import com.bulbas23r.client.user.domain.model.User;
 import common.UserContextHolder;
 import common.event.DeleteUserEventDto;
 import org.springframework.kafka.core.KafkaTemplate;
