@@ -4,6 +4,8 @@ import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.event.DeleteHubEventDto;
+import common.event.GroupId;
+import common.event.Topic;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HubEventConsumer {
+
     private static final Logger logger = LoggerFactory.getLogger(HubEventConsumer.class);
 
     private final ObjectMapper objectMapper;
@@ -24,18 +27,17 @@ public class HubEventConsumer {
         this.productRepository = productRepository;
     }
 
-    @KafkaListener(topics = "delete-hub")
+    @KafkaListener(topics = Topic.DELETE_HUB, groupId = GroupId.PRODUCT)
     public void handleDeleteHubEvent(Map<String, Object> eventMap) {
         DeleteHubEventDto deleteStockEventDto = objectMapper.convertValue(eventMap,
             DeleteHubEventDto.class);
         UUID hubId = deleteStockEventDto.getHubId();
 
         List<Product> productsToDelete = productRepository.findByHubId(hubId);
-        if(productsToDelete != null && !productsToDelete.isEmpty()) {
+        if (productsToDelete != null && !productsToDelete.isEmpty()) {
             productsToDelete.forEach(productRepository::delete);
             logger.info("Deleted {} products for hubId {}", productsToDelete.size(), hubId);
-        }
-        else{
+        } else {
             logger.info("No products found for hubId {}", hubId);
         }
     }

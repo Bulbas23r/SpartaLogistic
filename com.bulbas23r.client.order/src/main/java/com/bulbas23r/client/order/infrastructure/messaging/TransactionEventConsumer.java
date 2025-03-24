@@ -2,6 +2,7 @@ package com.bulbas23r.client.order.infrastructure.messaging;
 
 import com.bulbas23r.client.order.application.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.event.GroupId;
 import common.event.OrderFailedEventDto;
 import common.event.Topic;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class TransactionEventConsumer {
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
 
-    @KafkaListener(topics = Topic.ORDER_FAILED, groupId = "order-service")
+    @KafkaListener(topics = Topic.ORDER_FAILED, groupId = GroupId.ORDER)
     public void handleFailedOrderEvent(Map<String, Object> event) {
         OrderFailedEventDto eventDto = objectMapper.convertValue(event, OrderFailedEventDto.class);
         orderService.failOrder(eventDto.getOrderId());
