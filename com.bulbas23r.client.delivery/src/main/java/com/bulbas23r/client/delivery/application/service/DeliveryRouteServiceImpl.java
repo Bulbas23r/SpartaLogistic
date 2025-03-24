@@ -1,8 +1,8 @@
 package com.bulbas23r.client.delivery.application.service;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteArriveRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteDepartRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteArriveRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepartRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;

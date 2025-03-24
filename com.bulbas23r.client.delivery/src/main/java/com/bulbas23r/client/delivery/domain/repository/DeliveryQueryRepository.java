@@ -1,6 +1,6 @@
 package com.bulbas23r.client.delivery.domain.repository;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

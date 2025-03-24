@@ -1,6 +1,7 @@
 package com.bulbas23r.client.company.domain.model;
 
-import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
+import common.dto.CompanyInfoResponseDto;
 import common.model.BaseEntity;
 import common.model.Address;
 import jakarta.persistence.Column;
@@ -18,11 +19,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
-@Entity
-@Table(name = "p_company")
 @Getter
 @Builder
+@Entity
+@Table(name = "p_company")
+@SQLRestriction("is_deleted is false")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Company extends BaseEntity{
@@ -36,7 +39,7 @@ public class Company extends BaseEntity{
     private UUID hubId;
 
     @Column(name = "manager_id", nullable = false)
-    private UUID managerId;
+    private Long managerId;
 
     @Column(nullable = false , length = 255)
     private String name;
@@ -67,6 +70,10 @@ public class Company extends BaseEntity{
 
     private <T> T updateValue(T newValue, T currentValue) {
         return newValue != null ? newValue : currentValue;
+    }
+
+    public CompanyInfoResponseDto toCompanyInfoResponseDto() {
+        return new CompanyInfoResponseDto(name,type.toString(),hubId,managerId);
     }
 
 }

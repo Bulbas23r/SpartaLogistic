@@ -1,4 +1,4 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.response;
 
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.fasterxml.jackson.annotation.JsonInclude;

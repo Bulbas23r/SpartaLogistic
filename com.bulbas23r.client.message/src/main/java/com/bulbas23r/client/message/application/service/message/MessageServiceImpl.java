@@ -67,7 +67,7 @@ public class MessageServiceImpl implements MessageService{
     String channelId = channelData.get("id").toString();
 
     // chat.postMessage 호출
-    String sender = UserContextHolder.getCurrentUser();
+    String sender = UserContextHolder.getUser();
     SlackIncomingHookDto slackIncomingHookDto = new SlackIncomingHookDto(sender, dto.getMessage());
     String postUrl = "https://slack.com/api/chat.postMessage";
     Map<String, Object> messagePayload = new HashMap<>();

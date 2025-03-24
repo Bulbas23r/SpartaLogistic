@@ -7,6 +7,7 @@ import com.bulbas23r.client.product.infrastructure.Const.ProductString;
 import com.bulbas23r.client.product.infrastructure.client.CompanyClient;
 import com.bulbas23r.client.product.infrastructure.client.HubClient;
 import com.bulbas23r.client.product.presentation.dto.ProductCompanyResponseDto;
+import com.bulbas23r.client.product.infrastructure.messaging.ProductEventProducer;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
 import com.bulbas23r.client.product.presentation.dto.ProductHubResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
@@ -29,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductQueryRepository productQueryRepository;
     private final CompanyClient companyClient;
     private final HubClient hubClient;
+    private final ProductEventProducer productEventProducer;
 
     @Transactional
     @Override
@@ -45,7 +47,10 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = new Product(productCreateRequestDto);
-        return productRepository.save(product);
+        product = productRepository.save(product);
+        productEventProducer.sendProductCreateEvent(product.getId(),
+            productCreateRequestDto.getHubId(), productCreateRequestDto.getQuantity());
+        return product;
     }
 
     @Transactional
@@ -69,9 +74,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(UUID productId) {
         Product product = getProduct(productId);
+        productEventProducer.sendProductDeleteEvent(product.getId(), product.getHubId());
         product.delete();
-        // TODO: soft-delete로 처리해야 하는데...
-        productRepository.update(product);
     }
 
     @Transactional

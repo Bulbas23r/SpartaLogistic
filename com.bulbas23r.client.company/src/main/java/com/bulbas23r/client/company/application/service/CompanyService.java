@@ -1,8 +1,9 @@
 package com.bulbas23r.client.company.application.service;
 
-import com.bulbas23r.client.company.application.dto.CompanyCreateRequestDto;
-import com.bulbas23r.client.company.application.dto.CompanyResponseDto;
-import com.bulbas23r.client.company.application.dto.CompanyUpdateRequestDto;
+import com.bulbas23r.client.company.domain.model.Company;
+import com.bulbas23r.client.company.presentation.dto.CompanyCreateRequestDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyResponseDto;
+import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
 import com.bulbas23r.client.company.domain.model.CompanyType;
 import common.utils.PageUtils.CommonSortBy;
 import java.util.UUID;
@@ -17,4 +18,5 @@ public interface CompanyService {
     CompanyResponseDto deleteCompany(UUID id);
     Page<CompanyResponseDto>  getCompanyList(Pageable pageable);
     Page<CompanyResponseDto> searchCompany(String name,UUID hubId, CompanyType type ,Pageable pageable, Direction sortDirection, CommonSortBy sortBy);
+    Company getCompany(UUID uuid);
 }

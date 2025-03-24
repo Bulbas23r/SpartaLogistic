@@ -1,4 +1,4 @@
-package com.bulbas23r.client.company.application.dto;
+package com.bulbas23r.client.company.presentation.dto;
 
 import com.bulbas23r.client.company.domain.model.CompanyType;
 import common.annotation.ValidEnum;

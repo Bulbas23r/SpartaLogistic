@@ -1,4 +1,4 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
@@ -7,7 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DeliveryRouteArriveRequestDto {
+public class DeliveryRouteDepartRequestDto {
+
+    @NotNull
+    private UUID deliveryManagerId;
 
     @NotNull
     private UUID deliveryId;
@@ -18,8 +21,5 @@ public class DeliveryRouteArriveRequestDto {
     @NotNull
     private UUID arrivalHubId;
 
-    private Integer distance;
-
-    private Integer duration;
 
 }

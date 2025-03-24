@@ -1,7 +1,7 @@
 package com.bulbas23r.client.delivery.domain.model;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.bulbas23r.client.delivery.application.dto.DeliveryUpdateRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryUpdateRequestDto;
 import common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

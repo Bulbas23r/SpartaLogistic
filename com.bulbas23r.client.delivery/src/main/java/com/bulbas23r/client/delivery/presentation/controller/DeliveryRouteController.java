@@ -1,11 +1,9 @@
 package com.bulbas23r.client.delivery.presentation.controller;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteArriveRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteCreateRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteDepartRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteArriveRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepartRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.application.service.DeliveryRouteService;
-import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import common.annotation.RoleCheck;
 import jakarta.validation.Valid;
 import java.util.UUID;

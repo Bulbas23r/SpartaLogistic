@@ -1,4 +1,4 @@
-package com.bulbas23r.client.company.application.dto;
+package com.bulbas23r.client.company.presentation.dto;
 
 import com.bulbas23r.client.company.domain.model.Company;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class CompanyResponseDto {
     private UUID id;
     private UUID hubId;
-    private UUID managerId;
+    private Long managerId;
     private String name;
     private String type;
     private String phone;
