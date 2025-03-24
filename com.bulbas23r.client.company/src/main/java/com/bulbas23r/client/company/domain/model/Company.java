@@ -1,6 +1,7 @@
 package com.bulbas23r.client.company.domain.model;
 
 import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
+import common.dto.CompanyInfoResponseDto;
 import common.model.BaseEntity;
 import common.model.Address;
 import jakarta.persistence.Column;
@@ -69,6 +70,10 @@ public class Company extends BaseEntity{
 
     private <T> T updateValue(T newValue, T currentValue) {
         return newValue != null ? newValue : currentValue;
+    }
+
+    public CompanyInfoResponseDto toCompanyInfoResponseDto() {
+        return new CompanyInfoResponseDto(name,type.toString(),hubId,managerId);
     }
 
 }

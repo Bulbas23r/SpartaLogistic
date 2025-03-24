@@ -17,6 +17,14 @@ import lombok.ToString;
 public class CreateOrderEventDto {
 
     UUID orderId;
+    UUID provideCompanyId;
+    UUID receiverCompanyId;
     UUID hubId;
     List<OrderProductEventDto> products;
+
+    public CreateOrderEventDto(UUID orderId, UUID provideCompanyId, UUID receiverCompanyId) {
+        this.orderId = orderId;
+        this.provideCompanyId = provideCompanyId;
+        this.receiverCompanyId = receiverCompanyId;
+    }
 }

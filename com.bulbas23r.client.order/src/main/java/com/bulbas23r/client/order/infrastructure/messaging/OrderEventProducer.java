@@ -63,4 +63,10 @@ public class OrderEventProducer {
             .map(OrderProduct::getHubId)
             .orElse(null);
     }
+
+
+    public void sendCreateOrderEventToDelivery(Order order) {
+        CreateOrderEventDto orderEventDto = new CreateOrderEventDto(order.getId(),order.getProvideCompanyId(),order.getReceiveCompanyId());
+        kafkaTemplate.send("create-order-delivery", orderEventDto);
+    }
 }
