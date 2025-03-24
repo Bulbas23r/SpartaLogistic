@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.catalina.User;
 
 @Getter
 @Setter
@@ -19,4 +20,6 @@ public class CreateOrderEventDto {
     UUID orderId;
     UUID hubId;
     List<OrderProductEventDto> products;
+
+    User user;
 }

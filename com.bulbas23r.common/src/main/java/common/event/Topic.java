@@ -1,6 +1,6 @@
 package common.event;
 
-public class TopicName {
+public class Topic {
 
     public static final String CREATE_ORDER = "create-order";
     public static final String CANCEL_ORDER = "cancel-order";
