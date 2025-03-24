@@ -8,6 +8,7 @@ import com.bulbas23r.client.user.application.dto.UserSignUpRequestDto;
 import com.bulbas23r.client.user.application.service.ClientService;
 import com.bulbas23r.client.user.application.service.UserService;
 import com.bulbas23r.client.user.domain.model.User;
+import com.bulbas23r.client.user.infrastructure.messaging.UserEventProducer;
 import common.annotation.RoleCheck;
 import common.dto.UserDetailsDto;
 import common.dto.UserInfoResponseDto;
@@ -41,6 +42,7 @@ public class UserController {
 
     private final UserService userService;
     private final ClientService clientService;
+    private final UserEventProducer userEventProducer;
 
     @GetMapping("/client/{username}")
     public UserDetailsDto getUserDetails(@PathVariable("username") String username) {
@@ -137,6 +139,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
+        userEventProducer.sendUserDeleteEvent(userId);
         return ResponseEntity.ok().build();
     }
 
