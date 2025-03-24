@@ -13,7 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateProductEventDto {
-
     UUID hubId;
     UUID productId;
     int quantity;
