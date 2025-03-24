@@ -1,10 +1,12 @@
 package com.bulbas23r.client.company.presentation.controller;
 
+import com.bulbas23r.client.company.domain.model.Company;
 import com.bulbas23r.client.company.presentation.dto.CompanyCreateRequestDto;
 import com.bulbas23r.client.company.presentation.dto.CompanyResponseDto;
 import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
 import com.bulbas23r.client.company.application.service.CompanyService;
 import com.bulbas23r.client.company.domain.model.CompanyType;
+import com.jayway.jsonpath.internal.path.ArraySliceOperation.Operation;
 import common.annotation.RoleCheck;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
@@ -81,6 +83,13 @@ public class CompanyController {
         Pageable pageable = PageUtils.pageable(page, size);
         Page<CompanyResponseDto> result = companyService.searchCompany(name,hubId,type,pageable,sortDirection,sortBy);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/info/id/{companyId}")
+    public ResponseEntity<?> getCompanyInfoById(@PathVariable("companyId") UUID companyId) {
+        Company company = companyService.getCompany(companyId);
+
+        return ResponseEntity.ok(company.toCompanyInfoResponseDto());
     }
 
 }

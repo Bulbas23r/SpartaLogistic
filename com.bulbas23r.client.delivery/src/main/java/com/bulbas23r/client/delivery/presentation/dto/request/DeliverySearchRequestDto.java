@@ -1,4 +1,4 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.request;
 
 import common.utils.PageUtils;
 import java.util.UUID;

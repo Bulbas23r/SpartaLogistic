@@ -1,20 +1,31 @@
 package common;
 
 public class UserContextHolder {
-  private static final ThreadLocal<String> currentUser = new ThreadLocal<>();
+  private static final ThreadLocal<String> authorizationHolder = new ThreadLocal<>();
+  private static final ThreadLocal<String> userHolder = new ThreadLocal<>();
+  private static final ThreadLocal<String> roleHolder = new ThreadLocal<>();
 
-  // 현재 사용자 설정
-  public static void setCurrentUser(String user) {
-    currentUser.set(user);
+  public static void setCurrentUser(String authorization, String user, String role) {
+    authorizationHolder.set(authorization);
+    userHolder.set(user);
+    roleHolder.set(role);
   }
 
-  // 현재 사용자 조회
-  public static String getCurrentUser() {
-    return currentUser.get();
+  public static String getAuthorization() {
+    return authorizationHolder.get();
   }
 
-  // ThreadLocal 값 초기화
+  public static String getUser() {
+    return userHolder.get();
+  }
+
+  public static String getRole() {
+    return roleHolder.get();
+  }
+
   public static void clear() {
-    currentUser.remove();
+    authorizationHolder.remove();
+    userHolder.remove();
+    roleHolder.remove();
   }
 }
