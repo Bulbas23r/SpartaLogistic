@@ -4,6 +4,7 @@ import com.bulbas23r.client.message.presentation.dto.request.GeminiRequestDto;
 import com.bulbas23r.client.message.presentation.dto.response.GeminiResponseDto;
 import common.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +14,8 @@ public class GeminiServiceImpl implements GeminiService{
 
   private final RestTemplate restTemplate;
 
-  private final static String AI_URI =  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAbaqOzv_9p4YTvi0RUF-arvfuAYZyHQNI";
+  @Value("${gemini.uri}")
+  private static String AI_URI;
 
 
   @Override

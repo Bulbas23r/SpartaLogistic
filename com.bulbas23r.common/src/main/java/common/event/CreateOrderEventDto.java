@@ -15,7 +15,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateOrderEventDto {
-
     UUID orderId;
     UUID hubId;
     List<OrderProductEventDto> products;

@@ -4,14 +4,16 @@ import com.bulbas23r.client.message.application.service.gemini.GeminiService;
 import com.bulbas23r.client.message.application.service.message.MessageService;
 import com.bulbas23r.client.message.client.DeliveryClient;
 import com.bulbas23r.client.message.client.HubClient;
+import com.bulbas23r.client.message.client.OrderClient;
+import com.bulbas23r.client.message.client.ProductClient;
 import com.bulbas23r.client.message.client.UserClient;
+import com.bulbas23r.client.message.presentation.dto.OrderReseponseDto;
 import com.bulbas23r.client.message.presentation.dto.QuestionRequestDto;
 import com.bulbas23r.client.message.presentation.dto.request.PostMessageDto;
 import com.bulbas23r.client.message.presentation.dto.response.DeliveryResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.dto.HubInfoResponseDto;
-import common.dto.UserInfoResponseDto;
-import common.event.OrderMessageEventDto;
+import common.event.CreateOrderEventDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +35,14 @@ public class OrderEventConsumer {
   private final DeliveryClient deliveryClient;
   private final HubClient hubClient;
   private final UserClient userClient;
+  private final ProductClient productClient;
+  private final OrderClient orderClient;
   private final GeminiService geminiService;
   private final MessageService messageService;
 
   @KafkaListener(topics = "create-order")
   public void handleEvent(Map<String, Object> eventMap) {
-    OrderMessageEventDto event = objectMapper.convertValue(eventMap, OrderMessageEventDto.class);
+    CreateOrderEventDto event = objectMapper.convertValue(eventMap, CreateOrderEventDto.class);
 
     // 1. 주문 아이디로 배달 정보 가져오기
     ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity =
@@ -110,12 +114,18 @@ public class OrderEventConsumer {
 
   private String toAnswer(QuestionRequestDto requestDto) {
     // 주문 이벤트 내 상품 정보들을 "상품명: 수량개" 형태의 문자열로 변환
-    String productString = requestDto.getOrderMessageEventDto().getProducts().stream()
-        .map(product -> product.getProductName() + ": " + product.getQuantity() + "개")
+    String productString = requestDto.getCreateOrderEventDto().getProducts().stream()
+        .map(product -> productClient.getProduct(product.getProductId()).getBody().getName() + ": " + product.getQuantity() + "개")
         .collect(Collectors.joining(", "));
 
-    // requestDto에 담긴 허브명들을 사용하여 답변 문자열 구성
-    return productString + "\n주문 요청 사항 : " + requestDto.getOrderMessageEventDto().getMemo() +
+    ResponseEntity<OrderReseponseDto> order = orderClient.getOrder(
+        requestDto.getCreateOrderEventDto().getOrderId());
+
+    List<String> memo = order.getBody().getOrderProducts().stream()
+        .map(OrderReseponseDto.OrderProductResponseDto::getMemo)
+        .toList();
+
+    return productString + "\n주문 요청 사항 : " + memo.get(0) +
         "\n출발지 : " + requestDto.getDepartureHubName() +
         "\n경유지 : " + (requestDto.getTransitHubNames().isEmpty() ? "없음"
         : String.join(", ", requestDto.getTransitHubNames())) +

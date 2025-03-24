@@ -1,6 +1,6 @@
 package com.bulbas23r.client.message.presentation.dto;
 
-import common.event.OrderMessageEventDto;
+import common.event.CreateOrderEventDto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionRequestDto {
-  private OrderMessageEventDto orderMessageEventDto;
+  private CreateOrderEventDto createOrderEventDto;
   private String departureHubName;
   private List<String> transitHubNames = new ArrayList<>();
   private String arriveHubName;
