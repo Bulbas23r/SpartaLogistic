@@ -3,6 +3,7 @@ package com.bulbas23r.client.delivery.infrastructure.messaging;
 
 import com.bulbas23r.client.delivery.application.service.DeliveryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.UserContextHolder;
 import common.event.CreateOrderEventDto;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,10 @@ public class DeliveryEventConsumer {
     @KafkaListener(topics = "create-order-delivery")
     public void handleOrderCreateEvent(Map<String, Object> eventMap) {
         CreateOrderEventDto eventDto = objectMapper.convertValue(eventMap, CreateOrderEventDto.class);
-        System.out.println("CreateOrderEventDto!: " + eventDto);
 
-       deliveryService.createDeliveryByOrder(eventDto);
+        UserContextHolder.setCurrentUser(eventDto.getAuthorization(), eventDto.getUsername(), eventDto.getRole());
+
+        deliveryService.createDeliveryByOrder(eventDto);
 
     }
 

@@ -2,6 +2,7 @@ package com.bulbas23r.client.order.infrastructure.messaging;
 
 import com.bulbas23r.client.order.domain.model.Order;
 import com.bulbas23r.client.order.domain.model.OrderProduct;
+import common.UserContextHolder;
 import common.event.CancelOrderEventDto;
 import common.event.CreateOrderEventDto;
 import common.event.OrderProductEventDto;
@@ -69,6 +70,10 @@ public class OrderEventProducer {
 
     public void sendCreateOrderEventToDelivery(Order order) {
         CreateOrderEventDto orderEventDto = new CreateOrderEventDto(order.getId(),order.getProvideCompanyId(),order.getReceiveCompanyId());
+        orderEventDto.setAuthorization(UserContextHolder.getAuthorization());
+        orderEventDto.setRole(UserContextHolder.getRole());
+        orderEventDto.setUsername(UserContextHolder.getUser());
+
         kafkaTemplate.send("create-order-delivery", orderEventDto);
     }
 }

@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOrderEventDto {
+public class CreateOrderEventDto extends EventBaseDto {
 
     UUID orderId;
     UUID provideCompanyId;
