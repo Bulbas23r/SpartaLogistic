@@ -27,7 +27,9 @@ public class OrderEventProducer {
         UUID hubId = getHubId(order);
         List<OrderProductEventDto> createOrderProductEventDtos = getOrderProductEventDtos(order, 1);
 
-        CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(order.getId(), hubId, createOrderProductEventDtos);
+        CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(order.getId(),
+            order.getProvideCompanyId(), order.getReceiveCompanyId(), hubId,
+            createOrderProductEventDtos);
         kafkaTemplate.send("create-order", createOrderEventDto);
     }
 
