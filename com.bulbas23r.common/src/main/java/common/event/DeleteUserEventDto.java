@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteUserEventDto {
-
+public class DeleteUserEventDto extends EventBaseDto {
+  
     private Long userId;
 }

@@ -15,11 +15,17 @@ import org.apache.catalina.User;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOrderEventDto {
+public class CreateOrderEventDto extends EventBaseDto {
 
     UUID orderId;
+    UUID provideCompanyId;
+    UUID receiverCompanyId;
     UUID hubId;
     List<OrderProductEventDto> products;
 
-    User user;
+    public CreateOrderEventDto(UUID orderId, UUID provideCompanyId, UUID receiverCompanyId) {
+        this.orderId = orderId;
+        this.provideCompanyId = provideCompanyId;
+        this.receiverCompanyId = receiverCompanyId;
+    }
 }

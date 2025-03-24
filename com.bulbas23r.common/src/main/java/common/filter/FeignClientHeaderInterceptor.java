@@ -1,5 +1,6 @@
 package common.filter;
 
+import common.UserContextHolder;
 import common.header.UserInfoHeader;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -33,6 +34,10 @@ public class FeignClientHeaderInterceptor implements RequestInterceptor {
             if (id != null) {
                 template.header(UserInfoHeader.USER_ID, id);
             }
+        }else{
+            template.header("Authorization",UserContextHolder.getAuthorization());
+            template.header(UserInfoHeader.USER_NAME, UserContextHolder.getUser());
+            template.header(UserInfoHeader.USER_ROLE, UserContextHolder.getRole());
         }
     }
 }

@@ -6,13 +6,12 @@ import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.bulbas23r.client.product.infrastructure.Const.ProductString;
 import com.bulbas23r.client.product.infrastructure.client.CompanyClient;
 import com.bulbas23r.client.product.infrastructure.client.HubClient;
-import com.bulbas23r.client.product.presentation.dto.ProductCompanyResponseDto;
+import com.bulbas23r.client.product.infrastructure.messaging.ProductEventProducer;
 import com.bulbas23r.client.product.presentation.dto.ProductCreateRequestDto;
-import com.bulbas23r.client.product.presentation.dto.ProductHubResponseDto;
 import com.bulbas23r.client.product.presentation.dto.ProductUpdateRequestDto;
-import common.utils.PageUtils;
+import common.dto.CompanyInfoResponseDto;
+import common.dto.HubInfoResponseDto;
 import common.utils.PageUtils.CommonSortBy;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
@@ -29,23 +28,28 @@ public class ProductServiceImpl implements ProductService {
     private final ProductQueryRepository productQueryRepository;
     private final CompanyClient companyClient;
     private final HubClient hubClient;
+    private final ProductEventProducer productEventProducer;
 
     @Transactional
     @Override
     public Product createProduct(ProductCreateRequestDto productCreateRequestDto) {
-        ProductCompanyResponseDto company = companyClient.getCompany(
-            productCreateRequestDto.getCompanyId());
-        ProductHubResponseDto hub = hubClient.getHub(productCreateRequestDto.getHubId());
+        CompanyInfoResponseDto companyInfoResponseDto = companyClient.getCompanyInfoById(
+            productCreateRequestDto.getCompanyId()).getBody();
+        HubInfoResponseDto hubInfoResponseDto = hubClient.getHubInfoById(
+            productCreateRequestDto.getHubId()).getBody();
 
-        if (company == null) {
+        if (companyInfoResponseDto == null) {
             throw new ResourceNotFoundException("Company not found with id: " + productCreateRequestDto.getCompanyId());
         }
-        if (hub == null) {
+        if (hubInfoResponseDto == null) {
             throw new ResourceNotFoundException("Hub not found with id: " + productCreateRequestDto.getHubId());
         }
 
         Product product = new Product(productCreateRequestDto);
-        return productRepository.save(product);
+        product = productRepository.save(product);
+        productEventProducer.sendProductCreateEvent(product.getId(),
+            productCreateRequestDto.getHubId(), productCreateRequestDto.getQuantity());
+        return product;
     }
 
     @Transactional
@@ -69,9 +73,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(UUID productId) {
         Product product = getProduct(productId);
+        productEventProducer.sendProductDeleteEvent(product.getId(), product.getHubId());
         product.delete();
-        // TODO: soft-delete로 처리해야 하는데...
-        productRepository.update(product);
     }
 
     @Transactional

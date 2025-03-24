@@ -1,8 +1,8 @@
 package com.bulbas23r.client.delivery.application.service;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteArriveRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteDepartRequestDto;
-import com.bulbas23r.client.delivery.application.dto.DeliveryRouteResponseDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteArriveRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepartRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRoute;
 import com.bulbas23r.client.delivery.domain.model.DeliveryRouteStatus;
 import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
@@ -59,6 +59,11 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
         return deliveryRouteRepository.findAllByDelivery_Id(deliveryId,pageable).map(DeliveryRouteResponseDto::fromEntity);
     }
 
+    @Override
+    public Page<DeliveryRouteResponseDto> getDeliveryByOrderIdRouteList(UUID orderId,
+        Pageable pageable) {
+        return deliveryRouteRepository.findAllByOrder_Id(orderId,pageable).map(DeliveryRouteResponseDto::fromEntity);
+    }
 
     public DeliveryRoute findDeliveryRoute(UUID deliveryId, UUID departureHubId, UUID arrivalHubId, DeliveryRouteStatus status) {
         return deliveryRouteRepository.findByDelivery_IdAndDepartureHubIdAndArrivalHubIdAndStatus(

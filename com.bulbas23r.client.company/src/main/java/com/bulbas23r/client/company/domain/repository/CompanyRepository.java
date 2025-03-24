@@ -10,5 +10,5 @@ public interface CompanyRepository {
     Company save(Company company);
     boolean existsByHubIdAndName(UUID hubId, String name);
     Optional<Company> findById(UUID id);
-    Page<Company> findAllByIsDeletedIsFalse(Pageable pageable);
+    Page<Company> findAll(Pageable pageable);
 }

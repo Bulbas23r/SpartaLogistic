@@ -57,7 +57,7 @@ public abstract class BaseEntity {
             this.isDeleted = true;
             // 이미 deletedBy 값이 없다면, 현재 요청의 사용자 이름을 기록합니다.
             if (this.deletedBy == null) {
-                this.deletedBy = UserContextHolder.getCurrentUser();
+                this.deletedBy = UserContextHolder.getUser();
             }
         }
     }
