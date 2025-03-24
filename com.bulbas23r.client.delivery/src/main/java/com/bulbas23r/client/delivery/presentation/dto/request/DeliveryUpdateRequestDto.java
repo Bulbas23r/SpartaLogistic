@@ -1,4 +1,4 @@
-package com.bulbas23r.client.delivery.application.dto;
+package com.bulbas23r.client.delivery.presentation.dto.request;
 
 import java.util.UUID;
 import lombok.Getter;

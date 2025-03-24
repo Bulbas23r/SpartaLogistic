@@ -1,6 +1,5 @@
 package com.bulbas23r.client.delivery.domain.repository;
 
-import com.bulbas23r.client.delivery.application.dto.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.domain.model.Delivery;
 import java.util.Optional;
 import java.util.UUID;
