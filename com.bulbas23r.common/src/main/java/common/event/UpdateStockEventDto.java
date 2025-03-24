@@ -17,5 +17,5 @@ import lombok.ToString;
 public class UpdateStockEventDto {
 
     UUID hubId;
-    List<CreateOrderProductEventDto> products;
+    List<OrderProductEventDto> products;
 }
