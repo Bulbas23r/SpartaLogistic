@@ -11,6 +11,7 @@ import com.bulbas23r.client.hub.route.domain.model.Route;
 import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
 import com.bulbas23r.client.hub.stock.domain.model.Stock;
 import com.bulbas23r.client.hub.stock.domain.repository.StockRepository;
+import com.bulbas23r.client.hub.stock.infrastructure.messaging.HubEventProducer;
 import common.dto.UserInfoResponseDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
@@ -39,6 +40,7 @@ public class HubServiceImpl implements HubService {
     private final UserClient userClient;
     private final RouteRepository routeRepository;
     private final StockRepository stockRepository;
+    private final HubEventProducer hubEventProducer;
 
     @Override
     @Transactional
@@ -122,6 +124,7 @@ public class HubServiceImpl implements HubService {
     public void deleteHub(UUID hubId) {
         Hub hub = getHubById(hubId);
         hub.setDeleted(true);
+        hubEventProducer.sendDeleteHubEvent(hub.getId());
     }
 
     @Override
