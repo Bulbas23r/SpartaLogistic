@@ -11,6 +11,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductJpaRepository extends ProductRepository, JpaRepository<Product, UUID> {
     @Override
+    List<Product> findByHubId(UUID hubId);
+
+    @Override
+    List<Product> findByCompanyId(UUID companyId);
+
+    @Override
     default void update(Product product) {
         save(product);
     }
@@ -19,4 +25,8 @@ public interface ProductJpaRepository extends ProductRepository, JpaRepository<P
     Product save(Product product);
     List<Product> findAllByCompanyId(UUID companyId);
 
+    @Override
+    default void delete(Product product) {
+        product.delete();
+    }
 }
