@@ -7,6 +7,10 @@ import com.bulbas23r.client.hub.hub.domain.repository.HubRepository;
 import com.bulbas23r.client.hub.hub.infrastructure.client.UserClient;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.CreateHubRequestDto;
 import com.bulbas23r.client.hub.hub.presentation.dto.request.UpdateHubRequestDto;
+import com.bulbas23r.client.hub.route.domain.model.Route;
+import com.bulbas23r.client.hub.route.domain.repository.RouteRepository;
+import com.bulbas23r.client.hub.stock.domain.model.Stock;
+import com.bulbas23r.client.hub.stock.domain.repository.StockRepository;
 import common.dto.UserInfoResponseDto;
 import common.exception.BadRequestException;
 import common.exception.NotFoundException;
@@ -33,6 +37,8 @@ public class HubServiceImpl implements HubService {
     private final HubRepository hubRepository;
     private final HubQueryRepository hubQueryRepository;
     private final UserClient userClient;
+    private final RouteRepository routeRepository;
+    private final StockRepository stockRepository;
 
     @Override
     @Transactional
@@ -136,5 +142,22 @@ public class HubServiceImpl implements HubService {
         return hubRepository.findByManagerId(managerId).orElseThrow(
             () -> new BadRequestException("해당 유저가 담당중인 허브가 존재하지 않습니다!")
         );
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteStocksByProductId(UUID productId) {
+        List<Stock> stockList = stockRepository.findAllByProductId(productId);
+
+        stockList.forEach(Stock::setDeleted);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoutesByHubId(UUID hubId) {
+        List<Route> routeList = routeRepository.findAllByHubId(hubId);
+
+        routeList.forEach(Route::setDeleted);
     }
 }
