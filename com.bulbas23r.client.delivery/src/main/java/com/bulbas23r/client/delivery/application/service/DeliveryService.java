@@ -1,5 +1,6 @@
 package com.bulbas23r.client.delivery.application.service;
 
+import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
@@ -19,4 +20,6 @@ public interface DeliveryService {
     Page<DeliveryResponseDto> searchDelivery(DeliverySearchRequestDto requestDto);
     void changeStatus(UUID deliveryId, DeliveryStatus status);
     void createDeliveryByOrder(CreateOrderEventDto eventDto);
+
+    Delivery getDeliveryByOrderId(UUID orderId);
 }

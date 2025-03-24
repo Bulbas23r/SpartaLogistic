@@ -45,13 +45,18 @@ public class OrderEventConsumer {
   public void handleEvent(Map<String, Object> eventMap) {
     CreateOrderEventDto event = objectMapper.convertValue(eventMap, CreateOrderEventDto.class);
     UserContextHolder.setCurrentUser(event.getAuthorization(),event.getUsername(),event.getRole());
-    // 1. 주문 아이디로 배달 정보 가져오기
-    ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity =
-        deliveryClient.getDeliveryByOrderIdRouteList(event.getOrderId());
+    // 1. 주문 아이디로 배달 아이디 가져오기
+    ResponseEntity<DeliveryResponseDto> deliveryByOrderId = deliveryClient.getDeliveryByOrderId(
+        event.getOrderId());
 
+    // 2. 배달 아이디로 배달 경로 가져오기
+    ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity =
+        deliveryClient.getDeliveryByOrderIdRouteList(deliveryByOrderId.getBody()
+            .getId());
+
+    // 3. 받아온 허브 아이디들로 출발지, 경유지, 도착지 명 가져오기
     if (deliveryResponseEntity.getStatusCode().is2xxSuccessful() &&
         deliveryResponseEntity.getBody() != null) {
-
       List<DeliveryResponseDto> routes = deliveryResponseEntity.getBody().getContent();
       if (!routes.isEmpty()) {
         // 출발 허브: 리스트 첫번째 요소의 departureHubId
@@ -76,6 +81,7 @@ public class OrderEventConsumer {
 
           departureHubName = departureResponse.getBody().getName();
 
+          // 4. 출발 허브 담당자 슬랙 아이디 가져오기
           hubSlackId = userClient.getUser(
               departureResponse.getBody().getManagerId()).getBody().getSlackId();
         }

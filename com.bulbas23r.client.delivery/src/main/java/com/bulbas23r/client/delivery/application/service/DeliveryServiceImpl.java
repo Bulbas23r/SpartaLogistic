@@ -59,6 +59,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
+    public Delivery getDeliveryByOrderId(UUID orderId) {
+        return deliveryRepository.findByOrderId(orderId);
+    }
+
+    @Override
     @Transactional
     public DeliveryResponseDto createDelivery(DeliveryCreateRequestDto requestDto) {
         //todo: _id 값 유효성 check

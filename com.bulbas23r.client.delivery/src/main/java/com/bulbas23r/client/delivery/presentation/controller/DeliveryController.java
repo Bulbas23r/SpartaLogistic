@@ -1,5 +1,6 @@
 package com.bulbas23r.client.delivery.presentation.controller;
 
+import com.bulbas23r.client.delivery.domain.model.Delivery;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
@@ -42,6 +43,12 @@ public class DeliveryController {
     public ResponseEntity<?> getDelivery(@PathVariable("deliveryId") UUID deliveryId) {
         DeliveryResponseDto result = deliveryService.getDelivery(deliveryId);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<?> getDeliveryByOrderId(@PathVariable("orderId") UUID orderId) {
+        Delivery deliveryByOrderId = deliveryService.getDeliveryByOrderId(orderId);
+        return ResponseEntity.ok(deliveryByOrderId);
     }
 
 

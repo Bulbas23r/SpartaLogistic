@@ -10,4 +10,5 @@ public interface DeliveryRepository {
     Delivery save(Delivery delivery);
     Optional<Delivery> findById(UUID id);
     Page<Delivery> findAll(Pageable pageable);
+    Delivery findByOrderId(UUID orderId);
 }

@@ -11,8 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "hub-service", url = "http://localhost:19091/api/deliveries", configuration = FeignConfig.class)
 public interface DeliveryClient {
-  @GetMapping("/{orderId}/order/route")
+  @GetMapping("/{deliveryId}/route")
   ResponseEntity<Page<DeliveryResponseDto>> getDeliveryByOrderIdRouteList(
+      @PathVariable("deliveryId") UUID deliveryId
+  );
+
+  @GetMapping("/order/{orderId}")
+  ResponseEntity<DeliveryResponseDto> getDeliveryByOrderId(
       @PathVariable("orderId") UUID orderId
   );
 }
