@@ -31,6 +31,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order(orderCreateRequestDto);
         order = orderRepository.save(order);
         orderEventProducer.sendOrderEvent(order);
+        orderEventProducer.sendCreateOrderEventToDelivery(order);
+
         return order;
     }
 
