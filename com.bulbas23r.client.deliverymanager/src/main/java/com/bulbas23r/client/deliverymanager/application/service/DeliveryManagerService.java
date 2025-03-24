@@ -24,6 +24,8 @@ public interface DeliveryManagerService {
 
     void deleteDeliveryManager(Long userId);
 
+    void deleteCompanyDeliveryManagers(UUID hubId);
+
     DeliveryManager updateDeliveryManager(Long userId, UpdateDeliveryManagerRequestDto requestDto);
 
     Page<DeliveryManager> searchDeliveryManagerList(Pageable pageable, Direction sortDirection,

@@ -171,6 +171,13 @@ public class DeliveryManagerServiceImpl implements DeliveryManagerService {
         }
 
     }
+
+    @Override
+    @Transactional
+    public void deleteCompanyDeliveryManagers(UUID hubId) {
+        List<DeliveryManager> deliveryManagers = getCompanyDeliveryManagerList(hubId);
+        deliveryManagers.forEach(DeliveryManager::setDeleted);
+    }
     //    @Transactional
 //    @Override
 //    public DeliveryManager createDeliveryManager(CreateDeliveryManagerRequestDto requestDto) {

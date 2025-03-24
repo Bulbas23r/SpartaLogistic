@@ -2,12 +2,13 @@ package com.bulbas23r.client.hub.stock.infrastructure.messaging;
 
 import com.bulbas23r.client.hub.hub.application.service.HubService;
 import com.bulbas23r.client.hub.stock.application.service.StockService;
-import common.event.CreateStockEventDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import common.event.CreateProductEventDto;
 import common.event.DeleteProductDto;
 import common.event.Topic;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,14 +17,18 @@ public class ProductEventConsumer {
 
     private final StockService stockService;
     private final HubService hubService;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = Topic.CREATE_PRODUCT)
-    public void createStock(@Payload CreateStockEventDto event) {
-        stockService.createStock(event);
+    public void createStock(Map<String, Object> event) {
+        CreateProductEventDto eventDto = objectMapper.convertValue(event,
+            CreateProductEventDto.class);
+        stockService.createStock(eventDto);
     }
 
     @KafkaListener(topics = Topic.DELETE_PRODUCT)
-    public void deleteStock(@Payload DeleteProductDto event) {
-        hubService.deleteStocksByProductId(event.getProductId());
+    public void deleteStock(Map<String, Object> event) {
+        DeleteProductDto eventDto = objectMapper.convertValue(event, DeleteProductDto.class);
+        hubService.deleteStocksByProductId(eventDto.getProductId());
     }
 }

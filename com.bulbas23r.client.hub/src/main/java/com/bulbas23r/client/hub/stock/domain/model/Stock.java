@@ -1,6 +1,6 @@
 package com.bulbas23r.client.hub.stock.domain.model;
 
-import common.event.CreateStockEventDto;
+import common.event.CreateProductEventDto;
 import common.model.BaseEntity;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ public class Stock extends BaseEntity {
 
     private Integer quantity;
 
-    public static Stock fromEventDto(CreateStockEventDto eventDto) {
+    public static Stock fromEventDto(CreateProductEventDto eventDto) {
         return Stock.builder()
             .id(new StockId(eventDto.getHubId(), eventDto.getProductId()))
             .quantity(eventDto.getQuantity())

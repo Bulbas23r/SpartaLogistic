@@ -2,9 +2,9 @@ package com.bulbas23r.client.hub.stock.application.service;
 
 import com.bulbas23r.client.hub.stock.domain.model.Stock;
 import com.bulbas23r.client.hub.stock.domain.repository.StockRepository;
-import common.event.CreateStockEventDto;
+import common.event.CreateOrderEventDto;
+import common.event.CreateProductEventDto;
 import common.event.OrderProductEventDto;
-import common.event.UpdateStockEventDto;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    public Stock createStock(CreateStockEventDto eventDto) {
+    public Stock createStock(CreateProductEventDto eventDto) {
         Stock stock = Stock.fromEventDto(eventDto);
 
         return stockRepository.save(stock);
@@ -29,7 +29,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    public void updateStock(UpdateStockEventDto eventDto) {
+    public void updateStock(CreateOrderEventDto eventDto) {
         List<UUID> productIds =
             eventDto.getProducts().stream().map(OrderProductEventDto::getProductId).toList();
         List<Stock> stockList =
