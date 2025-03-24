@@ -1,15 +1,13 @@
 package com.bulbas23r.client.company.presentation.controller;
 
+import com.bulbas23r.client.company.application.service.CompanyService;
 import com.bulbas23r.client.company.domain.model.Company;
+import com.bulbas23r.client.company.domain.model.CompanyType;
 import com.bulbas23r.client.company.presentation.dto.CompanyCreateRequestDto;
 import com.bulbas23r.client.company.presentation.dto.CompanyResponseDto;
 import com.bulbas23r.client.company.presentation.dto.CompanyUpdateRequestDto;
-import com.bulbas23r.client.company.application.service.CompanyService;
-import com.bulbas23r.client.company.domain.model.CompanyType;
-import com.jayway.jsonpath.internal.path.ArraySliceOperation.Operation;
 import common.annotation.RoleCheck;
 import common.utils.PageUtils;
-import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,14 +40,15 @@ public class CompanyController {
 
     @RoleCheck({"MASTER", "HUB_MANAGER, COMPANY"})
     @PutMapping("/{companyId}")
-    public ResponseEntity<?> updateCompany(@PathVariable("companyId") UUID companyId, @RequestBody CompanyUpdateRequestDto requestDto) {
+    public ResponseEntity<?> updateCompany(@PathVariable("companyId") UUID companyId,
+        @RequestBody CompanyUpdateRequestDto requestDto) {
         CompanyResponseDto resultDto = companyService.updateCompany(companyId, requestDto);
         return ResponseEntity.ok(resultDto);
     }
 
     @GetMapping
     public ResponseEntity<?> getCompanyList(
-        @RequestParam(name = "page",defaultValue = "0", required = false) int page,
+        @RequestParam(name = "page", defaultValue = "0", required = false) int page,
         @RequestParam(name = "size", defaultValue = "10", required = false) int size
     ) {
         Pageable pageable = PageUtils.pageable(page, size);
@@ -65,23 +64,24 @@ public class CompanyController {
 
     @RoleCheck({"MASTER", "HUB_MANAGER"})
     @DeleteMapping("/{companyId}")
-    public ResponseEntity<?> deleteCompany(@PathVariable("companyId")  UUID companyId) {
-        CompanyResponseDto resultDto =  companyService.deleteCompany(companyId);
+    public ResponseEntity<?> deleteCompany(@PathVariable("companyId") UUID companyId) {
+        CompanyResponseDto resultDto = companyService.deleteCompany(companyId);
         return ResponseEntity.ok(resultDto);
     }
 
     @GetMapping("/search")
     public ResponseEntity<?> searchCompany(
         @RequestParam(name = "name", required = false) String name,
-        @RequestParam(name = "hubId",required = false) UUID hubId,
-        @RequestParam(name = "type",required = false) CompanyType type,
+        @RequestParam(name = "hubId", required = false) UUID hubId,
+        @RequestParam(name = "type", required = false) CompanyType type,
         @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-        @RequestParam(name = "size",defaultValue = "10", required = false) int size,
-        @RequestParam(name = "sortDirection",defaultValue = "DESC", required = false) Sort.Direction sortDirection,
+        @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+        @RequestParam(name = "sortDirection", defaultValue = "DESC", required = false) Sort.Direction sortDirection,
         @RequestParam(name = "sortBy", defaultValue = "UPDATED_AT", required = false) PageUtils.CommonSortBy sortBy
     ) {
         Pageable pageable = PageUtils.pageable(page, size);
-        Page<CompanyResponseDto> result = companyService.searchCompany(name,hubId,type,pageable,sortDirection,sortBy);
+        Page<CompanyResponseDto> result = companyService.searchCompany(name, hubId, type, pageable,
+            sortDirection, sortBy);
         return ResponseEntity.ok(result);
     }
 
