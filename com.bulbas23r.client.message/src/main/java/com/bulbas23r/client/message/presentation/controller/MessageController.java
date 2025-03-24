@@ -1,7 +1,10 @@
 package com.bulbas23r.client.message.presentation.controller;
 
-import com.bulbas23r.client.message.application.service.MessageService;
+import com.bulbas23r.client.message.application.service.gemini.GeminiService;
+import com.bulbas23r.client.message.application.service.message.MessageService;
 import com.bulbas23r.client.message.domain.model.Message;
+import com.bulbas23r.client.message.presentation.dto.request.GeminiRequestDto;
+import com.bulbas23r.client.message.presentation.dto.response.GeminiResponseDto;
 import com.bulbas23r.client.message.presentation.dto.response.MessageResponseDto;
 import com.bulbas23r.client.message.presentation.dto.request.PostMessageDto;
 import common.annotation.RoleCheck;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
 
   private final MessageService messageService;
+  private final GeminiService geminiService;
 
   @PostMapping
   public ResponseEntity<?> postMessage(@RequestBody PostMessageDto postMessageDto) {

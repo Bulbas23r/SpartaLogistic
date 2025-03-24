@@ -59,6 +59,11 @@ public class DeliveryRouteServiceImpl implements DeliveryRouteService {
         return deliveryRouteRepository.findAllByDelivery_Id(deliveryId,pageable).map(DeliveryRouteResponseDto::fromEntity);
     }
 
+    @Override
+    public Page<DeliveryRouteResponseDto> getDeliveryByOrderIdRouteList(UUID orderId,
+        Pageable pageable) {
+        return deliveryRouteRepository.findAllByOrder_Id(orderId,pageable).map(DeliveryRouteResponseDto::fromEntity);
+    }
 
     public DeliveryRoute findDeliveryRoute(UUID deliveryId, UUID departureHubId, UUID arrivalHubId, DeliveryRouteStatus status) {
         return deliveryRouteRepository.findByDelivery_IdAndDepartureHubIdAndArrivalHubIdAndStatus(

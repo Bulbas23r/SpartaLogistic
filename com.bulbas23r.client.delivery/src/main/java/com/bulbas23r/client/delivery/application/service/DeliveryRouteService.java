@@ -9,7 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface DeliveryRouteService {
-    DeliveryRouteResponseDto departDeliveryRoute(DeliveryRouteDepartRequestDto requestDto);
-    DeliveryRouteResponseDto arriveDeliveryRoute(@Valid DeliveryRouteArriveRequestDto requestDto);
-    Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId,Pageable pageable);
+
+  DeliveryRouteResponseDto departDeliveryRoute(DeliveryRouteDepartRequestDto requestDto);
+
+  DeliveryRouteResponseDto arriveDeliveryRoute(@Valid DeliveryRouteArriveRequestDto requestDto);
+
+  Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId, Pageable pageable);
+
+  Page<DeliveryRouteResponseDto> getDeliveryByOrderIdRouteList(UUID orderId, Pageable pageable);
 }
