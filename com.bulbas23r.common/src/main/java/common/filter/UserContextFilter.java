@@ -34,12 +34,13 @@ public class UserContextFilter implements Filter {
                 }
             }
 
-            // "X-User-Name" 헤더 값 가져오기
             String username = httpRequest.getHeader(UserInfoHeader.USER_NAME);
+            String authorization = httpRequest.getHeader("Authorization");
+            String role = httpRequest.getHeader(UserInfoHeader.USER_ROLE);
             logger.info("X-User-Name header: {}", username);
 
             if (username != null && !username.trim().isEmpty()) {
-                UserContextHolder.setCurrentUser(username);
+                UserContextHolder.setCurrentUser(authorization,username,role);
             } else {
                 logger.warn("X-User-Name header is missing or empty");
             }
