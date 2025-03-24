@@ -31,6 +31,11 @@ public class OrderEventProducer {
         CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(order.getId(),
             order.getProvideCompanyId(), order.getReceiveCompanyId(), hubId,
             createOrderProductEventDtos);
+
+        createOrderEventDto.setAuthorization(UserContextHolder.getAuthorization());
+        createOrderEventDto.setRole(UserContextHolder.getRole());
+        createOrderEventDto.setUsername(UserContextHolder.getUser());
+
         kafkaTemplate.send("create-order", createOrderEventDto);
     }
 

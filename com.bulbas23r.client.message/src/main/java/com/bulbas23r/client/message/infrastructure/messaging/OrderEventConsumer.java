@@ -12,6 +12,7 @@ import com.bulbas23r.client.message.presentation.dto.QuestionRequestDto;
 import com.bulbas23r.client.message.presentation.dto.request.PostMessageDto;
 import com.bulbas23r.client.message.presentation.dto.response.DeliveryResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.UserContextHolder;
 import common.dto.HubInfoResponseDto;
 import common.event.CreateOrderEventDto;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class OrderEventConsumer {
   @KafkaListener(topics = "create-order")
   public void handleEvent(Map<String, Object> eventMap) {
     CreateOrderEventDto event = objectMapper.convertValue(eventMap, CreateOrderEventDto.class);
-
+    UserContextHolder.setCurrentUser(event.getAuthorization(),event.getUsername(),event.getRole());
     // 1. 주문 아이디로 배달 정보 가져오기
     ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity =
         deliveryClient.getDeliveryByOrderIdRouteList(event.getOrderId());
