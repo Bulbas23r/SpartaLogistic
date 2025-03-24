@@ -4,14 +4,12 @@ import com.bulbas23r.client.product.domain.model.Product;
 import com.bulbas23r.client.product.domain.repository.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import common.event.DeleteCompanyEventDto;
-import common.event.UpdateStockEventDto;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
