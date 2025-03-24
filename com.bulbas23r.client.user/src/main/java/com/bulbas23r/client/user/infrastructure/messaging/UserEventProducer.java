@@ -1,6 +1,7 @@
 package com.bulbas23r.client.user.infrastructure.messaging;
 
 import com.bulbas23r.client.user.domain.model.User;
+import common.UserContextHolder;
 import common.event.DeleteUserEventDto;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class UserEventProducer {
 
   public void sendUserDeleteEvent(Long userId) {
     DeleteUserEventDto event = new DeleteUserEventDto(userId);
+    event.setAuthorization(UserContextHolder.getAuthorization());
+    event.setRole(UserContextHolder.getRole());
+    event.setUsername(UserContextHolder.getUser());
     kafkaTemplate.send("user-delete-events", event);
   }
 }
