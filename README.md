@@ -72,4 +72,5 @@
 [API Endpoints](API_ENDPOINTS.md)
 
 ## 트러블 슈팅
-
+- [Kafka 사용 중 dto 인식 오류](https://www.notion.so/teamsparta/kafka-DTO-1bd2dc3ef51480a5a937f0c059f35f8d?pvs=4)
+- [Kafka 수신 후 FeignClient 사용 오류](https://www.notion.so/teamsparta/kafka-feignclient-1c02dc3ef514806fb19bc97b4145fd8a?pvs=4)
