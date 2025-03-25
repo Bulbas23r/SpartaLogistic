@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: message-service
+  config:
+    import: configserver:http://localhost:18080
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+    path: /message-service/v3/api-docs
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+
+hub-service:
+  url: http://localhost:19091/api/hubs
+
+user-service:
+  url: http://localhost:19091/api/users
+
+delivery-service:
+  url: http://localhost:19091/api/deliveries
+
+order-service:
+  url: http://localhost:19091/api/orders
+
+product-service:
+  url: http://localhost:19091/api/products
