@@ -143,6 +143,6 @@ public class OrderEventConsumer {
             "\n경유지 : " + (requestDto.getTransitHubNames().isEmpty() ? "없음"
             : String.join(", ", requestDto.getTransitHubNames())) +
             "\n도착지 : " + requestDto.getArriveHubName()
-            + "출발지, 경유지, 도착지의 위치를 바탕으로 발송지에서 최종 발송 시한이 언제인지 알려줘";
+            + "출발지, 경유지, 도착지의 위치를 바탕으로 출발지에서 최종 발송 시한이 언제인지 알려줘, 예상 시간은 평균적으로 계산해서 언제 출발해야 하는지 출발시간은 몇시입니다. 이렇게 1문장으로만 대답해";
     }
 }
