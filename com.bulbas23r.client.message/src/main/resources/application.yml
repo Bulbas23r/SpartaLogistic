@@ -25,13 +25,16 @@ springdoc:
 
 
 hub-service:
-  url: http://localhost:${wiremock.server.port}/api/hubs
+  url: http://localhost:19091/api/hubs
 
 user-service:
-  url: http://localhost:${wiremock.server.port}/api/users
+  url: http://localhost:19091/api/users
 
 delivery-service:
-  url: http://localhost:${wiremock.server.port}/api/deliveries
+  url: http://localhost:19091/api/deliveries
 
 order-service:
-  url: http://localhost:${wiremock.server.port}/api/orders
+  url: http://localhost:19091/api/orders
+
+product-service:
+  url: http://localhost:19091/api/products

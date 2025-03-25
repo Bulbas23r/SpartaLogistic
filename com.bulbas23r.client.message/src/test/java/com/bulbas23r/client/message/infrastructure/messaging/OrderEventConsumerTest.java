@@ -13,6 +13,8 @@ import com.bulbas23r.client.message.client.HubClient;
 import com.bulbas23r.client.message.client.OrderClient;
 import com.bulbas23r.client.message.client.ProductClient;
 import com.bulbas23r.client.message.client.UserClient;
+import com.bulbas23r.client.message.presentation.dto.OrderReseponseDto;
+import com.bulbas23r.client.message.presentation.dto.QuestionRequestDto;
 import com.bulbas23r.client.message.presentation.dto.response.DeliveryResponseDto;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import common.dto.HubInfoResponseDto;
@@ -21,6 +23,7 @@ import common.event.CreateOrderEventDto;
 import common.event.OrderProductEventDto;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +42,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @TestPropertySource(properties = {
     "user-service.url=http://localhost:${wiremock.server.port}/api/users",
     "delivery-service.url=http://localhost:${wiremock.server.port}/api/deliveries",
-    "hub-service.url=http://localhost:${wiremock.server.port}/api/hubs"
+    "product-service.url=http://localhost:${wiremock.server.port}/api/products",
+    "hub-service.url=http://localhost:${wiremock.server.port}/api/hubs",
+    "order-service.url=http://localhost:${wiremock.server.port}/api/orders",
 })
 @ActiveProfiles("test")
 class OrderEventConsumerTest {
@@ -64,6 +69,7 @@ class OrderEventConsumerTest {
 
   @InjectMocks
   private OrderEventConsumer orderEventConsumer;
+
 
   @Test
   void handleEvent() {
@@ -188,18 +194,115 @@ class OrderEventConsumerTest {
                 + "  \"active\": true\n"
                 + "}")));
 
-    ResponseEntity<HubInfoResponseDto> hubInfo = hubClient.getHubInfo(
+    wireMockServer.stubFor(get(urlEqualTo("/api/hubs/" + routes.get(1).getDepartureHubId()))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{\n"
+                + "  \"name\": \"경기 허브\",\n"
+                + "  \"managerId\": 12345,\n"
+                + "  \"roadAddress\": \"123 Main Street\",\n"
+                + "  \"jibunAddress\": \"123-45\",\n"
+                + "  \"latitude\": 37.5665,\n"
+                + "  \"longitude\": 126.9780,\n"
+                + "  \"active\": true\n"
+                + "}")));
+
+    wireMockServer.stubFor(get(urlEqualTo("/api/hubs/" + routes.get(2).getDepartureHubId()))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{\n"
+                + "  \"name\": \"부산 허브\",\n"
+                + "  \"managerId\": 12345,\n"
+                + "  \"roadAddress\": \"123 Main Street\",\n"
+                + "  \"jibunAddress\": \"123-45\",\n"
+                + "  \"latitude\": 37.5665,\n"
+                + "  \"longitude\": 126.9780,\n"
+                + "  \"active\": true\n"
+                + "}")));
+
+    ResponseEntity<HubInfoResponseDto> departHubInfo = hubClient.getHubInfo(
         routes.get(0).getDepartureHubId());
 
-    assertEquals(hubInfo.getBody().getName(),"서울 허브");
+    ResponseEntity<HubInfoResponseDto> transitHubInfo = hubClient.getHubInfo(
+        routes.get(1).getDepartureHubId());
 
-//
-//    when(geminiService.getAi(any())).thenReturn("AI 응답 테스트");
-//
-//    // when
-//    orderEventConsumer.handleEvent(eventMap);
+    ResponseEntity<HubInfoResponseDto> arriveHubInfo = hubClient.getHubInfo(
+        routes.get(routes.size() - 1).getArrivalHubId());
+
+
+    assertEquals(departHubInfo.getBody().getName(),"서울 허브");
+
+
+    QuestionRequestDto questionRequestDto = new QuestionRequestDto(
+        createOrderEventDto,
+        departHubInfo.getBody().getName(),
+        List.of(transitHubInfo.getBody().getName()),
+        arriveHubInfo.getBody().getName()
+    );
+
+
+    wireMockServer.stubFor(get(urlEqualTo("/api/products/" + questionRequestDto.getCreateOrderEventDto().getProducts().get(0).getProductId()))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody(
+                "{\n"
+                    + "  \"id\": \"" + productId + "\",\n"
+                    + "  \"companyId\": \""+ departureHubId + "\",\n"
+                    + "  \"hubId\": \""+ departureHubId + "\",\n"
+                    + "  \"name\": \"Sample Product\",\n"
+                    + "  \"price\": 99.99,\n"
+                    + "  \"description\": \"3월 24일 오후 1시까지 배송해주세요\"\n"
+                    + "}\n"
+            )));
+
+
+    wireMockServer.stubFor(get(urlEqualTo("/api/orders/" + questionRequestDto.getCreateOrderEventDto().getOrderId()))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody(
+                "{\n"
+                    + "  \"id\": \"" + orderId + "\",\n"
+                    + "  \"orderProducts\": [\n"
+                    + "    {\n"
+                    + "      \"memo\": \"3월 24일 오후 1시까지 배송해주세요\"\n"
+                    + "    }\n"
+                    + "  ]\n"
+                    + "}\n"
+            )));
+
+    System.out.println(toAnswer(questionRequestDto));
 
     // then
     // messageService.sendDirectMessage 호출 확인 (필요시 verify 사용 가능)
   }
+
+
+
+  private String toAnswer(QuestionRequestDto requestDto) {
+    // 주문 이벤트 내 상품 정보들을 "상품명: 수량개" 형태의 문자열로 변환
+    String productString = requestDto.getCreateOrderEventDto().getProducts().stream()
+        .map(product -> productClient.getProduct(product.getProductId()).getBody().getName()
+            + ": " + product.getQuantity() + "개")
+        .collect(Collectors.joining(", "));
+
+
+    ResponseEntity<OrderReseponseDto> order = orderClient.getOrder(
+        requestDto.getCreateOrderEventDto().getOrderId());
+
+    List<String> memo = order.getBody().getOrderProducts().stream()
+        .map(OrderReseponseDto.OrderProductResponseDto::getMemo)
+        .toList();
+
+    return productString + "\n주문 요청 사항 : " + memo.get(0) +
+        "\n출발지 : " + requestDto.getDepartureHubName() +
+        "\n경유지 : " + (requestDto.getTransitHubNames().isEmpty() ? "없음"
+        : String.join(", ", requestDto.getTransitHubNames())) +
+        "\n도착지 : " + requestDto.getArriveHubName()
+        + "출발지, 경유지, 도착지의 위치를 바탕으로 발송지에서 최종 발송 시한이 언제인지 알려줘";
+  }
+
 }

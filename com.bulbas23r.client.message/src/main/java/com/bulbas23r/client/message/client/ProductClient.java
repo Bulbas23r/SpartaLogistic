@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "product-service", url = "http://localhost:19091/api/products", configuration = FeignConfig.class)
+@FeignClient(name = "product-service", url = "${product-service.url}", configuration = FeignConfig.class)
 public interface ProductClient {
   @GetMapping("/{productId}")
-  ResponseEntity<ProductResponseDto> getProduct(@PathVariable UUID productId);
+  ResponseEntity<ProductResponseDto> getProduct(@PathVariable("productId") UUID productId);
 }
