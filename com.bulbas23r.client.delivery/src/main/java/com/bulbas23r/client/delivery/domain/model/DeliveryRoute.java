@@ -73,8 +73,8 @@ public class DeliveryRoute extends BaseEntity {
         }
     }
 
-    public void updateDepartDelivery(Long deliveryManagerId) {
-        this.status = DeliveryRouteStatus.HUB_TRANSIT;
+    public void updateDepartDelivery(Long deliveryManagerId , DeliveryRouteStatus status) {
+        this.status = status;
         this.deliveryManagerId = deliveryManagerId;
     }
 

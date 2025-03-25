@@ -87,4 +87,8 @@ public class Delivery extends BaseEntity {
     public void changeStatus(DeliveryStatus status) {
         this.status = status;
     }
+
+    public void changeDeliveryManagerId(UUID deliveryManagerId) {
+        this.deliveryManagerId = deliveryManagerId;
+    }
 }

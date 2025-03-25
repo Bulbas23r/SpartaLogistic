@@ -16,5 +16,4 @@ public interface DeliveryRouteService {
 
   Page<DeliveryRouteResponseDto> getDeliveryRouteList(UUID deliveryId, Pageable pageable);
 
-  Page<DeliveryRouteResponseDto> getDeliveryByOrderIdRouteList(UUID orderId, Pageable pageable);
 }

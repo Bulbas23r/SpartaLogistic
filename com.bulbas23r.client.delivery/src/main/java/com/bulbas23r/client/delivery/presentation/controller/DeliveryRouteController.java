@@ -59,16 +59,5 @@ public class DeliveryRouteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{orderId}/order/route")
-    public ResponseEntity<?> getDeliveryByOrderIdRouteList(
-        @PathVariable UUID orderId,
-        @RequestParam(defaultValue = "0", required = false) int page,
-        @RequestParam(defaultValue =  "10", required = false) int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Direction.ASC, "sequence");
-        Page<DeliveryRouteResponseDto> result = deliveryRouteService.getDeliveryByOrderIdRouteList(orderId,pageable);
-
-        return ResponseEntity.ok(result);
-    }
 
 }
