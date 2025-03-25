@@ -1,6 +1,8 @@
 # API Endpoints Documentation
 
-이 문서는 각 컨트롤러별로 노출되는 API 엔드포인트와 관련 정보를 정리한 것입니다.
+이 문서는 각 컨트롤러별로 노출되는 API 엔드포인트와 관련 정보를 정리한 것입니다.  
+해당 API 앤드포인트들은 gateway 서비스에서 Swagger를 통해 확인하실 수 있습니다.  
+(gateway 서비스 실행후 localhost:19091 접속)
 
 ---
 
