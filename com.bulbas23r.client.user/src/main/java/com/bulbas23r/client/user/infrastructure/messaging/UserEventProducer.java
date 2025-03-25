@@ -18,6 +18,6 @@ public class UserEventProducer {
     event.setAuthorization(UserContextHolder.getAuthorization());
     event.setRole(UserContextHolder.getRole());
     event.setUsername(UserContextHolder.getUser());
-    kafkaTemplate.send("user-delete-events", event);
+    kafkaTemplate.send("delete-user", event);
   }
 }

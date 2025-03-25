@@ -48,9 +48,14 @@ public class OrderEventConsumer {
         CreateOrderEventDto event = objectMapper.convertValue(eventMap, CreateOrderEventDto.class);
         UserContextHolder.setCurrentUser(event.getAuthorization(), event.getUsername(),
             event.getRole());
+
         // 1. 주문 아이디로 배달 정보 가져오기
+        ResponseEntity<DeliveryResponseDto> findDelivery = deliveryClient.getDeliveryByOrderId(
+            event.getOrderId());
+
+        // 배달 아이디로 경로 가져오기
         ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity =
-            deliveryClient.getDeliveryByOrderIdRouteList(event.getOrderId());
+            deliveryClient.getDeliveryRouteList(findDelivery.getBody().getId());
 
         if (deliveryResponseEntity.getStatusCode().is2xxSuccessful() &&
             deliveryResponseEntity.getBody() != null) {
