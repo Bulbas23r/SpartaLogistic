@@ -9,10 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "hub-service", url = "http://localhost:19091/api/deliveries", configuration = FeignConfig.class)
+//@FeignClient(name = "delivery-service", url = "http://localhost:19091/api/deliveries", configuration = FeignConfig.class)
+@FeignClient(name = "delivery-service", url = "${delivery-service.url}", configuration = FeignConfig.class)
 public interface DeliveryClient {
   @GetMapping("/{deliveryId}/route")
-  ResponseEntity<Page<DeliveryResponseDto>> getDeliveryByOrderIdRouteList(
+  ResponseEntity<Page<DeliveryResponseDto>> getDeliveryRouteList(
       @PathVariable("deliveryId") UUID deliveryId
   );
 

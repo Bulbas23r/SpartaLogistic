@@ -61,10 +61,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         createDelivery(requestDto);
     }
 
-    @Override
-    public Delivery getDeliveryByOrderId(UUID orderId) {
-        return deliveryRepository.findByOrderId(orderId);
-    }
 
     @Override
     @Transactional
