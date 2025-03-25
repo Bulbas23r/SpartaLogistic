@@ -45,7 +45,7 @@ public class DeliveryRoute extends BaseEntity {
     private UUID arrivalHubId;
 
     @Column(name = "delivery_manager_id")
-    private UUID deliveryManagerId;
+    private Long deliveryManagerId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -73,7 +73,7 @@ public class DeliveryRoute extends BaseEntity {
         }
     }
 
-    public void updateDepartDelivery(UUID deliveryManagerId) {
+    public void updateDepartDelivery(Long deliveryManagerId) {
         this.status = DeliveryRouteStatus.HUB_TRANSIT;
         this.deliveryManagerId = deliveryManagerId;
     }

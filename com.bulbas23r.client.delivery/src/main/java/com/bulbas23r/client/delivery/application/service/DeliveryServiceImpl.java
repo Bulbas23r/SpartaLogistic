@@ -65,7 +65,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public DeliveryResponseDto createDelivery(DeliveryCreateRequestDto requestDto) {
-        //todo: _id 값 유효성 check
 
         Delivery delivery = requestDto.toDelivery();
         deliveryRepository.save(delivery);
@@ -180,7 +179,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                     .arrivalHubId(routeList.get(i))
                     .estimatedDistance(hubRoute.getTransitDistance())
                     .estimatedDuration(hubRoute.getTransitTime())
-                    .sequence(i + 1)
+                    .sequence(i)
                     .build()
             );
         }
