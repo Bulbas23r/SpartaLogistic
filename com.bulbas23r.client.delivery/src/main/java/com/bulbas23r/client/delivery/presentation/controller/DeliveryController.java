@@ -1,11 +1,14 @@
 package com.bulbas23r.client.delivery.presentation.controller;
 
+import com.bulbas23r.client.delivery.domain.model.Delivery;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCompanyRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryUpdateRequestDto;
 import com.bulbas23r.client.delivery.application.service.DeliveryService;
 import common.annotation.RoleCheck;
+import common.model.UserRoleEnum.Authority;
 import common.utils.PageUtils;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -31,7 +34,7 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-    @RoleCheck({"MASTER", "HUB_MANAGER"})
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @PostMapping
     public ResponseEntity<?> createDelivery(@Valid @RequestBody DeliveryCreateRequestDto requestDto) {
         DeliveryResponseDto result = deliveryService.createDelivery(requestDto);
@@ -42,6 +45,12 @@ public class DeliveryController {
     public ResponseEntity<?> getDelivery(@PathVariable("deliveryId") UUID deliveryId) {
         DeliveryResponseDto result = deliveryService.getDelivery(deliveryId);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<?> getDeliveryByOrderId(@PathVariable("orderId") UUID orderId) {
+        Delivery deliveryByOrderId = deliveryService.getDeliveryByOrderId(orderId);
+        return ResponseEntity.ok(deliveryByOrderId);
     }
 
 
@@ -55,7 +64,7 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
-    @RoleCheck({"MASTER", "HUB_MANAGER"})
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @PutMapping("/{deliveryId}")
     public ResponseEntity<?> updateDelivery(
         @PathVariable("deliveryId") UUID deliveryId,
@@ -65,10 +74,16 @@ public class DeliveryController {
         return ResponseEntity.ok(result);
     }
 
-    @RoleCheck({"MASTER", "HUB_MANAGER"})
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER})
     @DeleteMapping("/{deliveryId}")
     public ResponseEntity<?> deleteDelivery(@PathVariable("deliveryId") UUID deliveryId) {
         DeliveryResponseDto result = deliveryService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/company/depart")
+    public ResponseEntity<?> deliveryCompany(@RequestBody DeliveryCompanyRequestDto requestDto) {
+        DeliveryResponseDto result = deliveryService.deliveryCompany(requestDto);
         return ResponseEntity.ok(result);
     }
 
@@ -77,7 +92,5 @@ public class DeliveryController {
         Page<DeliveryResponseDto> result = deliveryService.searchDelivery(requestDto);
         return ResponseEntity.ok(result);
     }
-
-
 
 }

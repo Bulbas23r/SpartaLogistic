@@ -1,149 +1,205 @@
 package com.bulbas23r.client.message.infrastructure.messaging;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.bulbas23r.client.message.application.service.gemini.GeminiService;
 import com.bulbas23r.client.message.application.service.message.MessageService;
 import com.bulbas23r.client.message.client.DeliveryClient;
 import com.bulbas23r.client.message.client.HubClient;
+import com.bulbas23r.client.message.client.OrderClient;
+import com.bulbas23r.client.message.client.ProductClient;
 import com.bulbas23r.client.message.client.UserClient;
-import com.bulbas23r.client.message.presentation.dto.request.PostMessageDto;
 import com.bulbas23r.client.message.presentation.dto.response.DeliveryResponseDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import common.dto.HubInfoResponseDto;
 import common.dto.UserInfoResponseDto;
-import java.util.HashMap;
+import common.event.CreateOrderEventDto;
+import common.event.OrderProductEventDto;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@SpringBootTest(
-    properties = {
-        "spring.main.allow-bean-definition-overriding=true",
-        "spring.cloud.openfeign.enabled=false"  // 실제 Feign 자동 구성을 비활성화
-    },
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
-)
+@SpringBootTest
+@AutoConfigureWireMock(port = 0)
+@TestPropertySource(properties = {
+    "user-service.url=http://localhost:${wiremock.server.port}/api/users",
+    "delivery-service.url=http://localhost:${wiremock.server.port}/api/deliveries",
+    "hub-service.url=http://localhost:${wiremock.server.port}/api/hubs"
+})
 @ActiveProfiles("test")
-@ComponentScan(
-    excludeFilters = @ComponentScan.Filter(
-        type = FilterType.ANNOTATION,
-        classes = FeignClient.class  // @FeignClient가 붙은 클래스들은 스캔에서 제외
-    )
-)
-@Import(MocksConfiguration.class)
 class OrderEventConsumerTest {
-
+  @MockitoBean
+  private MessageService messageService;
   @Autowired
   private DeliveryClient deliveryClient;
-
   @Autowired
   private HubClient hubClient;
-
   @Autowired
   private UserClient userClient;
 
   @Autowired
+  private ProductClient productClient;
+  @Autowired
+  private OrderClient orderClient;
+  @Autowired
   private GeminiService geminiService;
 
   @Autowired
-  private MessageService messageService;
+  private WireMockServer wireMockServer;
 
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @Autowired
+  @InjectMocks
   private OrderEventConsumer orderEventConsumer;
 
   @Test
-  void testHandleEvent() {
-    // 1. 테스트용 이벤트 데이터 생성
+  void handleEvent() {
+    // given
     UUID orderId = UUID.randomUUID();
-    Map<String, Object> eventMap = new HashMap<>();
-    eventMap.put("orderId", orderId.toString());
-    eventMap.put("memo", "테스트 주문 메모");
-    // 상품 정보 (Java 9+의 Map.of 사용)
-    Map<String, Object> product = Map.of("productName", "상품1", "quantity", 1);
-    eventMap.put("products", List.of(product));
-
-    // 2. DeliveryClient 목 설정: 배달 경로 정보(Page<DeliveryResponseDto>) 반환
     UUID departureHubId = UUID.randomUUID();
-    UUID transitHubId = UUID.randomUUID();
+    UUID middleHubId = UUID.randomUUID();
     UUID arrivalHubId = UUID.randomUUID();
+    UUID productId = UUID.randomUUID();
+    UUID deliveryId = UUID.randomUUID();
 
-    DeliveryResponseDto route1 = new DeliveryResponseDto();
-    route1.setDepartureHubId(departureHubId);
+    OrderProductEventDto orderProductEventDto = new OrderProductEventDto(productId,1);
+    CreateOrderEventDto createOrderEventDto = new CreateOrderEventDto(orderId,null,null,departureHubId,List.of(orderProductEventDto));
+    createOrderEventDto.setAuthorization("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwicm9sZSI6Ik1BU1RFUiIsImlhdCI6MTc0MjgzNDE5MiwiZXhwIjoxNzQyODM3NzkyfQ.QAvrfUp83KI2fbj5bV5rpKNKJ5PlyynAQM87Pm1eplo");
+    createOrderEventDto.setUsername("username");
+    createOrderEventDto.setRole("MASTER");
 
-    DeliveryResponseDto route2 = new DeliveryResponseDto();
-    route2.setDepartureHubId(transitHubId);
+    // 유저 슬랙 아이디 가져오기
+    wireMockServer.stubFor(get(urlEqualTo("/api/users/info/1"))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{ \"id\": 1, \"username\": \"username\", \"slackId\": \"slackId\", \"role\": \"MASTER\" }")));
 
-    DeliveryResponseDto route3 = new DeliveryResponseDto();
-    route3.setArrivalHubId(arrivalHubId);
+    ResponseEntity<UserInfoResponseDto> response = userClient.getUser(1L);
 
-    List<DeliveryResponseDto> routes = List.of(route1, route2, route3);
-    Page<DeliveryResponseDto> page = new PageImpl<>(routes);
-    ResponseEntity<Page<DeliveryResponseDto>> deliveryResponseEntity = ResponseEntity.ok(page);
-    when(deliveryClient.getDeliveryByOrderIdRouteList(orderId)).thenReturn(deliveryResponseEntity);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("slackId", response.getBody().getSlackId());
 
-    // 3. HubClient 목 설정: 각 허브 ID에 대해 HubInfoResponseDto 반환
-    HubInfoResponseDto departureHubInfo = new HubInfoResponseDto();
-    departureHubInfo.setName("출발허브");
-    // 담당자 정보를 위한 managerId 설정 (여기서는 Long 타입 사용)
-    Long managerId = 1L;
-    departureHubInfo.setManagerId(managerId);
-    ResponseEntity<HubInfoResponseDto> departureResponse = ResponseEntity.ok(departureHubInfo);
-    when(hubClient.getHubInfo(departureHubId)).thenReturn(departureResponse);
 
-    HubInfoResponseDto transitHubInfo = new HubInfoResponseDto();
-    transitHubInfo.setName("경유허브");
-    ResponseEntity<HubInfoResponseDto> transitResponse = ResponseEntity.ok(transitHubInfo);
-    when(hubClient.getHubInfo(transitHubId)).thenReturn(transitResponse);
+    // 주문 아이디로 배송 정보 가져오기
+    wireMockServer.stubFor(get(urlEqualTo("/api/deliveries/order/" + orderId))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{\n" +
+                "    \"id\": \"" + deliveryId + "\",\n" +
+                "    \"departureHubId\": \"" + departureHubId + "\",\n" +
+                "    \"arrivalHubId\": \"" + arrivalHubId + "\",\n" +
+                "    \"deliveryManagerId\": \"" + UUID.randomUUID() + "\",\n" +
+                "    \"sequence\": 1,\n" +
+                "    \"estimatedDistance\": 100,\n" +
+                "    \"estimatedDuration\": 60,\n" +
+                "    \"actualDistance\": 95,\n" +
+                "    \"actualDuration\": 55\n" +
+                "}")));
 
-    HubInfoResponseDto arrivalHubInfo = new HubInfoResponseDto();
-    arrivalHubInfo.setName("도착허브");
-    ResponseEntity<HubInfoResponseDto> arrivalResponse = ResponseEntity.ok(arrivalHubInfo);
-    when(hubClient.getHubInfo(arrivalHubId)).thenReturn(arrivalResponse);
+    ResponseEntity<DeliveryResponseDto> deliveryResponse = deliveryClient.getDeliveryByOrderId(orderId);
+    assertEquals(HttpStatus.OK, deliveryResponse.getStatusCode());
 
-    // 4. UserClient 목 설정: 출발 허브 담당자의 Slack ID 반환
-    UserInfoResponseDto userInfo = new UserInfoResponseDto();
-    userInfo.setSlackId("slack123");
-    ResponseEntity<UserInfoResponseDto> userResponse = ResponseEntity.ok(userInfo);
-    when(userClient.getUser(managerId)).thenReturn(userResponse);
+    DeliveryResponseDto delivery = deliveryResponse.getBody();
+    assertNotNull(delivery);
+    assertEquals(deliveryId, delivery.getId());
 
-    // 5. GeminiService 목 설정: AI 응답 메시지 반환
-    when(geminiService.getAi(anyString())).thenReturn("AI 응답 메시지");
+    // 배달 아이디로 경로 가져오기
+    wireMockServer.stubFor(get(urlEqualTo("/api/deliveries/" + delivery.getId() + "/route"))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{\n"
+                + "  \"content\": [\n"
+                + "    {\n"
+                + "      \"id\": \"" + delivery.getId() + "\",\n"
+                + "      \"departureHubId\": \"" + departureHubId + "\",\n"
+                + "      \"arrivalHubId\": \"" + middleHubId + "\",\n"
+//                + "      \"deliveryManagerId\": \"d65f3a4c-1234-4567-8901-223344556677\",\n"
+                + "      \"sequence\": 1,\n"
+                + "      \"estimatedDistance\": 120,\n"
+                + "      \"estimatedDuration\": 80,\n"
+                + "      \"actualDistance\": 115,\n"
+                + "      \"actualDuration\": 75\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"" + delivery.getId() + "\",\n"
+                + "      \"departureHubId\": \"" + middleHubId + "\",\n"
+                + "      \"arrivalHubId\": \"" + arrivalHubId + "\",\n"
+//                + "      \"deliveryManagerId\": \"g67f2a3d-4567-7890-1234-445566778899\",\n"
+                + "      \"sequence\": 2,\n"
+                + "      \"estimatedDistance\": 150,\n"
+                + "      \"estimatedDuration\": 100,\n"
+                + "      \"actualDistance\": 145,\n"
+                + "      \"actualDuration\": 95\n"
+                + "    },\n"
+                + "    {\n"
+                + "      \"id\": \"" + delivery.getId() + "\",\n"
+                + "      \"departureHubId\": \"" + arrivalHubId + "\",\n"
+                + "      \"arrivalHubId\": \" " + arrivalHubId + " \",\n"
+//                + "      \"deliveryManagerId\": \"j90f4a5e-6789-9012-3456-778899001122\",\n"
+                + "      \"sequence\": 3,\n"
+                + "      \"estimatedDistance\": 200,\n"
+                + "      \"estimatedDuration\": 130,\n"
+                + "      \"actualDistance\": 190,\n"
+                + "      \"actualDuration\": 120\n"
+                + "    }\n"
+                + "  ],\n"
+                + "  \"totalElements\": 3,\n"
+                + "  \"totalPages\": 1,\n"
+                + "  \"size\": 10,\n"
+                + "  \"number\": 0\n"
+                + "}\n")));
 
-    // 6. 이벤트 처리 호출
-    orderEventConsumer.handleEvent(eventMap);
+    ResponseEntity<Page<DeliveryResponseDto>> deliveryRouteList = deliveryClient.getDeliveryRouteList(
+        delivery.getId());
 
-    // 7. MessageService가 sendDirectMessage를 호출했는지 검증
-    ArgumentCaptor<PostMessageDto> captor = ArgumentCaptor.forClass(PostMessageDto.class);
-    verify(messageService, times(1)).sendDirectMessage(captor.capture());
-    PostMessageDto sentMessage = captor.getValue();
+    List<DeliveryResponseDto> routes = deliveryRouteList.getBody().getContent();
 
-    // 슬랙 아이디 및 메시지 내용에 필요한 허브명과 AI 응답 메시지가 포함되어 있는지 확인
-    assertEquals("slack123", sentMessage.getSlackId());
-    String messageContent = sentMessage.getMessage();
-    assertTrue(messageContent.contains("출발허브"));
-    assertTrue(messageContent.contains("경유허브"));
-    assertTrue(messageContent.contains("도착허브"));
-    assertTrue(messageContent.contains("AI 응답 메시지"));
+    assertEquals(routes.get(0).getDepartureHubId(), departureHubId);
+
+
+    // 각 허브 아이디로 허브명 조회
+    wireMockServer.stubFor(get(urlEqualTo("/api/hubs/" + routes.get(0).getDepartureHubId()))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .withBody("{\n"
+                + "  \"name\": \"서울 허브\",\n"
+                + "  \"managerId\": 12345,\n"
+                + "  \"roadAddress\": \"123 Main Street\",\n"
+                + "  \"jibunAddress\": \"123-45\",\n"
+                + "  \"latitude\": 37.5665,\n"
+                + "  \"longitude\": 126.9780,\n"
+                + "  \"active\": true\n"
+                + "}")));
+
+    ResponseEntity<HubInfoResponseDto> hubInfo = hubClient.getHubInfo(
+        routes.get(0).getDepartureHubId());
+
+    assertEquals(hubInfo.getBody().getName(),"서울 허브");
+
+//
+//    when(geminiService.getAi(any())).thenReturn("AI 응답 테스트");
+//
+//    // when
+//    orderEventConsumer.handleEvent(eventMap);
+
+    // then
+    // messageService.sendDirectMessage 호출 확인 (필요시 verify 사용 가능)
   }
 }

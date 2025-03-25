@@ -10,7 +10,7 @@ import lombok.Setter;
 public class DeliveryRouteDepartRequestDto {
 
     @NotNull
-    private UUID deliveryManagerId;
+    private Long deliveryManagerId;
 
     @NotNull
     private UUID deliveryId;
@@ -20,6 +20,5 @@ public class DeliveryRouteDepartRequestDto {
 
     @NotNull
     private UUID arrivalHubId;
-
 
 }

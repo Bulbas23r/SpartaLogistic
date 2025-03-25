@@ -5,6 +5,7 @@ import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryRouteDepar
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryRouteResponseDto;
 import com.bulbas23r.client.delivery.application.service.DeliveryRouteService;
 import common.annotation.RoleCheck;
+import common.model.UserRoleEnum.Authority;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,15 @@ public class DeliveryRouteController {
     private final DeliveryRouteService deliveryRouteService;
 
 
-    @RoleCheck({"MASTER", "HUB_MANAGER", "HUB_TO_HUB_DELIVERY"})
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER, Authority.HUB_TO_HUB_DELIVERY})
     @PostMapping("/route/depart")
     public ResponseEntity<?> departDeliveryRoute(@RequestBody @Valid DeliveryRouteDepartRequestDto requestDto) {
-
         DeliveryRouteResponseDto result = deliveryRouteService.departDeliveryRoute(requestDto);
 
         return ResponseEntity.ok(result);
     }
 
-    @RoleCheck({"MASTER", "HUB_MANAGER", "HUB_TO_HUB_DELIVERY"})
+    @RoleCheck({Authority.MASTER, Authority.HUB_MANAGER, Authority.HUB_TO_HUB_DELIVERY})
     @PostMapping("/route/arrive")
     public ResponseEntity<?> arriveDeliveryRoute(@RequestBody @Valid DeliveryRouteArriveRequestDto requestDto) {
 
@@ -59,16 +59,5 @@ public class DeliveryRouteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{orderId}/order/route")
-    public ResponseEntity<?> getDeliveryByOrderIdRouteList(
-        @PathVariable UUID orderId,
-        @RequestParam(defaultValue = "0", required = false) int page,
-        @RequestParam(defaultValue =  "10", required = false) int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Direction.ASC, "sequence");
-        Page<DeliveryRouteResponseDto> result = deliveryRouteService.getDeliveryByOrderIdRouteList(orderId,pageable);
-
-        return ResponseEntity.ok(result);
-    }
 
 }

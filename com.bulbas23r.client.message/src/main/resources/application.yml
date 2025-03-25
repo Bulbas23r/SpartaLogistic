@@ -22,3 +22,16 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
+
+hub-service:
+  url: http://localhost:${wiremock.server.port}/api/hubs
+
+user-service:
+  url: http://localhost:${wiremock.server.port}/api/users
+
+delivery-service:
+  url: http://localhost:${wiremock.server.port}/api/deliveries
+
+order-service:
+  url: http://localhost:${wiremock.server.port}/api/orders

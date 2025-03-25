@@ -31,6 +31,7 @@ import org.hibernate.type.SqlTypes;
 @RequiredArgsConstructor
 @Table(name = "p_order")
 public class Order extends BaseEntity {
+
     @Id
     @GeneratedValue
     @UuidGenerator
@@ -70,13 +71,13 @@ public class Order extends BaseEntity {
         this.status = OrderStatus.valueOf(dto.getStatus());
         this.orderProducts = new HashSet<>();
         List<OrderProductCreateRequestDto> orderProductList = dto.getOrderProducts();
-        for(OrderProductCreateRequestDto orderProductDto : orderProductList) {
+        for (OrderProductCreateRequestDto orderProductDto : orderProductList) {
             OrderProduct orderProduct = new OrderProduct(orderProductDto);
             orderProduct.setOrder(this);
             this.orderProducts.add(orderProduct);
         }
 
-        if(isNotSingleHubId()){
+        if (isNotSingleHubId()) {
             throw new IllegalArgumentException(OrderString.NON_SILGLE_HUB_ID);
         }
     }
@@ -87,20 +88,24 @@ public class Order extends BaseEntity {
         this.status = OrderStatus.valueOf(dto.getStatus());
         this.orderProducts = new HashSet<>();
         List<OrderProductCreateRequestDto> orderProductList = dto.getOrderProducts();
-        for(OrderProductCreateRequestDto orderProductDto : orderProductList) {
+        for (OrderProductCreateRequestDto orderProductDto : orderProductList) {
             this.orderProducts.add(new OrderProduct(orderProductDto));
         }
 
-        if(isNotSingleHubId()){
+        if (isNotSingleHubId()) {
             throw new IllegalArgumentException(OrderString.NON_SILGLE_HUB_ID);
         }
     }
 
     // 주문의 주문 제품들이 모두 동일 허브 아이디임을 확인
-    public boolean isNotSingleHubId(){
+    public boolean isNotSingleHubId() {
         return this.orderProducts.stream()
             .map(OrderProduct::getHubId)
             .distinct()
             .count() != 1;
+    }
+
+    public void fail() {
+        this.status = OrderStatus.FAILED;
     }
 }
