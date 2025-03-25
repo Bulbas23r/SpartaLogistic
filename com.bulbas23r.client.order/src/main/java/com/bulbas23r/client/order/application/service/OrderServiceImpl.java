@@ -33,7 +33,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order(orderCreateRequestDto);
         order = orderRepository.save(order);
         orderEventProducer.sendOrderCreateEvent(order);
-        orderEventProducer.sendCreateOrderEventToDelivery(order);
         return order;
     }
 

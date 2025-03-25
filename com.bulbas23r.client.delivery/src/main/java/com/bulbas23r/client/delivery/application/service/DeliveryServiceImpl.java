@@ -6,12 +6,15 @@ import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryQueryRepository;
 import com.bulbas23r.client.delivery.domain.repository.DeliveryRepository;
 import com.bulbas23r.client.delivery.infrastructure.client.CompanyClient;
+import com.bulbas23r.client.delivery.infrastructure.client.DeliverManageClient;
 import com.bulbas23r.client.delivery.infrastructure.client.HubClient;
 import com.bulbas23r.client.delivery.infrastructure.client.UserClient;
 import com.bulbas23r.client.delivery.infrastructure.persistence.DeliveryRouteJpaRepository;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCompanyRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryUpdateRequestDto;
+import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryManagerResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.HubRouteResponseDto;
 import common.dto.CompanyInfoResponseDto;
@@ -38,6 +41,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final HubClient hubClient;
     private final CompanyClient companyClient;
     private final UserClient userClient;
+    private final DeliverManageClient deliverManageClient;
 
     @Transactional
     public void createDeliveryByOrder(CreateOrderEventDto eventDto) {
@@ -65,7 +69,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public DeliveryResponseDto createDelivery(DeliveryCreateRequestDto requestDto) {
-        //todo: _id 값 유효성 check
 
         Delivery delivery = requestDto.toDelivery();
         deliveryRepository.save(delivery);
@@ -134,6 +137,27 @@ public class DeliveryServiceImpl implements DeliveryService {
         );
     }
 
+    // 업체 배송
+    @Transactional
+    public DeliveryResponseDto deliveryCompany(DeliveryCompanyRequestDto requestDto) {
+        DeliveryManagerResponseDto managerInfo = deliverManageClient.getDeliveryManagerByUserId(requestDto.getDeliveryManagerId());
+
+        if(managerInfo == null || !managerInfo.getDeliveryManagerType().equals("COMPANY")) {
+            throw new BadRequestException("배송 담당자가 유효하지 않거나 업체 배송 담당자가 아닙니다.");
+        }
+
+        Delivery delivery = findById(requestDto.getDeliveryId());
+
+        if(!delivery.getStatus().equals(DeliveryStatus.HUB_ARRIVED)) {
+            throw new BadRequestException("업체 배송을 할 수 없습니다.");
+        }
+
+        delivery.changeStatus(DeliveryStatus.COMPANY_TRANSIT);
+        delivery.changeDeliveryManagerId(delivery.getDeliveryManagerId());
+
+        return DeliveryResponseDto.fromEntity(delivery);
+    }
+
     @Transactional
     public void changeStatus(UUID deliveryId, DeliveryStatus status) {
         Delivery delivery = findById(deliveryId);
@@ -156,6 +180,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         );
     }
 
+
+    @Transactional
     public Delivery findById(UUID deliveryId) {
         return deliveryRepository.findById(deliveryId)
             .orElseThrow(() -> new NotFoundException("배송 정보를 찾을 수 없습니다."));
@@ -180,7 +206,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                     .arrivalHubId(routeList.get(i))
                     .estimatedDistance(hubRoute.getTransitDistance())
                     .estimatedDuration(hubRoute.getTransitTime())
-                    .sequence(i + 1)
+                    .sequence(i)
                     .build()
             );
         }

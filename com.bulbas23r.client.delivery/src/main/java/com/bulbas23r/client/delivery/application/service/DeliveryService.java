@@ -1,6 +1,8 @@
 package com.bulbas23r.client.delivery.application.service;
 
 import com.bulbas23r.client.delivery.domain.model.Delivery;
+import com.bulbas23r.client.delivery.domain.model.DeliveryStatus;
+import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCompanyRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliveryCreateRequestDto;
 import com.bulbas23r.client.delivery.presentation.dto.response.DeliveryResponseDto;
 import com.bulbas23r.client.delivery.presentation.dto.request.DeliverySearchRequestDto;
@@ -32,4 +34,6 @@ public interface DeliveryService {
     void cancelDelivery(UUID orderId);
 
     Delivery getDeliveryByOrderId(UUID orderId);
+
+    DeliveryResponseDto deliveryCompany(DeliveryCompanyRequestDto requestDto);
 }

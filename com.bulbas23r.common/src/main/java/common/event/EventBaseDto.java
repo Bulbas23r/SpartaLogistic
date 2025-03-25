@@ -1,6 +1,5 @@
 package common.event;
 
-import common.UserContextHolder;
 import lombok.Getter;
 import lombok.Setter;
 
