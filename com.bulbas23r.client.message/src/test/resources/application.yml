@@ -18,5 +18,8 @@ delivery-service:
 order-service:
   url: http://localhost:${wiremock.server.port}/api/orders
 
+product-service:
+  url: http://localhost:${wiremock.server.port}/api/products
+
 spring.main.allow-bean-definition-overriding: true
 spring.config.import: optional:configserver:http://localhost:18080
